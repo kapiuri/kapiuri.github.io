@@ -18,12 +18,10 @@ document.getElementById('extractButton').addEventListener('click', function() {
             console.log('Image loaded');
             EXIF.getData(image, function() {
                 let exifData = '';
-                for (let tag in EXIF.Tags) {
-                    if (EXIF.Tags.hasOwnProperty(tag)) {
-                        const tagValue = EXIF.getTag(image, tag);
-                        if (tagValue) {
-                            exifData += `${tag}: ${tagValue}\n`;
-                        }
+                const tags = EXIF.getAllTags(image); // Get all EXIF tags
+                for (let tag in tags) {
+                    if (tags.hasOwnProperty(tag)) {
+                        exifData += `${tag}: ${tags[tag]}\n`;
                     }
                 }
                 if (exifData === '') {
