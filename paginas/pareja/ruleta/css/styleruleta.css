@@ -1,0 +1,60 @@
+	body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .contenedor-galeria {
+            width: 200px; /* Ancho del contenedor */
+            height: 200px; /* Altura del contenedor */
+            overflow: hidden; /* Oculta las partes de la imagen que se salen del contenedor */
+            position: relative;
+            border: 3px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            margin-top: 30px;
+        }
+        .galeria {
+            display: flex;
+            transition: transform 0.5s ease;
+            position: absolute;
+            left: 0; /* Ajuste para alinear la galería */
+        }
+        .imagen {
+            min-width: 200px; /* Ancho de cada imagen igual al ancho del contenedor */
+            height: 200px; /* Altura de cada imagen igual a la altura del contenedor */
+        }
+        .imagen img {
+            width: 100%; /* La imagen ocupa el 100% del ancho del contenedor */
+            height: 100%; /* La imagen ocupa el 100% de la altura del contenedor */
+            object-fit: cover; /* Asegura que la imagen mantenga la proporción */
+        }
+        #imagenSeleccionada {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        #imagenSeleccionada img {
+            max-width: 500px;
+            height: auto;
+        }
+	#nombreImagen {
+	    font-size: 24px; /* Tamaño del texto */
+	    font-weight: bold; /* Texto en negrita */
+        position: absolute;
+        font-family: fantasy;
+        letter-spacing: 0.2em;
+	    top: 10px; /* Espacio desde la parte superior */
+	    left: 50%; /* Centrar horizontalmente */
+	    transform: translateX(-50%); /* Ajustar el centro */
+	    color: #333; /* Color del texto */
+	    padding: 5px; /* Espacio alrededor del texto */
+	    border-radius: 5px; /* Bordes redondeados */
+	    text-align: center; /* Alinear el texto en el centro */
+	}

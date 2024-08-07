@@ -1,0 +1,90 @@
+/* Estilos para el cuerpo de la página */
+body {
+    background-image: url('../../assets/imagenes/fondos/fondodejuegos.png');
+    background-color: #f5f5f5; /* Color de fondo de reserva si la imagen no carga */
+    font-family: fantasy; /* Fuente decorativa */
+    letter-spacing: 0.2em; /* Espaciado entre letras */
+    margin: 0; /* Eliminar márgenes predeterminados */
+    padding: 20px; /* Relleno interno para el cuerpo de la página */
+}
+
+/* Estilos para la barra de navegación */
+nav {
+    padding: 10px; /* Espaciado interno en la barra de navegación */
+    position: relative; /* Para posicionar el botón de menú */
+}
+
+/* Estilos para la lista de navegación */
+ul {
+    list-style-type: none; /* Eliminar puntos de lista */
+    padding: 0; /* Eliminar relleno por defecto */
+    margin: 0; /* Eliminar márgenes por defecto */
+    display: flex; /* Mostrar los elementos en una línea */
+    justify-content: center; /* Centrar horizontalmente los elementos */
+    transition: max-height 0.3s ease; /* Transición suave para el despliegue del menú */
+}
+
+/* Estilos para los elementos de la lista */
+li {
+    margin: 0 10px; /* Espaciado entre elementos de la lista */
+}
+
+/* Estilos para los enlaces en la navegación */
+a {
+    text-decoration: none; /* Eliminar subrayado */
+    color: white; /* Color del texto en blanco */
+    font-size: 18px; /* Tamaño de fuente */
+    padding: 8px 12px; /* Espaciado interno para mejorar la apariencia */
+    display: block; /* Asegura que el área de clic cubra todo el padding */
+    transition: color 0.3s; /* Transición suave para el color del texto */
+}
+
+/* Efecto hover para los enlaces */
+a:hover {
+    text-decoration: underline; /* Subrayar el enlace al pasar el ratón */
+    color: #ddd; /* Cambiar el color del texto al pasar el ratón */
+}
+
+/* Estilos para el botón de menú en dispositivos móviles */
+#boton-menu { /* Asegúrate de que el ID coincida */
+    display: none; /* Ocultar el botón de menú por defecto */
+}
+
+/* Media query para el menú en móviles */
+@media (max-width: 768px) {
+    nav ul {
+        display: none; /* Ocultar el menú por defecto en móviles */
+        flex-direction: column; /* Mostrar los elementos en una columna */
+        width: 100%; /* Hacer que el menú ocupe todo el ancho */
+        background-color: #1c1c1c; /* Fondo oscuro en móviles */
+        position: fixed; /* Posicionar el menú fuera del flujo normal */
+        top: 0; /* Posicionar el menú en la parte superior de la pantalla */
+        left: 0; /* Alineación con el borde izquierdo */
+        height: 100vh; /* Ocupa toda la altura de la pantalla */
+        justify-content: center; /* Centrar los elementos verticalmente */
+        align-items: center; /* Centrar los elementos horizontalmente */
+        z-index: 1000; /* Asegura que el menú esté por encima de otros elementos */
+        transition: opacity 0.3s ease; /* Transición para la visibilidad del menú */
+        opacity: 0; /* Ocultar el menú por defecto */
+    }
+
+    nav ul.show {
+        display: flex; /* Mostrar el menú cuando tenga la clase 'show' */
+        opacity: 1; /* Mostrar el menú con opacidad */
+    }
+
+    #boton-menu { /* Asegúrate de que el ID coincida */
+        display: block; /* Mostrar el botón de menú en dispositivos móviles */
+        background: none; /* Sin fondo para el botón */
+        color: white; /* Color del texto del botón */
+        border: none; /* Sin bordes para el botón */
+        padding: 10px; /* Espaciado interno para el botón */
+        font-size: 18px; /* Tamaño de la fuente del botón */
+        cursor: pointer; /* Cambiar el cursor para indicar clic */
+        border-radius: 0; /* Sin bordes redondeados */
+    }
+
+    #boton-menu:hover { /* Asegúrate de que el ID coincida */
+        color: #ddd; /* Cambiar el color del texto al pasar el ratón */
+    }
+}

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exif Data Extractor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Exif Data Extractor</h1>
+        <input type="file" id="fileInput" accept="image/*">
+        <button id="extractButton">Extract EXIF Data</button>
+        <pre id="exifOutput">Select an image and click "Extract EXIF Data" to see the metadata.</pre>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

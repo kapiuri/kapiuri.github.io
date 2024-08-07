@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+#map {
+    height: 100vh; /* Ocupa toda la altura de la ventana del navegador */
+    width: 100vw;  /* Ocupa toda la anchura de la ventana del navegador */
+}
