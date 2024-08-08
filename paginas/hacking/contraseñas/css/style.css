@@ -1,0 +1,11 @@
+#password-generator {
+    margin-top: 20px;
+}
+
+#generatedPassword {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #222;
+    border: 1px dashed #0f0;
+    word-wrap: break-word;
+}
