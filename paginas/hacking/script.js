@@ -1,3 +1,3 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard de Seguridad cargado.');
+    console.log('Dashboard Hacker cargado.');
 });
