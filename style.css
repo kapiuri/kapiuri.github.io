@@ -1,5 +1,5 @@
 body {
-    font-family: 'Press Start 2P';
+    font-family: 'Press Start 2P', cursive;
     margin: 0;
     padding: 0;
     background-color: #000;
@@ -60,6 +60,7 @@ ul li {
     border: 1px solid #0f0;
 }
 
+/* Footer */
 footer {
     background-color: #111;
     color: #0f0;
@@ -73,13 +74,58 @@ footer {
 
 /* Estilos responsivos para dispositivos móviles */
 @media (max-width: 768px) {
+    header nav ul {
+        padding: 0;
+    }
+    
     header nav ul li {
         display: block;
         margin: 10px 0;
+        text-align: center;
     }
     
+    main {
+        padding: 10px;
+    }
+    
+    h1, h2 {
+        font-size: 1.5em;
+    }
+
+    ul li {
+        font-size: 0.9em;
+    }
+
     footer {
         position: static;
         border-top: none;
+    }
+}
+
+/* Estilos para pantallas pequeñas (móviles) */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    header {
+        padding: 10px;
+    }
+
+    header nav ul li {
+        margin: 5px 0;
+    }
+
+    h1, h2 {
+        font-size: 1.2em;
+    }
+
+    ul li {
+        padding: 8px;
+        font-size: 0.8em;
+    }
+
+    footer {
+        padding: 5px;
     }
 }
