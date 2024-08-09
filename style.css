@@ -1,45 +1,4 @@
-body {
-    font-family: 'Press Start 2P';
-    margin: 0;
-    padding: 0;
-    background-color: #000;
-    color: #0f0;
-}
-
-header {
-    background-color: #111;
-    color: #0f0;
-    padding: 20px;
-    text-align: center;
-    border-bottom: 2px solid #0f0;
-    position: relative;
-}
-
-header nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.menu-toggle {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000; /* Asegura que el botón esté sobre otros elementos */
-}
-
-.menu-toggle .bar {
-    background-color: #0f0;
-    height: 3px;
-    width: 30px;
-    margin: 3px 0;
-    transition: 0.3s;
-}
-
+/* Estilos generales para los menús desplegables */
 #nav-links {
     list-style: none;
     padding: 0;
@@ -49,6 +8,7 @@ header nav {
 }
 
 #nav-links li {
+    position: relative;
     margin: 0 15px;
 }
 
@@ -61,78 +21,42 @@ header nav {
     text-decoration: underline;
 }
 
-/* Menú hamburguesa */
-.menu-toggle.active .bar:nth-child(1) {
-    transform: rotate(45deg);
-    position: absolute;
+/* Menú desplegable */
+.dropdown {
+    position: relative;
 }
 
-.menu-toggle.active .bar:nth-child(2) {
-    opacity: 0;
-}
-
-.menu-toggle.active .bar:nth-child(3) {
-    transform: rotate(-45deg);
+.dropdown-menu {
+    display: none;
     position: absolute;
-}
-
-#nav-links.active {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    background-color: #111;
-    position: absolute;
-    top: 60px;
+    top: 100%;
     left: 0;
-    padding: 10px 0;
-    z-index: 999;
-}
-
-/* Estilos generales */
-main {
-    padding: 20px;
-}
-
-h1, h2 {
-    color: #0f0;
-    border-bottom: 1px dashed #0f0;
-    padding-bottom: 10px;
-}
-
-section {
-    margin-bottom: 20px;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-ul li {
     background-color: #111;
-    margin: 5px 0;
+    list-style: none;
     padding: 10px;
     border: 1px solid #0f0;
+    z-index: 1000;
 }
 
-/* Footer */
-footer {
-    background-color: #111;
+.dropdown-menu li {
+    margin: 5px 0;
+}
+
+.dropdown-menu li a {
     color: #0f0;
-    text-align: center;
-    padding: 10px;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
-    border-top: 2px solid #0f0;
+    text-decoration: none;
+}
+
+.dropdown-menu li a:hover {
+    text-decoration: underline;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
 }
 
 /* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
-    }
-
     #nav-links {
         display: none;
         flex-direction: column;
@@ -142,66 +66,4 @@ footer {
     #nav-links.active {
         display: flex;
     }
-    
-    main {
-        padding: 10px;
-    }
-    
-    h1, h2 {
-        font-size: 1.5em;
-        margin: 10px 0;
-    }
-
-    #nav-links li {
-        margin: 10px 0;
-        text-align: center;
-    }
-
-    #nav-links li a {
-        font-size: 1.2em;
-    }
-
-    footer {
-        position: static;
-        border-top: none;
-    }
-}
-
-/* Ajustes para pantallas muy pequeñas */
-@media (max-width: 480px) {
-    body {
-        font-size: 14px;
-    }
-
-    header {
-        padding: 10px;
-    }
-
-    header nav ul li {
-        margin: 5px 0;
-    }
-
-    h1, h2 {
-        font-size: 1.2em;
-        margin: 5px 0;
-    }
-
-    ul li {
-        padding: 8px;
-        font-size: 0.8em;
-    }
-
-    footer {
-        padding: 5px;
-    }
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-video {
-    max-width: 100%;
-    height: auto;
 }
