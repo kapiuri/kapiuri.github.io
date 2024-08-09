@@ -43,7 +43,6 @@ header nav {
     transition: 0.3s;
 }
 
-/* Estilo del menú desplegable */
 #nav-links {
     list-style: none;
     padding: 0;
@@ -53,7 +52,6 @@ header nav {
 }
 
 #nav-links li {
-    position: relative;
     margin: 0 15px;
 }
 
@@ -69,41 +67,6 @@ header nav {
 
 #nav-links li a:hover {
     background-color: #555;
-}
-
-/* Estilo del menú desplegable */
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #444;
-    list-style: none;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-}
-
-.dropdown-menu li {
-    margin: 5px 0;
-}
-
-.dropdown-menu li a {
-    color: #f1f1f1;
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 3px;
-    display: block;
-}
-
-.dropdown-menu li a:hover {
-    background-color: #666;
-}
-
-/* Mostrar el menú al pasar el ratón por encima */
-.dropdown:hover .dropdown-menu {
-    display: block;
 }
 
 /* Estilo del pie de página */
