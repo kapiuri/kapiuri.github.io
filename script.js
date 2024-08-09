@@ -4,5 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById('mobile-menu').addEventListener('click', function() {
     var navLinks = document.getElementById('nav-links');
+    this.classList.toggle('active');
     navLinks.classList.toggle('active');
 });
