@@ -1,15 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard Hacker cargado.');
 
-    var mobileMenu = document.getElementById('mobile-menu');
-    var navLinks = document.getElementById('nav-links');
-    var menuClose = document.getElementById('menu-close');
-
-    mobileMenu.addEventListener('click', function() {
+    document.getElementById('mobile-menu').addEventListener('click', function() {
+        var navLinks = document.getElementById('nav-links');
+        this.classList.toggle('active');
         navLinks.classList.toggle('active');
-    });
-
-    menuClose.addEventListener('click', function() {
-        navLinks.classList.remove('active');
     });
 });
