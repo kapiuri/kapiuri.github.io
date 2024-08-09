@@ -1,0 +1,218 @@
+/* Estilo del cuerpo */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #2a2a2a, #000);
+    color: #f1f1f1;
+}
+
+/* Estilo del encabezado */
+header {
+    background-color: #333;
+    color: #f1f1f1;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #f1f1f1;
+    position: relative;
+}
+
+/* Estilo de los enlaces de navegación */
+header nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.menu-toggle .bar {
+    background-color: #f1f1f1;
+    height: 3px;
+    width: 30px;
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+#nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#nav-links li {
+    margin: 0 15px;
+}
+
+#nav-links li a {
+    color: #f1f1f1;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#nav-links li a:hover {
+    background-color: #555;
+}
+
+/* Estilo del pie de página */
+footer {
+    background-color: #333;
+    color: #f1f1f1;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    border-top: 2px solid #f1f1f1;
+}
+
+/* Estilo principal del contenido */
+main {
+    padding: 20px;
+}
+
+h1, h2 {
+    color: #f1f1f1;
+    border-bottom: 1px dashed #f1f1f1;
+    padding-bottom: 10px;
+}
+
+/* Estilo de las listas */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    background-color: #333;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #f1f1f1;
+    border-radius: 5px;
+}
+
+.redes-sociales {
+    margin-top: 10px;
+}
+
+.icono {
+    display: inline-block;
+    font-size: 30px; /* Tamaño grande para los íconos */
+    color: #e0e0e0; /* Color claro por defecto */
+    margin: 0 15px; /* Espaciado entre íconos */
+    transition: color 0.3s;
+    text-decoration: none; /* Eliminar subrayado en los íconos */
+}
+
+/* Estilos para los íconos de redes sociales específicos */
+.icono.fa-instagram:hover {
+    color: #E1306C; /* Rosa de Instagram en hover */
+}
+
+.icono.fa-twitter:hover {
+    color: #1DA1F2; /* Azul de Twitter en hover */
+}
+
+.icono.fa-reddit:hover {
+    color: #FF4500; /* Naranja de Reddit en hover */
+}
+
+/* Estilo específico para el ícono de PayPal */
+.icono.fa-paypal:hover {
+    color: #003087; /* Color azul de PayPal en hover */
+}
+
+/* Estilo para el ícono de GitHub */
+.icono.fa-github:hover {
+    color: #000000; /* Color negro de GitHub en hover */
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+
+    #nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #nav-links.active {
+        display: flex;
+    }
+    
+    main {
+        padding: 10px;
+    }
+    
+    h1, h2 {
+        font-size: 1.5em;
+        margin: 10px 0;
+    }
+
+    #nav-links li {
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    #nav-links li a {
+        font-size: 1.2em;
+    }
+
+    footer {
+        position: static;
+        border-top: none;
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    header {
+        padding: 10px;
+    }
+
+    header nav ul li {
+        margin: 5px 0;
+    }
+
+    h1, h2 {
+        font-size: 1.2em;
+        margin: 5px 0;
+    }
+
+    ul li {
+        padding: 8px;
+        font-size: 0.8em;
+    }
+
+    footer {
+        padding: 5px;
+    }
+}
+
+/* Estilo para imágenes y vídeos */
+img, video {
+    max-width: 100%;
+    height: auto;
+}
