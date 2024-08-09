@@ -22,27 +22,6 @@ header nav {
     position: relative;
 }
 
-header nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-header nav ul li {
-    display: inline-block;
-    margin: 0 15px;
-}
-
-header nav ul li a {
-    color: #0f0;
-    text-decoration: none;
-}
-
-header nav ul li a:hover {
-    text-decoration: underline;
-}
-
-/* Menú hamburguesa */
 .menu-toggle {
     display: none;
     flex-direction: column;
@@ -160,6 +139,10 @@ footer {
     h1, h2 {
         font-size: 1.5em;
         margin: 10px 0;
+    }
+
+    #nav-links {
+        top: 60px;
     }
 
     ul li {
