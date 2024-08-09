@@ -7,3 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
         navLinks.classList.toggle('active');
     });
 });
+
+// Obtén el año actual
+const currentYear = new Date().getFullYear();
+
+// Selecciona el elemento con el id 'current-year'
+document.getElementById('current-year').textContent = currentYear;
