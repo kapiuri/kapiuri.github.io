@@ -40,7 +40,28 @@ header nav {
     transition: 0.3s;
 }
 
-/* Menú hamburguesa animado */
+#nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#nav-links li {
+    margin: 0 15px;
+}
+
+#nav-links li a {
+    color: #0f0;
+    text-decoration: none;
+}
+
+#nav-links li a:hover {
+    text-decoration: underline;
+}
+
+/* Menú hamburguesa */
 .menu-toggle.active .bar:nth-child(1) {
     transform: rotate(45deg);
     position: absolute;
@@ -55,7 +76,7 @@ header nav {
     position: absolute;
 }
 
-#nav-links {
+#nav-links.active {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -63,28 +84,8 @@ header nav {
     position: absolute;
     top: 60px;
     left: 0;
-    display: none;
-    padding: 10px 0; /* Añadir padding para que los enlaces no estén pegados al borde */
-    z-index: 999; /* Asegura que el menú esté sobre otros elementos */
-}
-
-#nav-links.active {
-    display: flex;
-}
-
-#nav-links li {
-    margin: 10px 0;
-    text-align: center;
-}
-
-#nav-links li a {
-    color: #0f0;
-    text-decoration: none;
-    font-size: 1.2em;
-}
-
-#nav-links li a:hover {
-    text-decoration: underline;
+    padding: 10px 0;
+    z-index: 999;
 }
 
 /* Estilos generales */
@@ -132,6 +133,16 @@ footer {
         display: flex;
     }
 
+    #nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #nav-links.active {
+        display: flex;
+    }
+    
     main {
         padding: 10px;
     }
@@ -141,13 +152,13 @@ footer {
         margin: 10px 0;
     }
 
-    #nav-links {
-        top: 60px;
+    #nav-links li {
+        margin: 10px 0;
+        text-align: center;
     }
 
-    ul li {
-        padding: 10px;
-        font-size: 0.9em;
+    #nav-links li a {
+        font-size: 1.2em;
     }
 
     footer {
