@@ -1,16 +1,22 @@
-const token = '22089aeaaa30b5';
+const token = '22089aeaaa30b5'; // Asegúrate de reemplazar este token si es necesario
 
 async function getIPInfo() {
-    const ipAddress = document.getElementById('ipAddress').value;
+    const ipAddress = document.getElementById('ipAddress').value.trim();
+    if (!ipAddress) {
+        alert('Por favor, introduce una dirección IP.');
+        return;
+    }
+
     const url = `https://ipinfo.io/${ipAddress}?token=${token}`;
 
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error('Error en la solicitud');
+            const errorData = await response.json();
+            throw new Error(`Error ${response.status}: ${errorData.error || 'Desconocido'}`);
         }
         const data = await response.json();
-        
+
         document.getElementById('ip').textContent = data.ip || 'No disponible';
         document.getElementById('city').textContent = data.city || 'No disponible';
         document.getElementById('region').textContent = data.region || 'No disponible';
