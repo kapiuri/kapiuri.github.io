@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de IP con ipinfo.io</title>
+    <link rel="stylesheet" href="../css/stylerastreoip.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Consulta de IP con ipinfo.io</h1>
+        <input type="text" id="ipAddress" placeholder="Introduce una dirección IP">
+        <button id="consultButton">Consultar</button>
+        <div id="result">
+            <p><strong>IP:</strong> <span id="ip"></span></p>
+            <p><strong>Ciudad:</strong> <span id="city"></span></p>
+            <p><strong>Región:</strong> <span id="region"></span></p>
+            <p><strong>País:</strong> <span id="country"></span></p>
+            <p><strong>Ubicación:</strong> <span id="location"></span></p>
+            <p><strong>Organización:</strong> <span id="org"></span></p>
+        </div>
+    </div>
+    <script src="../js/scriptrastreoip.js"></script>
+</body>
+</html>
