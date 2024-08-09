@@ -1,5 +1,5 @@
 body {
-    font-family: 'Press Start 2P';
+    font-family: 'Press Start 2P', cursive;
     margin: 0;
     padding: 0;
     background-color: #000;
@@ -29,7 +29,7 @@ header nav {
     position: absolute;
     top: 20px;
     right: 20px;
-    z-index: 1000; /* Asegura que el botón esté sobre otros elementos */
+    z-index: 1000;
 }
 
 .menu-toggle .bar {
@@ -71,6 +71,7 @@ header nav {
 #nav-links li a {
     color: #0f0;
     text-decoration: none;
+    font-size: 1em;
 }
 
 #nav-links li a:hover {
@@ -100,7 +101,7 @@ header nav {
     padding: 60px 20px 20px; /* Espacio suficiente para el botón de cierre */
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-    z-index: 999; /* Asegura que el menú esté sobre otros elementos */
+    z-index: 999;
 }
 
 #nav-links.active {
@@ -114,6 +115,9 @@ header nav {
 
 #nav-links li a {
     font-size: 1.5em;
+    padding: 15px;
+    display: block;
+    color: #0f0;
 }
 
 /* Estilos generales */
@@ -165,6 +169,14 @@ footer {
         display: block;
     }
 
+    #nav-links {
+        display: none; /* Ocultar el menú por defecto en móviles */
+    }
+
+    #nav-links.active {
+        display: flex;
+    }
+    
     main {
         padding: 10px;
     }
@@ -176,6 +188,7 @@ footer {
 
     #nav-links li a {
         font-size: 1.5em;
+        padding: 15px;
     }
 
     footer {
