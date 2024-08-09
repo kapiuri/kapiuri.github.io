@@ -1,5 +1,5 @@
 body {
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'Press Start 2P';
     margin: 0;
     padding: 0;
     background-color: #000;
@@ -40,6 +40,22 @@ header nav {
     transition: 0.3s;
 }
 
+/* Menú hamburguesa animado */
+.menu-toggle.active .bar:nth-child(1) {
+    transform: rotate(45deg);
+    position: absolute;
+}
+
+.menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+    transform: rotate(-45deg);
+    position: absolute;
+}
+
+/* Estilo del menú desplegable */
 #nav-links {
     list-style: none;
     padding: 0;
@@ -61,31 +77,43 @@ header nav {
     text-decoration: underline;
 }
 
-/* Menú hamburguesa */
-.menu-toggle.active .bar:nth-child(1) {
-    transform: rotate(45deg);
+/* Menú desplegable en pantalla completa para móviles */
+.menu-close {
+    display: none;
     position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2em;
+    color: #0f0;
+    cursor: pointer;
 }
 
-.menu-toggle.active .bar:nth-child(2) {
-    opacity: 0;
-}
-
-.menu-toggle.active .bar:nth-child(3) {
-    transform: rotate(-45deg);
-    position: absolute;
-}
-
-#nav-links.active {
+#nav-links {
     display: flex;
     flex-direction: column;
     width: 100%;
     background-color: #111;
-    position: absolute;
-    top: 60px;
+    position: fixed;
+    top: 0;
     left: 0;
-    padding: 10px 0;
-    z-index: 999;
+    height: 100%;
+    padding: 60px 20px 20px; /* Espacio suficiente para el botón de cierre */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 999; /* Asegura que el menú esté sobre otros elementos */
+}
+
+#nav-links.active {
+    transform: translateX(0);
+}
+
+#nav-links li {
+    margin: 20px 0;
+    text-align: center;
+}
+
+#nav-links li a {
+    font-size: 1.5em;
 }
 
 /* Estilos generales */
@@ -133,32 +161,21 @@ footer {
         display: flex;
     }
 
-    #nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
+    .menu-close {
+        display: block;
     }
 
-    #nav-links.active {
-        display: flex;
-    }
-    
     main {
         padding: 10px;
     }
-    
-    h1, h2 {
-        font-size: 1.5em;
-        margin: 10px 0;
-    }
 
     #nav-links li {
-        margin: 10px 0;
+        margin: 20px 0;
         text-align: center;
     }
 
     #nav-links li a {
-        font-size: 1.2em;
+        font-size: 1.5em;
     }
 
     footer {
