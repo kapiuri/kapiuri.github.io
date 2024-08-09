@@ -86,6 +86,7 @@ header nav ul li a:hover {
     left: 0;
     display: none;
     padding: 10px 0; /* Añadir padding para que los enlaces no estén pegados al borde */
+    z-index: 999; /* Asegura que el menú esté sobre otros elementos */
 }
 
 #nav-links.active {
