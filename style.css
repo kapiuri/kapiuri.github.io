@@ -43,6 +43,7 @@ header nav {
 /* Menú hamburguesa animado */
 .menu-toggle.active .bar:nth-child(1) {
     transform: rotate(45deg);
+    position: absolute;
 }
 
 .menu-toggle.active .bar:nth-child(2) {
@@ -51,9 +52,10 @@ header nav {
 
 .menu-toggle.active .bar:nth-child(3) {
     transform: rotate(-45deg);
+    position: absolute;
 }
 
-/* Estilo del menú de navegación en pantallas grandes */
+/* Menú de navegación en pantallas grandes */
 #nav-links {
     list-style: none;
     padding: 0;
@@ -169,7 +171,7 @@ footer {
     }
 
     #nav-links {
-        display: none;
+        display: none; /* Ocultar el menú por defecto en móviles */
     }
 
     #nav-links.active {
