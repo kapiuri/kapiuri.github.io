@@ -12,6 +12,14 @@ header {
     padding: 20px;
     text-align: center;
     border-bottom: 2px solid #0f0;
+    position: relative;
+}
+
+header nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
 }
 
 header nav ul {
@@ -32,6 +40,51 @@ header nav ul li a {
 
 header nav ul li a:hover {
     text-decoration: underline;
+}
+
+/* Menú hamburguesa */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.menu-toggle .bar {
+    background-color: #0f0;
+    height: 3px;
+    width: 25px;
+    margin: 3px 0;
+    transition: 0.3s;
+}
+
+/* Estilos del menú para dispositivos móviles */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+
+    #nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #111;
+        position: absolute;
+        top: 60px;
+        left: 0;
+    }
+
+    #nav-links.active {
+        display: flex;
+    }
+
+    header nav ul li {
+        display: block;
+        margin: 10px 0;
+        text-align: center;
+    }
 }
 
 main {
@@ -72,27 +125,19 @@ footer {
     border-top: 2px solid #0f0;
 }
 
-/* Estilos responsivos para dispositivos móviles */
+/* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
-    header nav ul {
-        padding: 0;
-    }
-    
-    header nav ul li {
-        display: block;
-        margin: 10px 0;
-        text-align: center;
-    }
-    
     main {
         padding: 10px;
     }
     
     h1, h2 {
         font-size: 1.5em;
+        margin: 10px 0;
     }
 
     ul li {
+        padding: 10px;
         font-size: 0.9em;
     }
 
@@ -102,7 +147,7 @@ footer {
     }
 }
 
-/* Estilos para pantallas pequeñas (móviles) */
+/* Ajustes para pantallas muy pequeñas */
 @media (max-width: 480px) {
     body {
         font-size: 14px;
@@ -118,6 +163,7 @@ footer {
 
     h1, h2 {
         font-size: 1.2em;
+        margin: 5px 0;
     }
 
     ul li {
@@ -128,4 +174,14 @@ footer {
     footer {
         padding: 5px;
     }
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+video {
+    max-width: 100%;
+    height: auto;
 }
