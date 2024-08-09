@@ -106,6 +106,42 @@ ul li {
     border-radius: 5px;
 }
 
+.redes-sociales {
+    margin-top: 10px;
+}
+
+.icono {
+    display: inline-block;
+    font-size: 30px; /* Tamaño grande para los íconos */
+    color: #e0e0e0; /* Color claro por defecto */
+    margin: 0 15px; /* Espaciado entre íconos */
+    transition: color 0.3s;
+    text-decoration: none; /* Eliminar subrayado en los íconos */
+}
+
+/* Estilos para los íconos de redes sociales específicos */
+.icono.fa-instagram:hover {
+    color: #E1306C; /* Rosa de Instagram en hover */
+}
+
+.icono.fa-twitter:hover {
+    color: #1DA1F2; /* Azul de Twitter en hover */
+}
+
+.icono.fa-reddit:hover {
+    color: #FF4500; /* Naranja de Reddit en hover */
+}
+
+/* Estilo específico para el ícono de PayPal */
+.icono.fa-paypal:hover {
+    color: #003087; /* Color azul de PayPal en hover */
+}
+
+/* Estilo para el ícono de GitHub */
+.icono.fa-github:hover {
+    color: #000000; /* Color negro de GitHub en hover */
+}
+
 /* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
     .menu-toggle {
