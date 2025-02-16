@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extractor de Datos EXIF</title>
+    <link rel="stylesheet" href="../css/stylemetadatos.css">
+    <link rel="shortcut icon" href="../../../../assets/iconos/ico-metadatos.ico" type="image/x-icon">
+
+</head>
+<body>
+    <main>
+        <div class="container">
+            <h1>Extractor de Datos EXIF</h1>
+            <input type="file" id="fileInput" accept="image/*">
+            <button id="extractButton">Extraer Datos EXIF</button>
+            <pre id="exifOutput">Selecciona una imagen y haz clic en "Extraer Datos EXIF" para ver los metadatos.</pre>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Mi Proyecto</p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
+    <script src="../js/scriptmetadatos.js"></script>
+</body>
+</html>
