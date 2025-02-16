@@ -1,0 +1,310 @@
+/* Fuentes importadas */
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;700&display=swap'); /* Fuente para estilo hacker */
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap'); /* Fuente para estilo fiesta */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); /* Fuente para estilo pareja */
+@import url('https://fonts.googleapis.com/css2?family=Game+Over&display=swap'); /* Fuente para estilo juegos */
+
+/* Estilos generales */
+body {
+    font-family: 'arial', sans-serif; /* Fuente por defecto */
+    margin: 0; /* Eliminar márgenes */
+    padding: 0; /* Eliminar relleno */
+    box-sizing: border-box; /* Incluir padding y border en el ancho total */
+    background: #1E1E1E; /* Fondo gris oscuro estilo consola */
+    color: #00FF00; /* Texto verde neón */
+    display: flex; /* Utilizar flexbox */
+    flex-direction: column; /* Disposición en columna */
+    min-height: 100vh; /* Altura mínima de la vista completa */
+    overflow-x: hidden; /* Ocultar el desbordamiento horizontal */
+}
+
+/* Estilos para el encabezado */
+header {
+    background: #333333; /* Fondo gris muy oscuro */
+    color: #00FF00; /* Texto verde neón */
+    padding: 20px; /* Relleno del encabezado */
+    display: flex; /* Utilizar flexbox */
+    flex-direction: column; /* Disposición en columna */
+    justify-content: center; /* Centrar contenido verticalmente */
+    align-items: center; /* Centrar contenido horizontalmente */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    border-bottom: 5px solid #00FF00; /* Borde inferior verde neón */
+    text-align: center; /* Alinear el texto al centro */
+}
+
+header h1 {
+    margin: 0 0 10px 0; /* Márgenes del título */
+    font-family: 'Montserrat', sans-serif; /* Fuente para el título */
+    font-size: 2.5em; /* Tamaño de fuente */
+    font-weight: 700; /* Negrita */
+    background: linear-gradient(135deg, #00FF00, #33FF33); /* Degradado verde neón */
+    -webkit-background-clip: text; /* Clip del degradado al texto para WebKit */
+    background-clip: text; /* Clip del degradado al texto */
+    color: transparent; /* Texto transparente para mostrar el degradado */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Sombra del texto */
+}
+
+/* Estilos para la navegación */
+nav {
+    display: flex; /* Utilizar flexbox */
+    justify-content: center; /* Centrar contenido horizontalmente */
+    align-items: center; /* Centrar contenido verticalmente */
+    width: 100%; /* Ancho completo */
+}
+
+#nav-links {
+    list-style: none; /* Eliminar estilo de lista */
+    margin: 0; /* Eliminar márgenes */
+    padding: 0; /* Eliminar relleno */
+    display: flex; /* Utilizar flexbox */
+    gap: 20px; /* Espaciado entre enlaces */
+    justify-content: center; /* Centrar contenido horizontalmente */
+}
+
+#nav-links li {
+    position: relative; /* Posicionamiento relativo para los elementos desplegables */
+}
+
+.dropbtn {
+    color: #00FF00; /* Texto verde neón */
+    padding: 10px 20px; /* Relleno de los botones */
+    text-decoration: none; /* Eliminar subrayado */
+    display: block; /* Mostrar como bloque */
+    font-size: 1.1em; /* Tamaño de fuente */
+    border-radius: 5px; /* Bordes redondeados */
+    background-color: #333333; /* Fondo gris oscuro */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave para fondo y color */
+    position: relative; /* Posicionamiento relativo para los elementos desplegables */
+}
+
+.dropbtn:hover {
+    background-color: #00FF00; /* Fondo verde neón al pasar el ratón */
+    color: #333333; /* Texto gris oscuro al pasar el ratón */
+}
+
+.dropdown-content {
+    display: none; /* Ocultar por defecto */
+    position: absolute; /* Posicionamiento absoluto */
+    background: #333333; /* Fondo gris oscuro */
+    min-width: 220px; /* Ancho mínimo */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    z-index: 1; /* Colocar sobre otros elementos */
+    top: 100%; /* Posicionar debajo del elemento contenedor */
+    left: 0; /* Alinear a la izquierda */
+    border-radius: 5px; /* Bordes redondeados */
+    opacity: 0; /* Opacidad inicial */
+    transition: opacity 0.3s ease; /* Transición suave para la opacidad */
+}
+
+.dropdown-content a {
+    color: #00FF00; /* Texto verde neón */
+    padding: 12px 20px; /* Relleno de los enlaces */
+    text-decoration: none; /* Eliminar subrayado */
+    display: block; /* Mostrar como bloque */
+    transition: background-color 0.3s ease; /* Transición suave para el fondo */
+    border-bottom: 1px solid #1E1E1E; /* Borde inferior gris oscuro */
+}
+
+.dropdown-content a:last-child {
+    border-bottom: none; /* Eliminar borde inferior del último enlace */
+}
+
+.dropdown-content a:hover {
+    background-color: #00FF00; /* Fondo verde neón al pasar el ratón */
+    color: #333333; /* Texto gris oscuro al pasar el ratón */
+}
+
+.dropdown:hover .dropdown-content {
+    display: block; /* Mostrar contenido desplegable al pasar el ratón */
+    opacity: 1; /* Hacer visible el contenido desplegable */
+}
+
+/* Menú móvil */
+.menu-toggle {
+    display: none; /* Ocultar por defecto */
+    flex-direction: column; /* Disposición en columna */
+    cursor: pointer; /* Cambiar el cursor al pasar sobre el menú */
+}
+
+.menu-toggle .bar {
+    background-color: #00FF00; /* Verde neón */
+    height: 3px; /* Altura de las barras del menú */
+    width: 30px; /* Ancho de las barras del menú */
+    margin: 4px 0; /* Espaciado entre barras */
+    transition: background-color 0.3s ease; /* Transición suave para el fondo */
+}
+
+.menu-toggle.active .bar:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px); /* Primer barra rota para formar una X */
+}
+
+.menu-toggle.active .bar:nth-child(2) {
+    opacity: 0; /* Ocultar segunda barra */
+}
+
+.menu-toggle.active .bar:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px); /* Tercera barra rota para formar una X */
+}
+
+/* Estilos para el contenido principal */
+main {
+    padding: 20px; /* Relleno del contenido principal */
+    display: flex; /* Utilizar flexbox */
+    flex-direction: column; /* Disposición en columna */
+    gap: 20px; /* Espaciado entre elementos */
+    width: 100%; /* Ancho completo */
+    max-width: 1200px; /* Ancho máximo */
+    margin: 20px auto; /* Márgenes automáticos para centrar */
+}
+
+main > div {
+    background: #333333; /* Fondo gris oscuro */
+    padding: 30px; /* Relleno de los elementos */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra sutil */
+    width: calc(50% - 20px); /* Ajuste de ancho para el espaciado */
+    position: relative; /* Posicionamiento relativo para animaciones */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para la transformación y sombra */
+}
+
+main > div:nth-child(odd) {
+    align-self: flex-start; /* Alinear a la izquierda */
+    margin-left: 0; /* Eliminar margen izquierdo */
+    margin-right: auto; /* Margen automático a la derecha */
+}
+
+main > div:nth-child(even) {
+    align-self: flex-end; /* Alinear a la derecha */
+    margin-left: auto; /* Margen automático a la izquierda */
+    margin-right: 0; /* Eliminar margen derecho */
+}
+
+main > div:hover {
+    transform: translateY(-10px) scale(1.02); /* Efecto de elevación y escalado al pasar el ratón */
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+}
+
+/* Fuente para estilo hacker */
+.hacking {
+    font-family: 'Cascadia Code', monospace; /* Fuente estilo hacker */
+}
+
+/* Fuente para estilo pareja */
+.pareja {
+    font-family: 'Great Vibes', cursive; /* Fuente estilo pareja */
+}
+
+/* Fuente para estilo fiesta */
+.fiesta {
+    font-family: 'Bubblegum Sans', cursive; /* Fuente estilo fiesta */
+}
+
+/* Fuente para estilo juegos */
+.juegos {
+    font-family: 'Game Over', cursive; /* Fuente estilo juegos */
+}
+
+/* Estilos para el pie de página */
+footer {
+    background: #333333; /* Fondo gris muy oscuro */
+    color: #ffffff; /* Texto blanco */
+    text-align: center; /* Alinear texto al centro */
+    padding: 30px; /* Relleno del pie de página */
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    margin-top: 20px; /* Márgenes superiores */
+    width: 100%; /* Ancho completo */
+    flex-shrink: 0; /* Evitar que el pie de página se reduzca */
+}
+
+footer p {
+    margin: 0; /* Eliminar márgenes del texto */
+    font-size: 0.9em; /* Tamaño de fuente */
+}
+
+.redes-sociales {
+    margin-top: 10px; /* Márgenes superiores para las redes sociales */
+}
+
+.informacion {
+    margin-top: 25px; /* Márgenes para la información */
+}
+
+.informacion a {
+    color: #ffffff; /* Texto blanco */
+    text-decoration: none; /* Eliminar subrayado en las enlaces */
+    margin: 0 25px; /* Márgenes para la información */
+}
+
+.icono {
+    display: inline-block; /* Mostrar en línea como bloque */
+    font-size: 25px; /* Tamaño grande para los íconos */
+    color: #ffffff; /* Color blanco por defecto */
+    margin: 0 15px; /* Espaciado entre íconos */
+    transition: color 0.3s; /* Transición suave para el color */
+    text-decoration: none; /* Eliminar subrayado en los íconos */
+}
+
+/* Estilos para íconos de redes sociales específicos */
+.icono.fa-instagram:hover {
+    color: #E1306C; /* Rosa de Instagram al pasar el ratón */
+}
+
+.icono.fa-twitter:hover {
+    color: #1DA1F2; /* Azul de Twitter al pasar el ratón */
+}
+
+.icono.fa-reddit:hover {
+    color: #FF4500; /* Naranja de Reddit al pasar el ratón */
+}
+
+/* Estilo específico para el ícono de PayPal */
+.icono.fa-paypal:hover {
+    color: #003087; /* Color azul de PayPal al pasar el ratón */
+}
+
+/* Estilo para el ícono de GitHub */
+.icono.fa-github:hover {
+    color: #333333; /* Color gris oscuro de GitHub al pasar el ratón */
+}
+
+/* Estilos para la navegación móvil */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex; /* Mostrar menú móvil */
+    }
+
+    #nav-links {
+        display: none; /* Ocultar enlaces de navegación por defecto */
+        flex-direction: column; /* Disposición en columna */
+        width: 100%; /* Ancho completo */
+    }
+
+    #nav-links.active {
+        display: flex; /* Mostrar enlaces de navegación cuando está activo */
+    }
+
+    #nav-links li {
+        width: 100%; /* Ancho completo para los elementos de la lista */
+    }
+
+    .dropbtn {
+        text-align: center; /* Alinear texto al centro */
+        padding: 15px; /* Relleno aumentado para dispositivos móviles */
+        font-size: 1.2em; /* Tamaño de fuente aumentado */
+    }
+
+    main {
+        flex-direction: column; /* Disposición en columna en dispositivos móviles */
+    }
+
+    main > div {
+        width: 100%; /* Ancho completo en pantallas pequeñas */
+        margin: 0; /* Eliminar márgenes en pantallas pequeñas */
+        transform: translateX(0); /* Restablecer transformación en pantallas pequeñas */
+    }
+
+    main > div:nth-child(odd),
+    main > div:nth-child(even) {
+        align-self: center; /* Centrar elementos en pantallas pequeñas */
+    }
+}
