@@ -26,7 +26,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -34,10 +34,17 @@ body {
     transition: transform 0.5s ease-in-out;
 }
 
-.dice-face {
-    font-size: 18px;
-    font-weight: bold;
-    color: black;
+/* Animación de los dados al lanzarlos */
+.shake {
+    animation: shake 0.6s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(10deg); }
+    40% { transform: rotate(-10deg); }
+    60% { transform: rotate(10deg); }
+    80% { transform: rotate(-10deg); }
 }
 
 button {
@@ -50,14 +57,14 @@ button {
     color: white;
     cursor: pointer;
     transition: 0.3s;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 button:hover {
     background-color: #e91e63;
 }
 
-/* Adaptabilidad para móviles */
+/* Estilos para móviles */
 @media (max-width: 600px) {
     .dice-container {
         flex-direction: column;
