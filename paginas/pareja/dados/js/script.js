@@ -9,12 +9,12 @@ let mode = "erotic"; // Modo inicial: partes del cuerpo y acciones
 document.getElementById("rollButton").addEventListener("click", () => {
     rollDiceAnimation(() => {
         if (mode === "erotic") {
-            document.getElementById("dice1").textContent = getRandomItem(bodyParts);
-            document.getElementById("dice2").textContent = getRandomItem(actions);
+            document.getElementById("dice1").innerText = getRandomItem(bodyParts);
+            document.getElementById("dice2").innerText = getRandomItem(actions);
             mode = "position";
         } else {
-            document.getElementById("dice1").textContent = getRandomItem(positions);
-            document.getElementById("dice2").textContent = getRandomItem(places);
+            document.getElementById("dice1").innerText = getRandomItem(positions);
+            document.getElementById("dice2").innerText = getRandomItem(places);
             mode = "erotic";
         }
     });
@@ -30,11 +30,11 @@ function rollDiceAnimation(callback) {
     let dice2 = document.getElementById("dice2");
     
     let diceSymbols = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-    
+
     let counter = 0;
     let interval = setInterval(() => {
-        dice1.textContent = diceSymbols[Math.floor(Math.random() * diceSymbols.length)];
-        dice2.textContent = diceSymbols[Math.floor(Math.random() * diceSymbols.length)];
+        dice1.innerText = diceSymbols[Math.floor(Math.random() * diceSymbols.length)];
+        dice2.innerText = diceSymbols[Math.floor(Math.random() * diceSymbols.length)];
         counter++;
         if (counter > 10) {
             clearInterval(interval);
