@@ -6,39 +6,43 @@ const places = ["Sofá", "Cocina", "Ducha", "Mesa", "Cama", "Suelo"];
 
 let mode = "erotic"; // Modo inicial: partes del cuerpo y acciones
 
-document.getElementById("rollButton").addEventListener("click", () => {
+const dice1 = document.getElementById("dice1");
+const dice2 = document.getElementById("dice2");
+const rollButton = document.getElementById("rollButton");
+const modeButton = document.getElementById("modeButton");
+
+// Lanzar los dados
+rollButton.addEventListener("click", () => {
     rollDiceAnimation(() => {
         if (mode === "erotic") {
-            document.getElementById("dice1").innerText = getRandomItem(bodyParts);
-            document.getElementById("dice2").innerText = getRandomItem(actions);
-            mode = "position";
+            dice1.innerText = getRandomItem(bodyParts);
+            dice2.innerText = getRandomItem(actions);
         } else {
-            document.getElementById("dice1").innerText = getRandomItem(positions);
-            document.getElementById("dice2").innerText = getRandomItem(places);
-            mode = "erotic";
+            dice1.innerText = getRandomItem(positions);
+            dice2.innerText = getRandomItem(places);
         }
     });
 });
 
+// Cambiar entre modos
+modeButton.addEventListener("click", () => {
+    mode = (mode === "erotic") ? "position" : "erotic";
+    alert(`Modo cambiado a: ${mode === "erotic" ? "Partes del cuerpo + Acción" : "Postura + Lugar"}`);
+});
+
+// Función para obtener un valor aleatorio
 function getRandomItem(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-// Simulación de animación al lanzar los dados
+// Animación al lanzar los dados
 function rollDiceAnimation(callback) {
-    let dice1 = document.getElementById("dice1");
-    let dice2 = document.getElementById("dice2");
-    
-    let diceSymbols = ["🎲", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+    dice1.classList.add("shake");
+    dice2.classList.add("shake");
 
-    let counter = 0;
-    let interval = setInterval(() => {
-        dice1.innerText = diceSymbols[Math.floor(Math.random() * diceSymbols.length)];
-        dice2.innerText = diceSymbols[Math.floor(Math.random() * diceSymbols.length)];
-        counter++;
-        if (counter > 10) {
-            clearInterval(interval);
-            callback();
-        }
-    }, 100);
+    setTimeout(() => {
+        dice1.classList.remove("shake");
+        dice2.classList.remove("shake");
+        callback();
+    }, 600);
 }
