@@ -23,6 +23,7 @@ body {
     width: 120px;
     height: 120px;
     background-color: white;
+    color: black;
     display: flex;
     align-items: center;
     justify-content: center;
