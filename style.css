@@ -6,7 +6,7 @@
 
 /* Estilos generales */
 body {
-    font-family: 'arial', sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -30,7 +30,6 @@ header {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border-bottom: 5px solid #00FF00;
     text-align: center;
-    width: 100%;
 }
 
 header h1 {
@@ -48,14 +47,12 @@ header h1 {
 /* Estilos para la navegación */
 nav {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     width: 100%;
-    flex-direction: column;
-    position: relative;
 }
 
-/* Botón del menú en móvil */
+/* Botón de menú para móviles */
 .toggle-menu {
     display: none;
     cursor: pointer;
@@ -63,8 +60,9 @@ nav {
     padding: 10px;
     color: #00FF00;
     background: none;
-    border: none;
-    outline: none;
+    border: 2px solid #00FF00;
+    border-radius: 5px;
+    margin: 10px 0;
 }
 
 /* Menú en pantalla principal */
@@ -74,11 +72,10 @@ nav {
     justify-content: center;
     padding: 0;
     list-style: none;
-    flex-wrap: nowrap;
+    flex-wrap: wrap; /* Permite que los elementos se acomoden en varias líneas */
     flex-direction: row;
 }
 
-/* Estilos de los enlaces */
 .enlace-cuadrado {
     background-color: black;
     border: 2px solid green;
@@ -175,42 +172,28 @@ footer p {
     color: #333333;
 }
 
-/* Estilos para la navegación en móviles */
+/* Estilos para la navegación móvil */
 @media (max-width: 768px) {
     .toggle-menu {
-        display: block;
-        text-align: center;
-        margin-bottom: 10px;
+        display: block; /* Hace visible el botón en móviles */
     }
 
     #enlaces-navegacion {
-        display: none;
+        display: none; /* Oculta el menú por defecto */
         flex-direction: column;
-        width: 100%;
         align-items: center;
-        gap: 10px;
+        width: 100%;
+        padding: 0;
+        margin: 0;
     }
 
     #enlaces-navegacion.active {
-        display: flex;
+        display: flex; /* Se muestra cuando se activa con JS */
     }
 
     .enlace-cuadrado {
-        width: 120px;
-        height: 80px;
-        font-size: 12px;
-    }
-
-    header h1 {
-        font-size: 2em;
-    }
-
-    footer {
-        padding: 20px;
-    }
-
-    .icono {
-        font-size: 20px;
-        margin: 0 10px;
+        width: 80%;
+        height: auto;
+        padding: 15px;
     }
 }
