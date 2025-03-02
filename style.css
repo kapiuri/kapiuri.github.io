@@ -1,166 +1,117 @@
-/* Fuentes importadas */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+/* Fuentes */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@300;400;600&display=swap');
 
 /* Estilos generales */
 body {
-    font-family: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    background: #f4f4f4;
-    color: #333;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
-/* Estilos del encabezado */
+/* Header */
 header {
-    background: rgba(0, 0, 0, 0.6);
-    color: #ffffff;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border-bottom: 2px solid #cccccc;
+    background: transparent;
+    padding: 20px 10%;
     text-align: center;
+    color: #00FF00;
+    transition: background-color 0.3s ease-in-out;
 }
 
 header h1 {
-    margin: 0;
-    font-size: 2.5em;
-    font-weight: 700;
-    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 2.5rem;
 }
 
-/* Menú en pantalla principal */
+/* Menú principal */
+#menu-principal {
+    padding: 50px 10%;
+    text-align: center;
+}
+
 #enlaces-navegacion {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    padding: 0;
     list-style: none;
-    flex-wrap: wrap;
-    margin: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 0;
 }
 
 .enlace-cuadrado {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    border-radius: 8px;
-    width: 150px;
-    height: 100px;
-    text-align: center;
-    padding: 15px;
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #333;
+    border: 2px solid #00FF00;
+    padding: 20px;
+    border-radius: 10px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .enlace-cuadrado a {
-    color: #333;
-    font-size: 16px;
+    color: #fff;
     text-decoration: none;
-    display: block;
-    line-height: 1.2;
-    word-wrap: break-word;
-    text-align: center;
+    font-weight: 600;
+    font-size: 1.2rem;
 }
 
 .enlace-cuadrado:hover {
-    background-color: #f0f0f0;
-    border-color: #888888;
+    transform: translateY(-5px);
+    background-color: #00FF00;
 }
 
 .enlace-cuadrado:hover a {
-    color: #333;
+    color: #121212;
 }
 
-/* Estilos para el pie de página */
+/* Footer */
 footer {
-    background: rgba(0, 0, 0, 0.6);
+    background-color: #1c1c1c;
     color: #ffffff;
+    padding: 40px 10%;
     text-align: center;
-    padding: 30px;
-    margin-top: 20px;
-    width: 100%;
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
 }
 
-footer p {
-    margin: 0;
-    font-size: 0.9em;
+footer .redes-sociales {
+    margin-bottom: 20px;
 }
 
-.redes-sociales {
-    margin-top: 10px;
+footer .icono {
+    color: #00FF00;
+    font-size: 1.5rem;
+    margin: 0 10px;
+    transition: color 0.3s ease;
 }
 
-.informacion {
-    margin-top: 25px;
+footer .icono:hover {
+    color: #ffffff;
 }
 
-.informacion a {
+footer .informacion a {
     color: #ffffff;
     text-decoration: none;
-    margin: 0 25px;
+    margin: 5px;
+    font-weight: 600;
+    transition: color 0.3s ease;
 }
 
-.icono {
-    display: inline-block;
-    font-size: 25px;
-    color: #ffffff;
-    margin: 0 15px;
-    transition: color 0.3s;
+footer .informacion a:hover {
+    color: #00FF00;
 }
 
-/* Estilos para íconos de redes sociales específicos */
-.icono.fa-instagram:hover {
-    color: #E1306C;
-}
-
-.icono.fa-twitter:hover {
-    color: #1DA1F2;
-}
-
-.icono.fa-reddit:hover {
-    color: #FF4500;
-}
-
-.icono.fa-paypal:hover {
-    color: #003087;
-}
-
-.icono.fa-github:hover {
-    color: #333333;
-}
-
-/* Estilos para la navegación en móviles */
+/* Estilos para dispositivos pequeños */
 @media (max-width: 768px) {
     #enlaces-navegacion {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
+        grid-template-columns: 1fr 1fr;
     }
-
-    .enlace-cuadrado {
-        width: 90%;
-        max-width: 300px;
-        height: auto;
-        padding: 15px;
+    
+    header h1 {
+        font-size: 2rem;
     }
-
-    .enlace-cuadrado a {
-        font-size: 16px;
+    
+    footer {
+        padding: 20px;
     }
 }
