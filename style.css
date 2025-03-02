@@ -1,101 +1,99 @@
 /* Fuentes importadas */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
 /* Estilos generales */
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background: #2D2D2D;
-    color: #A9FF00;
+    background: #f4f4f4;
+    color: #333;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    overflow-x: hidden;
 }
 
 /* Estilos del encabezado */
 header {
-    background: #333;
-    color: #A9FF00;
-    padding: 25px 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    border-bottom: 3px solid #A9FF00;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid #cccccc;
     text-align: center;
-    position: relative;
 }
 
 header h1 {
-    font-size: 3em;
+    margin: 0;
+    font-size: 2.5em;
     font-weight: 700;
-    background: linear-gradient(45deg, #A9FF00, #28A745);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-    animation: fadeIn 2s ease-in-out;
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    color: #ffffff;
 }
 
 /* Menú en pantalla principal */
 #enlaces-navegacion {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 20px;
-    padding: 20px 0;
+    justify-content: center;
+    padding: 0;
+    list-style: none;
+    flex-wrap: wrap;
+    margin: 20px;
 }
 
 .enlace-cuadrado {
-    background-color: #1C1C1C;
-    border: 2px solid #A9FF00;
-    border-radius: 10px;
-    width: 200px;
-    height: 120px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    width: 150px;
+    height: 100px;
+    text-align: center;
+    padding: 15px;
+    transition: all 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    padding: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-.enlace-cuadrado:hover {
-    background-color: #A9FF00;
-    border-color: #1C1C1C;
-    transform: scale(1.05);
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .enlace-cuadrado a {
-    color: #A9FF00;
+    color: #333;
     font-size: 16px;
     text-decoration: none;
-    transition: color 0.3s ease;
+    display: block;
+    line-height: 1.2;
+    word-wrap: break-word;
+    text-align: center;
+}
+
+.enlace-cuadrado:hover {
+    background-color: #f0f0f0;
+    border-color: #888888;
 }
 
 .enlace-cuadrado:hover a {
-    color: #1C1C1C;
+    color: #333;
 }
 
 /* Estilos para el pie de página */
 footer {
-    background: #333;
-    color: #fff;
-    padding: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
     text-align: center;
-    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+    padding: 30px;
     margin-top: 20px;
     width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 footer p {
@@ -104,7 +102,7 @@ footer p {
 }
 
 .redes-sociales {
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .informacion {
@@ -112,19 +110,38 @@ footer p {
 }
 
 .informacion a {
-    color: #fff;
+    color: #ffffff;
     text-decoration: none;
-    margin: 0 20px;
+    margin: 0 25px;
 }
 
 .icono {
+    display: inline-block;
     font-size: 25px;
-    margin: 0 10px;
-    transition: color 0.3s ease;
+    color: #ffffff;
+    margin: 0 15px;
+    transition: color 0.3s;
 }
 
-.icono:hover {
-    color: #A9FF00;
+/* Estilos para íconos de redes sociales específicos */
+.icono.fa-instagram:hover {
+    color: #E1306C;
+}
+
+.icono.fa-twitter:hover {
+    color: #1DA1F2;
+}
+
+.icono.fa-reddit:hover {
+    color: #FF4500;
+}
+
+.icono.fa-paypal:hover {
+    color: #003087;
+}
+
+.icono.fa-github:hover {
+    color: #333333;
 }
 
 /* Estilos para la navegación en móviles */
@@ -132,16 +149,18 @@ footer p {
     #enlaces-navegacion {
         flex-direction: column;
         align-items: center;
+        justify-content: center;
+        width: 100%;
     }
 
     .enlace-cuadrado {
-        width: 80%;
-        max-width: 350px;
+        width: 90%;
+        max-width: 300px;
         height: auto;
-        padding: 20px;
+        padding: 15px;
     }
 
     .enlace-cuadrado a {
-        font-size: 18px;
+        font-size: 16px;
     }
 }
