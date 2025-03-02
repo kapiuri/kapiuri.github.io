@@ -56,11 +56,11 @@ nav {
 #enlaces-navegacion {
     display: flex;
     gap: 20px;
-    justify-content: center;
+    justify-content: center;  /* Asegura que los elementos estén centrados */
     padding: 0;
     list-style: none;
-    flex-wrap: nowrap;
-    flex-direction: row;
+    flex-wrap: nowrap; /* Evita que los elementos se acomoden en varias líneas */
+    flex-direction: row; /* Asegura que los elementos estén en fila horizontal */
 }
 
 .enlace-cuadrado {
@@ -96,25 +96,6 @@ nav {
 
 .enlace-cuadrado:hover a {
     color: black;
-}
-
-/* Estilos para la navegación en móvil */
-@media (max-width: 768px) {
-    #enlaces-navegacion {
-        flex-direction: column; /* Apilar enlaces verticalmente */
-        align-items: center; /* Centrar los elementos */
-        gap: 10px; /* Espaciado entre enlaces */
-    }
-
-    .enlace-cuadrado {
-        width: 90%; /* Hacer los botones más anchos */
-        height: auto;
-        padding: 15px; /* Ajustar tamaño */
-    }
-
-    .enlace-cuadrado a {
-        font-size: 16px; /* Mejor legibilidad */
-    }
 }
 
 /* Estilos para el pie de página */
@@ -176,4 +157,32 @@ footer p {
 
 .icono.fa-github:hover {
     color: #333333;
+}
+
+/* Estilos para la navegación en móviles */
+@media (max-width: 768px) {
+    #enlaces-navegacion {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important; /* Centra los elementos horizontalmente */
+        justify-content: center !important; /* Asegura que estén centrados verticalmente */
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+    }
+
+    .enlace-cuadrado {
+        width: 90% !important; /* Hace que los botones sean más anchos */
+        max-width: 300px !important; /* Limita el ancho máximo */
+        height: auto !important;
+        padding: 15px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .enlace-cuadrado a {
+        font-size: 16px !important;
+    }
 }
