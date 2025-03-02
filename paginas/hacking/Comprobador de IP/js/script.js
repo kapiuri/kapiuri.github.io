@@ -1,9 +1,11 @@
-document.getElementById('checkIp').addEventListener('click', function () {
-    const apiKey = "ba55ccc78d76f60b46ca08f59e11942f540944b48920129881cfb46e62ecd742b3240c7af68f1a50"; // Coloca tu API Key aquí
-    const ip = document.getElementById('ipInput').value.trim(); // Obtiene la IP ingresada
+document.getElementById('censysForm').addEventListener('submit', function (e) {
+    e.preventDefault(); // Evita que el formulario recargue la página
+
+    const apiKey = "ba55ccc78d76f60b46ca08f59e11942f540944b48920129881cfb46e62ecd742b3240c7af68f1a50"; // API Key
+    const ip = document.getElementById('query').value.trim(); // Obtiene la IP ingresada
 
     if (!ip) {
-        document.getElementById('result').innerText = "Por favor, ingresa una dirección IP.";
+        document.getElementById('results').innerText = "⚠️ Por favor, ingresa una dirección IP.";
         return;
     }
 
@@ -23,14 +25,17 @@ document.getElementById('checkIp').addEventListener('click', function () {
         return response.json();
     })
     .then(data => {
-        if (data.data.abuseConfidenceScore > 50) {
-            document.getElementById('result').innerText = `⚠️ La IP ${ip} ha sido reportada por actividad maliciosa (${data.data.abuseConfidenceScore}% de confianza).`;
+        const score = data.data.abuseConfidenceScore;
+        const resultsDiv = document.getElementById('results');
+
+        if (score > 50) {
+            resultsDiv.innerHTML = `⚠️ La IP <strong>${ip}</strong> ha sido reportada por actividad maliciosa (${score}% de confianza).`;
         } else {
-            document.getElementById('result').innerText = `✅ La IP ${ip} está limpia (${data.data.abuseConfidenceScore}% de confianza).`;
+            resultsDiv.innerHTML = `✅ La IP <strong>${ip}</strong> está limpia (${score}% de confianza).`;
         }
     })
     .catch(error => {
-        document.getElementById('result').innerText = "Error al verificar la IP.";
+        document.getElementById('results').innerText = "❌ Error al verificar la IP.";
         console.error("Error al verificar la IP:", error);
     });
 });
