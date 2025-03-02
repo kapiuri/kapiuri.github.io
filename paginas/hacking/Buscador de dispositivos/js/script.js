@@ -1,11 +1,12 @@
 document.getElementById('shodanForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    
-    const query = document.getElementById('query').value;
-    const apiKey = 'GwBzNJASbQeTZMJwHHZz8KQfYxZEaGzt';  // Inserta tu clave API de Shodan
-    const url = `https://api.shodan.io/shodan/host/search?key=${apiKey}&query=${query}`;
 
-    fetch(url)
+    const query = document.getElementById('query').value;
+    const apiKey = 'GwBzNJASbQeTZMJwHHZz8KQfYxZEaGzt';  // Clave API de Shodan
+    const url = `https://api.shodan.io/shodan/host/search?key=${apiKey}&query=${query}`;
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Proxy CORS para sortear restricciones
+
+    fetch(proxyUrl + url)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Error en la respuesta: ${response.status}`);
