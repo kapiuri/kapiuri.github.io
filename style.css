@@ -108,6 +108,10 @@ footer {
     margin-top: 20px;
     width: 100%;
     flex-shrink: 0;
+    display: flex;
+    justify-content: center; /* Centra el contenido horizontalmente */
+    align-items: center; /* Centra el contenido verticalmente */
+    flex-direction: column; /* Organiza los elementos en columna */
 }
 
 footer p {
