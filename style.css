@@ -1,0 +1,192 @@
+/* Fuentes importadas */
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;700&display=swap'); /* Fuente estilo hacker */
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap'); /* Fuente estilo fiesta */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); /* Fuente estilo pareja */
+@import url('https://fonts.googleapis.com/css2?family=Game+Over&display=swap'); /* Fuente estilo juegos */
+
+/* Estilos generales */
+body {
+    font-family: 'arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: #1E1E1E;
+    color: #00FF00;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Estilos del encabezado */
+header {
+    background: #333333;
+    color: #00FF00;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 5px solid #00FF00;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0 0 10px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5em;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00FF00, #33FF33);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para la navegación */
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Menú en pantalla principal */
+#enlaces-navegacion {
+    display: flex;
+    gap: 20px;
+    justify-content: center;  /* Asegura que los elementos estén centrados */
+    padding: 0;
+    list-style: none;
+    flex-wrap: nowrap; /* Evita que los elementos se acomoden en varias líneas */
+    flex-direction: row; /* Asegura que los elementos estén en fila horizontal */
+}
+
+.enlace-cuadrado {
+    background-color: black;
+    border: 2px solid green;
+    border-radius: 8px;
+    width: 150px;
+    height: 100px;
+    text-align: center;
+    padding: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.enlace-cuadrado a {
+    color: green;
+    font-size: 14px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    line-height: 1.2;
+    word-wrap: break-word;
+    text-align: center;
+}
+
+.enlace-cuadrado:hover {
+    background-color: green;
+    border-color: black;
+}
+
+.enlace-cuadrado:hover a {
+    color: black;
+}
+
+/* Estilos para el pie de página */
+footer {
+    background: #333333;
+    color: #ffffff;
+    text-align: center;
+    padding: 30px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center; /* Centra el contenido horizontalmente */
+    align-items: center; /* Centra el contenido verticalmente */
+    flex-direction: column; /* Organiza los elementos en columna */
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.redes-sociales {
+    margin-top: 10px;
+}
+
+.informacion {
+    margin-top: 25px;
+}
+
+.informacion a {
+    color: #ffffff;
+    text-decoration: none;
+    margin: 0 25px;
+}
+
+.icono {
+    display: inline-block;
+    font-size: 25px;
+    color: #ffffff;
+    margin: 0 15px;
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+/* Estilos para íconos de redes sociales específicos */
+.icono.fa-instagram:hover {
+    color: #E1306C;
+}
+
+.icono.fa-twitter:hover {
+    color: #1DA1F2;
+}
+
+.icono.fa-reddit:hover {
+    color: #FF4500;
+}
+
+.icono.fa-paypal:hover {
+    color: #003087;
+}
+
+.icono.fa-github:hover {
+    color: #333333;
+}
+
+/* Estilos para la navegación en móviles */
+@media (max-width: 768px) {
+    #enlaces-navegacion {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important; /* Centra los elementos horizontalmente */
+        justify-content: center !important; /* Asegura que estén centrados verticalmente */
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+    }
+
+    .enlace-cuadrado {
+        width: 90% !important; /* Hace que los botones sean más anchos */
+        max-width: 300px !important; /* Limita el ancho máximo */
+        height: auto !important;
+        padding: 15px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .enlace-cuadrado a {
+        font-size: 16px !important;
+    }
+}
