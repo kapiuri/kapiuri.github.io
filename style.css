@@ -6,7 +6,7 @@
 
 /* Estilos generales */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'arial', sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -23,29 +23,33 @@ header {
     background: #333333;
     color: #00FF00;
     padding: 20px;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border-bottom: 5px solid #00FF00;
+    text-align: center;
 }
 
 header h1 {
+    margin: 0 0 10px 0;
+    font-family: 'Montserrat', sans-serif;
     font-size: 2.5em;
+    font-weight: 700;
     background: linear-gradient(135deg, #00FF00, #33FF33);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Botón de menú para móviles */
-#menu-movil {
-    display: none;
-    cursor: pointer;
-    font-size: 1.2em;
-    padding: 10px;
-    color: #00FF00;
-    background: none;
-    border: 2px solid #00FF00;
-    border-radius: 5px;
-    margin: 10px auto;
+/* Estilos para la navegación */
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 /* Menú en pantalla principal */
@@ -55,26 +59,33 @@ header h1 {
     justify-content: center;
     padding: 0;
     list-style: none;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex-direction: row;
 }
 
-/* Estilos de los botones de enlace */
 .enlace-cuadrado {
     background-color: black;
     border: 2px solid green;
     border-radius: 8px;
     width: 150px;
     height: 100px;
+    text-align: center;
+    padding: 10px;
+    transition: all 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 .enlace-cuadrado a {
     color: green;
     font-size: 14px;
     text-decoration: none;
+    display: block;
+    width: 100%;
+    line-height: 1.2;
+    word-wrap: break-word;
     text-align: center;
 }
 
@@ -87,26 +98,82 @@ header h1 {
     color: black;
 }
 
-/* Estilos para la navegación móvil */
+/* Estilos para la navegación en móvil */
 @media (max-width: 768px) {
-    #menu-movil {
-        display: block;
-    }
-
     #enlaces-navegacion {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-    }
-
-    #enlaces-navegacion.active {
-        display: flex;
+        flex-direction: column; /* Apilar enlaces verticalmente */
+        align-items: center; /* Centrar los elementos */
+        gap: 10px; /* Espaciado entre enlaces */
     }
 
     .enlace-cuadrado {
-        width: 80%;
+        width: 90%; /* Hacer los botones más anchos */
         height: auto;
-        padding: 15px;
+        padding: 15px; /* Ajustar tamaño */
     }
+
+    .enlace-cuadrado a {
+        font-size: 16px; /* Mejor legibilidad */
+    }
+}
+
+/* Estilos para el pie de página */
+footer {
+    background: #333333;
+    color: #ffffff;
+    text-align: center;
+    padding: 30px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.redes-sociales {
+    margin-top: 10px;
+}
+
+.informacion {
+    margin-top: 25px;
+}
+
+.informacion a {
+    color: #ffffff;
+    text-decoration: none;
+    margin: 0 25px;
+}
+
+.icono {
+    display: inline-block;
+    font-size: 25px;
+    color: #ffffff;
+    margin: 0 15px;
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+/* Estilos para íconos de redes sociales específicos */
+.icono.fa-instagram:hover {
+    color: #E1306C;
+}
+
+.icono.fa-twitter:hover {
+    color: #1DA1F2;
+}
+
+.icono.fa-reddit:hover {
+    color: #FF4500;
+}
+
+.icono.fa-paypal:hover {
+    color: #003087;
+}
+
+.icono.fa-github:hover {
+    color: #333333;
 }
