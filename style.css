@@ -6,11 +6,32 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Open Sans', sans-serif;
-    background-color: #121212;
+    background: radial-gradient(circle at center, #1a1a2e, #0f0f1b);
     color: #ffffff;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Fondo de estrellas animado */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://source.unsplash.com/1920x1080/?space,stars') center/cover no-repeat;
+    opacity: 0.3;
+    z-index: -1;
+    animation: moveStars 50s linear infinite;
+}
+
+@keyframes moveStars {
+    0% { background-position: 0 0; }
+    100% { background-position: 1000px 1000px; }
 }
 
 /* Header */
@@ -18,7 +39,7 @@ header {
     background: transparent;
     padding: 20px 10%;
     text-align: center;
-    color: #00FF00;
+    color: #4db8ff;
     transition: background-color 0.3s ease-in-out;
 }
 
@@ -30,6 +51,7 @@ header h1 {
 
 /* Menú principal */
 #menu-principal {
+    flex: 1;
     padding: 50px 10%;
     text-align: center;
 }
@@ -43,15 +65,15 @@ header h1 {
 }
 
 .enlace-cuadrado {
-    background-color: #333;
-    border: 2px solid #00FF00;
+    background: linear-gradient(145deg, #222244, #101020);
+    border: 2px solid #4db8ff;
     padding: 20px;
     border-radius: 10px;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .enlace-cuadrado a {
-    color: #fff;
+    color: #ffffff;
     text-decoration: none;
     font-weight: 600;
     font-size: 1.2rem;
@@ -59,27 +81,30 @@ header h1 {
 
 .enlace-cuadrado:hover {
     transform: translateY(-5px);
-    background-color: #00FF00;
+    background: #4db8ff;
 }
 
 .enlace-cuadrado:hover a {
-    color: #121212;
+    color: #101020;
 }
 
 /* Footer */
 footer {
-    background-color: #1c1c1c;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
     color: #ffffff;
-    padding: 40px 10%;
+    padding: 20px;
     text-align: center;
+    width: 100%;
+    margin-top: auto;
 }
 
 footer .redes-sociales {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 footer .icono {
-    color: #00FF00;
+    color: #4db8ff;
     font-size: 1.5rem;
     margin: 0 10px;
     transition: color 0.3s ease;
@@ -98,7 +123,16 @@ footer .informacion a {
 }
 
 footer .informacion a:hover {
-    color: #00FF00;
+    color: #4db8ff;
+}
+
+/* Para que el footer quede abajo si hay poco contenido */
+html, body {
+    height: 100%;
+}
+
+#menu-principal {
+    flex-grow: 1;
 }
 
 /* Estilos para dispositivos pequeños */
@@ -112,6 +146,6 @@ footer .informacion a:hover {
     }
     
     footer {
-        padding: 20px;
+        padding: 15px;
     }
 }
