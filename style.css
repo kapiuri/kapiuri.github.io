@@ -1,13 +1,13 @@
 /* Fuentes */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 /* Estilos generales */
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Open Sans', sans-serif;
-    background: radial-gradient(circle at center, #1a1a2e, #0f0f1b);
-    color: #ffffff;
+    font-family: 'Press Start 2P', cursive;
+    background: #000;
+    color: #00ff00;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -24,7 +24,7 @@ body::before {
     width: 100%;
     height: 100%;
     background: url('https://source.unsplash.com/1920x1080/?space,stars') center/cover no-repeat;
-    opacity: 0.3;
+    opacity: 0.2;
     z-index: -1;
     animation: moveStars 50s linear infinite;
 }
@@ -39,14 +39,12 @@ header {
     background: transparent;
     padding: 20px 10%;
     text-align: center;
-    color: #4db8ff;
+    color: #00ff00;
     transition: background-color 0.3s ease-in-out;
 }
 
 header h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 2.5rem;
+    font-size: 2rem;
 }
 
 /* Menú principal */
@@ -65,33 +63,33 @@ header h1 {
 }
 
 .enlace-cuadrado {
-    background: linear-gradient(145deg, #222244, #101020);
-    border: 2px solid #4db8ff;
+    background: #111;
+    border: 2px solid #00ff00;
     padding: 20px;
     border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .enlace-cuadrado a {
-    color: #ffffff;
+    color: #00ff00;
     text-decoration: none;
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .enlace-cuadrado:hover {
     transform: translateY(-5px);
-    background: #4db8ff;
+    background: #00ff00;
 }
 
 .enlace-cuadrado:hover a {
-    color: #101020;
+    color: #000;
 }
 
 /* Footer */
 footer {
     backdrop-filter: blur(5px);
-    color: #ffffff;
+    color: #00ff00;
     padding: 20px;
     text-align: center;
     width: 100%;
@@ -103,7 +101,7 @@ footer .redes-sociales {
 }
 
 footer .icono {
-    color: #4db8ff;
+    color: #00ff00;
     font-size: 1.5rem;
     margin: 0 10px;
     transition: color 0.3s ease;
@@ -114,7 +112,7 @@ footer .icono:hover {
 }
 
 footer .informacion a {
-    color: #ffffff;
+    color: #00ff00;
     text-decoration: none;
     margin: 5px;
     font-weight: 600;
@@ -122,7 +120,7 @@ footer .informacion a {
 }
 
 footer .informacion a:hover {
-    color: #4db8ff;
+    color: #ffffff;
 }
 
 /* Para que el footer quede abajo si hay poco contenido */
@@ -141,7 +139,7 @@ html, body {
     }
     
     header h1 {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
     
     footer {
