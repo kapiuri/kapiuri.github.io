@@ -42,5 +42,9 @@ function calcularHash() {
     resultadoHash.textContent = hash;
   };
 
+  lector.onerror = function () {
+    alert("Error al leer el archivo.");
+  };
+
   lector.readAsArrayBuffer(archivo);
 }
