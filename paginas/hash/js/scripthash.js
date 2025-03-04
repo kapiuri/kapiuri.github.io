@@ -1,10 +1,10 @@
 function calcularHash() {
-  let texto = document.getElementById("texto").value;
+  let archivo = document.getElementById("archivo").value;
   let tipoHash = document.getElementById("tipo-hash").value;
   let resultadoHash = document.getElementById("resultado-hash");
 
-  if (!texto) {
-    alert("Por favor, ingresa un texto.");
+  if (!archivo) {
+    alert("Por favor, ingrese un archivo.");
     return;
   }
 
