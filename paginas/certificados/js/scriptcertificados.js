@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // Aplicar modo oscuro si está activado en localStorage
+    if (localStorage.getItem("modoOscuro") === "true") {
+        document.body.classList.add("modo-oscuro");
+    }
+
     document.getElementById('certForm').addEventListener('submit', function(event) {
         event.preventDefault();
         generarCertificado();
