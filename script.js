@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const botonModo = document.getElementById("modo-toggle");
     const body = document.body;
     const icono = botonModo.querySelector("i");
-    const footerText = document.getElementById("footer-text");
     const enlacesFooter = document.querySelectorAll(".informacion a");
 
     // Comprobar si hay una preferencia guardada
@@ -16,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
         icono.classList.add("fa-sun");
         enlacesFooter.forEach(enlace => enlace.style.color = "#222");
     }
-    
+
     botonModo.addEventListener("click", function() {
         body.classList.toggle("modo-oscuro");
 
