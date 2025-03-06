@@ -1,0 +1,93 @@
+body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #000;
+    color: #00ff00;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    background: #111;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #00ff00;
+    border-radius: 5px;
+    background: #000;
+    color: #00ff00;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid #00ff00;
+    border-radius: 5px;
+    background-color: #000;
+    color: #00ff00;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+button:hover {
+    background-color: #00ff00;
+    color: #000;
+}
+
+#strength {
+    margin-top: 10px;
+    height: 10px;
+    width: 100%;
+    background: #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0;
+    background: #ff0000;
+    transition: width 0.3s, background-color 0.3s;
+}
+
+#criteria {
+    text-align: left;
+    margin-top: 20px;
+}
+
+#criteria p {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+#criteria input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #00ff00;
+}
