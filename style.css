@@ -1,6 +1,5 @@
 /* Fuentes */
 
-
 /* Estilos generales */
 body {
     font-family: 'Press Start 2P', cursive;
@@ -13,6 +12,77 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Modo oscuro/claro */
+body.modo-oscuro {
+    background: #f4f4f4;
+    color: #222;
+}
+
+body.modo-oscuro .enlace-cuadrado {
+    background: #ddd;
+    border-color: #222;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+body.modo-oscuro .enlace-cuadrado a {
+    color: #222;
+}
+
+body.modo-oscuro .enlace-cuadrado:hover {
+    background: #222;
+}
+
+body.modo-oscuro .enlace-cuadrado:hover a {
+    color: #f4f4f4;
+}
+
+body.modo-oscuro footer {
+    color: #222;
+}
+
+body.modo-oscuro footer .icono {
+    color: #222;
+}
+
+body.modo-oscuro footer .icono:hover {
+    color: #000;
+}
+
+body.modo-oscuro footer .informacion a {
+    color: #222;
+}
+
+body.modo-oscuro footer .informacion a:hover {
+    color: #000;
+}
+
+/* Botón de cambio de modo */
+#modo-toggle {
+    background: #00ff00;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+    border-radius: 5px;
+    margin: 10px;
+}
+
+#modo-toggle:hover {
+    background: #009900;
+}
+
+body.modo-oscuro #modo-toggle {
+    background: #222;
+    color: #f4f4f4;
+}
+
+body.modo-oscuro #modo-toggle:hover {
+    background: #111;
 }
 
 /* Fondo de estrellas animado */
@@ -41,28 +111,10 @@ header {
     text-align: center;
     color: #00ff00;
     transition: background-color 0.3s ease-in-out;
-    opacity: 0;
-    animation: fadeIn 1s ease-in-out forwards;
 }
 
 header h1 {
     font-size: 2rem;
-    transform: translateY(-20px);
-    opacity: 0;
-    animation: slideIn 1s ease-in-out forwards 0.5s;
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideIn {
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
 }
 
 /* Menú principal */
@@ -70,8 +122,6 @@ header h1 {
     flex: 1;
     padding: 50px 10%;
     text-align: center;
-    opacity: 0;
-    animation: fadeIn 1s ease-in-out forwards 1s;
 }
 
 #enlaces-navegacion {
@@ -88,17 +138,7 @@ header h1 {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    opacity: 0;
-    transform: scale(0.9);
-    animation: fadeInScale 0.5s ease-in-out forwards 1.5s;
-}
-
-@keyframes fadeInScale {
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .enlace-cuadrado a {
@@ -110,7 +150,6 @@ header h1 {
 .enlace-cuadrado:hover {
     transform: translateY(-5px);
     background: #00ff00;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
 }
 
 .enlace-cuadrado:hover a {
@@ -125,8 +164,6 @@ footer {
     text-align: center;
     width: 100%;
     margin-top: auto;
-    opacity: 0;
-    animation: fadeIn 1s ease-in-out forwards 2s;
 }
 
 footer .redes-sociales {
@@ -137,12 +174,11 @@ footer .icono {
     color: #00ff00;
     font-size: 1.5rem;
     margin: 0 10px;
-    transition: transform 0.3s ease, color 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 footer .icono:hover {
     color: #ffffff;
-    transform: scale(1.2);
 }
 
 footer .informacion a {
