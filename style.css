@@ -127,12 +127,12 @@ body.modo-oscuro .informacion a {
 
 /* Cambio de color del botón en modo oscuro */
 body.modo-oscuro #modo-toggle {
-    background: #fff; /* Blanco en modo oscuro */
+    background: #f4f4f4; /* Blanco en modo oscuro */
     color: #000; /* Icono negro en modo oscuro */
 }
 
 body.modo-oscuro #modo-toggle:hover {
-    background: #fff;
+    background: #ddd;
 }
 
 /* Responsive */
