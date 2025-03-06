@@ -7,8 +7,10 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
+/* Contenedor principal */
 .container {
     text-align: center;
     background: #111;
@@ -18,15 +20,18 @@ body {
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
+/* Títulos */
 h1 {
     font-size: 24px;
     margin-bottom: 20px;
 }
 
+/* Formularios */
 form {
     margin-bottom: 20px;
 }
 
+/* Etiquetas y entradas */
 label {
     display: block;
     margin-bottom: 10px;
@@ -43,9 +48,10 @@ select {
     color: #00ff00;
     width: 100%;
     box-sizing: border-box;
-    margin-bottom: 10px; /* Añadido para el espacio entre campos */
+    margin-bottom: 10px;
 }
 
+/* Botón */
 button {
     padding: 10px 20px;
     font-size: 16px;
@@ -62,16 +68,54 @@ button:hover {
     color: #000;
 }
 
+/* Resultado */
 #result {
-    white-space: pre-wrap; /* Mantiene los saltos de línea en el certificado */
+    white-space: pre-wrap;
     text-align: left;
     margin: 20px 0;
 }
 
+/* Enlace de descarga */
 #downloadLink {
     display: block;
     margin-top: 10px;
     text-decoration: none;
     color: #0011ff;
     font-weight: bold;
+}
+
+/* ============================= */
+/*   MODO CLARO                  */
+/* ============================= */
+body.modo-claro {
+    background-color: #fff;
+    color: #222;
+}
+
+.modo-claro .container {
+    background: #f0f0f0;
+    border: 2px solid #222;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.modo-claro input,
+.modo-claro select {
+    background: #fff;
+    color: #222;
+    border: 2px solid #222;
+}
+
+.modo-claro button {
+    background-color: #fff;
+    color: #222;
+    border: 2px solid #222;
+}
+
+.modo-claro button:hover {
+    background-color: #222;
+    color: #fff;
+}
+
+.modo-claro #downloadLink {
+    color: #ff0000;
 }
