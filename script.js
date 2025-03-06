@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const botonModo = document.getElementById("modo-toggle");
     const body = document.body;
     const icono = botonModo.querySelector("i");
+    const tituloKomodore = document.getElementById("titulo-komodore");
+    const footerText = document.getElementById("footer-text");
     
     // Comprobar si hay una preferencia guardada
     if (localStorage.getItem("modoOscuro") === "true") {
