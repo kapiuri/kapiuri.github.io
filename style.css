@@ -36,10 +36,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%; /* Ocupa todo el ancho disponible */
-    max-width: 250px; /* Limita el ancho máximo para evitar desbordes */
-    height: auto;
-    padding: 10px;
+    width: 200px;
+    height: 80px;
     background: #000;
     color: #00ff00;
     text-decoration: none;
@@ -48,13 +46,17 @@ body {
     border-radius: 10px;
     transition: transform 0.2s, background 0.3s;
     text-align: center;
+    padding: 10px;
+    overflow: hidden;
     word-wrap: break-word;
+    white-space: normal;
 }
 
 #enlaces-navegacion a:hover {
     transform: scale(1.1);
     background: #003300;
 }
+
 
 /* Botón modo oscuro */
 #modo-toggle {
