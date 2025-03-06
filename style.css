@@ -8,9 +8,15 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
+    text-align: center;
     transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Estilo del título */
+#titulo-komodore {
+    font-size: 2rem;
+    margin: 20px 0;
+    color: #00ff00;
 }
 
 /* Menú principal */
@@ -23,13 +29,9 @@ body {
     justify-items: center;
 }
 
-.enlace-cuadrado {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 150px;
-    height: 150px;
-    text-align: center;
+#enlaces-navegacion a {
+    display: block;
+    padding: 15px;
     background: #00ff00;
     color: #000;
     text-decoration: none;
@@ -39,7 +41,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
-.enlace-cuadrado:hover {
+#enlaces-navegacion a:hover {
     transform: scale(1.1);
     background: #009900;
     color: #fff;
@@ -69,23 +71,6 @@ body {
     background: #009900;
 }
 
-/* Modo oscuro */
-body.modo-oscuro {
-    background: #f4f4f4;
-    color: #222;
-}
-
-body.modo-oscuro .enlace-cuadrado {
-    background: #ddd;
-    border-color: #222;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-body.modo-oscuro .enlace-cuadrado:hover {
-    background: #222;
-    color: #f4f4f4;
-}
-
 /* Footer */
 footer {
     backdrop-filter: blur(5px);
@@ -94,6 +79,33 @@ footer {
     text-align: center;
     width: 100%;
     margin-top: auto;
+    transition: color 0.3s ease;
+}
+
+#footer-text {
+    transition: color 0.3s ease;
+}
+
+/* Modo oscuro */
+body.modo-oscuro {
+    background: #f4f4f4;
+    color: #222;
+}
+
+body.modo-oscuro #titulo-komodore,
+body.modo-oscuro #footer-text {
+    color: #222;
+}
+
+body.modo-oscuro #enlaces-navegacion a {
+    background: #ddd;
+    border-color: #222;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+body.modo-oscuro #enlaces-navegacion a:hover {
+    background: #222;
+    color: #f4f4f4;
 }
 
 /* Responsive */
