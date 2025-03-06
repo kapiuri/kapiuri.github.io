@@ -54,7 +54,7 @@ body {
     position: fixed;
     top: 10px;
     right: 10px;
-    background: #6e6d6d;
+    background: #00ff00;
     color: #000;
     border: none;
     padding: 10px;
@@ -123,6 +123,16 @@ body.modo-oscuro #enlaces-navegacion a:hover {
 
 body.modo-oscuro .informacion a {
     color: #222;
+}
+
+/* Cambio de color del botón en modo oscuro */
+body.modo-oscuro #modo-toggle {
+    background: #fff;
+    color: #000;
+}
+
+body.modo-oscuro #modo-toggle:hover {
+    background: #ddd;
 }
 
 /* Responsive */
