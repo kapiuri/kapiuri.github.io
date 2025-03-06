@@ -132,7 +132,7 @@ body.modo-oscuro #modo-toggle {
 }
 
 body.modo-oscuro #modo-toggle:hover {
-    background: #ddd;
+    background: #fff;
 }
 
 /* Responsive */
