@@ -54,8 +54,8 @@ body {
     position: fixed;
     top: 10px;
     right: 10px;
-    background: #00ff00;
-    color: #000;
+    background: #000; /* Negro en modo claro */
+    color: #fff; /* Icono blanco en modo claro */
     border: none;
     padding: 10px;
     font-size: 1.2rem;
@@ -70,7 +70,7 @@ body {
 }
 
 #modo-toggle:hover {
-    background: #009900;
+    background: #333;
 }
 
 /* Footer */
@@ -127,8 +127,8 @@ body.modo-oscuro .informacion a {
 
 /* Cambio de color del botón en modo oscuro */
 body.modo-oscuro #modo-toggle {
-    background: #fff;
-    color: #000;
+    background: #fff; /* Blanco en modo oscuro */
+    color: #000; /* Icono negro en modo oscuro */
 }
 
 body.modo-oscuro #modo-toggle:hover {
