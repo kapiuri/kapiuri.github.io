@@ -22,7 +22,7 @@ body {
 /* Menú principal */
 #enlaces-navegacion {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
     list-style: none;
     padding: 20px;
@@ -30,21 +30,23 @@ body {
 }
 
 #enlaces-navegacion a {
-    display: block;
-    padding: 15px;
-    background: #00ff00;
-    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 80px;
+    background: #000;
+    color: #00ff00;
     text-decoration: none;
     font-weight: bold;
+    border: 2px solid #00ff00;
     border-radius: 10px;
     transition: transform 0.2s, background 0.3s;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
 #enlaces-navegacion a:hover {
     transform: scale(1.1);
-    background: #009900;
-    color: #fff;
+    background: #003300;
 }
 
 /* Botón modo oscuro */
@@ -86,6 +88,17 @@ footer {
     transition: color 0.3s ease;
 }
 
+.informacion a {
+    color: #00ff00;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.informacion a:hover {
+    text-decoration: underline;
+}
+
 /* Modo oscuro */
 body.modo-oscuro {
     background: #f4f4f4;
@@ -98,14 +111,18 @@ body.modo-oscuro #footer-text {
 }
 
 body.modo-oscuro #enlaces-navegacion a {
-    background: #ddd;
-    border-color: #222;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background: #000;
+    border: 2px solid #222;
+    color: #222;
 }
 
 body.modo-oscuro #enlaces-navegacion a:hover {
-    background: #222;
-    color: #f4f4f4;
+    background: #333;
+    color: #fff;
+}
+
+body.modo-oscuro .informacion a {
+    color: #222;
 }
 
 /* Responsive */
