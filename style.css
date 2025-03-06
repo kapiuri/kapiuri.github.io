@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     text-align: center;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.5s ease-in-out, color 0.5s ease-in-out;
     overflow-x: hidden; /* Evita el scroll horizontal */
 }
 
@@ -44,12 +44,15 @@ body {
     font-weight: bold;
     border: 2px solid #00ff00;
     border-radius: 10px;
-    transition: transform 0.2s, background 0.3s;
+    transition: transform 0.3s ease, background 0.3s ease;
     text-align: center;
     padding: 10px;
     overflow: hidden;
     word-wrap: break-word;
     white-space: normal;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: aparecer 0.5s ease-out forwards;
 }
 
 #enlaces-navegacion a:hover {
@@ -57,6 +60,17 @@ body {
     background: #003300;
 }
 
+/* Animación de aparición para los enlaces */
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 /* Botón modo oscuro */
 #modo-toggle {
@@ -69,7 +83,7 @@ body {
     padding: 10px;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -80,6 +94,10 @@ body {
 
 #modo-toggle:hover {
     background: #333;
+}
+
+#modo-toggle:active {
+    transform: scale(0.9);
 }
 
 /* Footer */
