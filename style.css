@@ -10,6 +10,7 @@ body {
     min-height: 100vh;
     text-align: center;
     transition: background 0.3s ease, color 0.3s ease;
+    overflow-x: hidden; /* Evita el scroll horizontal */
 }
 
 /* Estilo del título */
@@ -27,14 +28,18 @@ body {
     list-style: none;
     padding: 20px;
     justify-items: center;
+    max-width: 100%; /* Asegura que no sobrepase el ancho de la pantalla */
+    word-break: break-word; /* Rompe palabras largas para evitar desbordamientos */
 }
 
 #enlaces-navegacion a {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 200px;
-    height: 80px;
+    width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: 250px; /* Limita el ancho máximo para evitar desbordes */
+    height: auto;
+    padding: 10px;
     background: #000;
     color: #00ff00;
     text-decoration: none;
@@ -42,6 +47,8 @@ body {
     border: 2px solid #00ff00;
     border-radius: 10px;
     transition: transform 0.2s, background 0.3s;
+    text-align: center;
+    word-wrap: break-word;
 }
 
 #enlaces-navegacion a:hover {
@@ -138,6 +145,6 @@ body.modo-oscuro #modo-toggle:hover {
 /* Responsive */
 @media (max-width: 768px) {
     #enlaces-navegacion {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
     }
 }
