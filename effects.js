@@ -12,72 +12,70 @@ resize();
 
 window.addEventListener('resize', resize);
 
-// Partículas tipo ceniza / chispas de fuego lenta y humo
+// Partículas chisporroteantes estilo Doom Eternal, con colores marrones/óxido
 
-class Particula {
+class Chispa {
   constructor() {
     this.reset();
   }
 
   reset() {
     this.x = Math.random() * W;
-    this.y = H + 10 + Math.random() * 50;
-    this.size = 1 + Math.random() * 3;
-    this.speedY = 0.3 + Math.random() * 0.7;
-    this.speedX = (Math.random() - 0.5) * 0.4;
-    this.alpha = 0.3 + Math.random() * 0.6;
-    this.life = 100 + Math.random() * 100;
-    this.color = `rgba(210, 140, 75, ${this.alpha})`; // tonos ceniza/dorado
-    this.smoke = Math.random() > 0.7; // si es humo o chispa
+    this.y = H + Math.random() * 50;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = - (1 + Math.random() * 2);
+    this.size = 1 + Math.random() * 2;
+    this.life = 30 + Math.random() * 30;
+    this.color = `rgba(${150 + Math.floor(Math.random() * 100)}, ${80 + Math.floor(Math.random() * 50)}, 30, 1)`; // marrones fuego
+    this.alpha = 1;
   }
 
   update() {
-    this.x += this.speedX;
-    this.y -= this.speedY;
+    this.x += this.vx;
+    this.y += this.vy;
     this.life--;
-
-    if (this.y < -10 || this.life <= 0 || this.x < -10 || this.x > W + 10) {
+    this.alpha = this.life / 60;
+    if (this.life <= 0 || this.y < -10 || this.x < -10 || this.x > W + 10) {
       this.reset();
     }
   }
 
   draw() {
-    if (this.smoke) {
-      // Humo difuso
-      let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 8);
-      grad.addColorStop(0, `rgba(150, 120, 90, ${this.alpha * 0.15})`);
-      grad.addColorStop(1, 'rgba(20, 15, 10, 0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.ellipse(this.x, this.y, this.size * 8, this.size * 5, 0, 0, 2 * Math.PI);
-      ctx.fill();
-    } else {
-      // Chispa fuego pequeña
-      ctx.fillStyle = this.color;
-      ctx.shadowColor = 'rgba(210,140,75,0.7)';
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Línea chispeante
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(this.x + this.vx * 5, this.y + this.vy * 5);
+    ctx.stroke();
+    ctx.restore();
   }
 }
 
-const particulas = [];
-const maxParticulas = 80;
-for (let i = 0; i < maxParticulas; i++) {
-  particulas.push(new Particula());
+const chispas = [];
+const maxChispas = 120;
+
+for (let i = 0; i < maxChispas; i++) {
+  chispas.push(new Chispa());
 }
 
 function loop() {
-  // Fondo con tono oscuro rojizo opaco para efecto medieval
-  ctx.fillStyle = 'rgba(26,16,7,0.7)';
+  // Fondo semitransparente para efecto de niebla oscura y atardecer marrón
+  ctx.fillStyle = 'rgba(26, 16, 7, 0.8)';
   ctx.fillRect(0, 0, W, H);
 
-  particulas.forEach(p => {
-    p.update();
-    p.draw();
+  chispas.forEach(chispa => {
+    chispa.update();
+    chispa.draw();
   });
 
   requestAnimationFrame(loop);
