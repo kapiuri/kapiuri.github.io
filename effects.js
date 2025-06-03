@@ -9,7 +9,10 @@ function resize() {
   canvas.height = H;
 }
 resize();
+
 window.addEventListener('resize', resize);
+
+// Partículas rápidas tipo chispas y líneas
 
 class Spark {
   constructor() {
@@ -24,7 +27,7 @@ class Spark {
     this.angle = Math.random() * 2 * Math.PI;
     this.size = 1 + Math.random() * 2;
     this.alpha = 0.2 + Math.random() * 0.8;
-    this.color = `rgba(${165 + Math.floor(Math.random() * 50)}, ${50 + Math.floor(Math.random() * 30)}, 25, ${this.alpha})`;
+    this.color = rgba(244, 67, 54, ${this.alpha});
     this.life = 40 + Math.random() * 60;
   }
 
@@ -46,7 +49,7 @@ class Spark {
   draw() {
     ctx.strokeStyle = this.color;
     ctx.lineWidth = this.size;
-    ctx.shadowColor = `rgba(${165 + Math.floor(Math.random() * 50)}, ${50 + Math.floor(Math.random() * 30)}, 25, 0.8)`;
+    ctx.shadowColor = '#f44336';
     ctx.shadowBlur = 10;
     ctx.beginPath();
     ctx.moveTo(this.x, this.y);
@@ -67,10 +70,10 @@ for (let i = 0; i < maxSparks; i++) {
 function loop() {
   ctx.clearRect(0, 0, W, H);
 
-  // Fondo con gradiente marrón oscuro intenso
+  // Fondo con gradiente oscuro intenso
   let gradient = ctx.createLinearGradient(0, 0, 0, H);
-  gradient.addColorStop(0, '#2e1b0f');
-  gradient.addColorStop(1, '#1a0d04');
+  gradient.addColorStop(0, '#100000');
+  gradient.addColorStop(1, '#000000');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, W, H);
 
