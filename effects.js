@@ -29,7 +29,7 @@ class Spark {
     this.angle = Math.random() * 2 * Math.PI; // Ángulo de dirección (0 a 360 grados en radianes)
     this.size = 1 + Math.random() * 2;        // Grosor de línea
     this.alpha = 0.2 + Math.random() * 0.8;   // Transparencia
-    this.color = 'rgba(244, 67, 54, ${this.alpha})';  // Color con transparencia
+    this.color = `rgba(244, 67, 54, ${this.alpha})`;
     this.life = 40 + Math.random() * 60;      // Vida útil (cuánto dura antes de reiniciarse)
   }
 
