@@ -27,7 +27,7 @@ class Spark {
     this.angle = Math.random() * 2 * Math.PI;
     this.size = 1 + Math.random() * 2;
     this.alpha = 0.2 + Math.random() * 0.8;
-    this.color = rgba(244, 67, 54, ${this.alpha});
+    this.color = `rgba(244, 67, 54, ${this.alpha})`;
     this.life = 40 + Math.random() * 60;
   }
 
