@@ -9,10 +9,7 @@ function resize() {
   canvas.height = H;
 }
 resize();
-
 window.addEventListener('resize', resize);
-
-// Partículas rápidas tipo chispas y líneas
 
 class Spark {
   constructor() {
@@ -36,11 +33,7 @@ class Spark {
     this.y += Math.sin(this.angle) * this.speed;
     this.life--;
 
-    if (
-      this.x < 0 || this.x > W ||
-      this.y < 0 || this.y > H ||
-      this.life <= 0
-    ) {
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H || this.life <= 0) {
       this.reset();
       this.y = H + 10;
     }
@@ -69,8 +62,6 @@ for (let i = 0; i < maxSparks; i++) {
 
 function loop() {
   ctx.clearRect(0, 0, W, H);
-
-  // Fondo con gradiente oscuro intenso
   let gradient = ctx.createLinearGradient(0, 0, 0, H);
   gradient.addColorStop(0, '#100000');
   gradient.addColorStop(1, '#000000');
@@ -86,3 +77,9 @@ function loop() {
 }
 
 loop();
+
+// Función "Apagar Todo"
+function apagarTodo() {
+  document.body.innerHTML = '';
+  document.body.style.background = 'black';
+}

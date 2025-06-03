@@ -1,4 +1,3 @@
-/* Fuente UnifrakturCook para estilo gótico medieval */
 body {
   margin: 0;
   background: #1a1007 url('https://i.imgur.com/CS3rfTq.jpg') no-repeat center center fixed;
@@ -12,7 +11,6 @@ body {
   text-shadow: 1px 1px 3px #3a1f0a;
 }
 
-/* Menú estilo tablilla de madera antigua */
 .menu {
   position: fixed;
   top: 0;
@@ -49,8 +47,7 @@ body {
   border-radius: 3px;
 }
 
-.menu ul li a:hover,
-.menu ul li a:focus {
+.menu ul li a:hover {
   background: #a35122cc;
   color: #fff5e6;
   border-color: #d2691e;
@@ -58,7 +55,6 @@ body {
   cursor: pointer;
 }
 
-/* Contenido central */
 .contenido {
   position: absolute;
   top: 50%;
@@ -70,20 +66,22 @@ body {
   padding: 0 1rem;
 }
 
-/* Título estilo medieval con sombra y textura */
 .titulo {
   font-size: 4rem;
   color: #d86e3f;
-  text-shadow:
-    2px 2px 0 #5a2e0a,
-    4px 4px 10px rgba(0,0,0,0.8);
   letter-spacing: 6px;
   text-transform: uppercase;
   line-height: 1.1;
   user-select: none;
+  text-shadow: 2px 2px 0 #5a2e0a, 4px 4px 10px rgba(0,0,0,0.8);
+  animation: fuego 1.2s infinite alternate;
 }
 
-/* Subtítulo */
+@keyframes fuego {
+  0%   { text-shadow: 0 0 6px #ff6b2b, 0 0 15px #ff6b2b; }
+  100% { text-shadow: 0 0 10px #ff471a, 0 0 30px #ff471a; }
+}
+
 .subtitulo {
   font-size: 1.8rem;
   margin-top: 1rem;
@@ -93,7 +91,6 @@ body {
   font-style: italic;
 }
 
-/* Canvas estilo fondo */
 #fondo {
   position: fixed;
   top: 0;
@@ -103,4 +100,55 @@ body {
   height: 100vh;
   display: block;
   pointer-events: none;
+}
+
+.cruz {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  opacity: 0.7;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.apagar {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: #240000;
+  color: #ffccbb;
+  border: 2px solid #6c2a1a;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-family: 'UnifrakturCook', cursive;
+  z-index: 100;
+  cursor: pointer;
+  border-radius: 5px;
+  text-shadow: 1px 1px 3px #000;
+  box-shadow: 0 0 10px #7f1f1f;
+  transition: all 0.3s ease;
+}
+.apagar:hover {
+  background: #420000;
+  color: #fff;
+}
+
+.galeria {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.imagen img {
+  width: 180px;
+  height: auto;
+  border: 3px solid #7c4825;
+  box-shadow: 0 0 15px #5a3b19;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.imagen img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #ff7847;
 }
