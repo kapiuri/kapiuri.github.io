@@ -8,47 +8,78 @@ function resize() {
   canvas.width = W;
   canvas.height = H;
 }
-window.addEventListener('resize', resize);
 resize();
+window.addEventListener('resize', resize);
 
-// Simple fire effect example (you can improve this)
-function draw() {
-  ctx.clearRect(0, 0, W, H);
-  // (For demo, just draw some flickering orange-red rectangles)
-  const flameCount = 30;
-  for(let i=0; i < flameCount; i++){
-    const x = Math.random()*W;
-    const y = H - Math.random()*100;
-    const size = Math.random()*30 + 10;
-    const r = 255;
-    const g = Math.floor(50 + Math.random()*150);
-    const b = 0;
-    ctx.fillStyle = `rgba(${r},${g},${b},${Math.random()})`;
+class Spark {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.length = 10 + Math.random() * 20;
+    this.speed = 5 + Math.random() * 8;
+    this.angle = Math.random() * 2 * Math.PI;
+    this.size = 1 + Math.random() * 2;
+    this.alpha = 0.2 + Math.random() * 0.8;
+    this.color = `rgba(244, 67, 54, ${this.alpha})`;
+    this.life = 40 + Math.random() * 60;
+  }
+
+  update() {
+    this.x += Math.cos(this.angle) * this.speed;
+    this.y += Math.sin(this.angle) * this.speed;
+    this.life--;
+
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H || this.life <= 0) {
+      this.reset();
+      this.y = H + 10;
+    }
+  }
+
+  draw() {
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = this.size;
+    ctx.shadowColor = '#f44336';
+    ctx.shadowBlur = 10;
     ctx.beginPath();
-    ctx.ellipse(x, y, size/2, size, 0, 0, Math.PI*2);
-    ctx.fill();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(
+      this.x - Math.cos(this.angle) * this.length,
+      this.y - Math.sin(this.angle) * this.length
+    );
+    ctx.stroke();
   }
-  requestAnimationFrame(draw);
 }
-draw();
 
-// Cambiar tema con botón
-const btnTema = document.getElementById('btnTema');
-const body = document.body;
+const sparks = [];
+const maxSparks = 120;
+for (let i = 0; i < maxSparks; i++) {
+  sparks.push(new Spark());
+}
 
-btnTema.addEventListener('click', () => {
-  if(body.classList.contains('dark-ages')) {
-    body.classList.remove('dark-ages');
-    body.classList.add('doom-eternal');
-    btnTema.textContent = 'Cambiar a The Dark Ages';
-    // Cambiar título y subtitulo
-    document.querySelector('.titulo').textContent = 'Galería Doom: Eternal';
-    document.querySelector('.subtitulo').textContent = 'Furia, sangre y fuego del infierno moderno.';
-  } else {
-    body.classList.remove('doom-eternal');
-    body.classList.add('dark-ages');
-    btnTema.textContent = 'Cambiar a Doom Eternal';
-    document.querySelector('.titulo').textContent = 'Galería Doom: The Dark Ages';
-    document.querySelector('.subtitulo').textContent = 'Oscuridad, fuego y sombras del pasado.';
-  }
-});
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+  let gradient = ctx.createLinearGradient(0, 0, 0, H);
+  gradient.addColorStop(0, '#100000');
+  gradient.addColorStop(1, '#000000');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, W, H);
+
+  sparks.forEach((spark) => {
+    spark.update();
+    spark.draw();
+  });
+
+  requestAnimationFrame(loop);
+}
+
+loop();
+
+// Función "Apagar Todo"
+function apagarTodo() {
+  document.body.innerHTML = '';
+  document.body.style.background = 'black';
+}
