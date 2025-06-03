@@ -15,79 +15,81 @@ function ajustarTamañoCanvas() {
 ajustarTamañoCanvas();
 window.addEventListener('resize', ajustarTamañoCanvas);
 
-class Particula {
+// --- Clase que define cada partícula (spark) ---
+class Spark {
   constructor() {
     this.reset();
   }
+
   reset() {
-    this.x = Math.random() * width;
-    this.y = height + Math.random() * 100;
-    this.vx = (Math.random() - 0.5) * 0.6;
-    this.vy = - (1 + Math.random() * 1.8);
-    this.size = 1 + Math.random() * 3;
-    this.life = 40 + Math.random() * 40;
-    this.maxLife = this.life;
-    this.alpha = 0;
-    this.colorBase = this.randomColorBase();
-    this.oscillation = Math.random() * 0.05 + 0.02;
-    this.phase = Math.random() * Math.PI * 2;
+    this.x = Math.random() * W;                // Posición inicial aleatoria X
+    this.y = Math.random() * H;                // Posición inicial aleatoria Y
+    this.length = 10 + Math.random() * 20;    // Longitud de la línea
+    this.speed = 5 + Math.random() * 8;       // Velocidad de movimiento
+    this.angle = Math.random() * 2 * Math.PI; // Ángulo de dirección (0 a 360 grados en radianes)
+    this.size = 1 + Math.random() * 2;        // Grosor de línea
+    this.alpha = 0.2 + Math.random() * 0.8;   // Transparencia
+    this.color = 'rgba(244, 67, 54, ${this.alpha})';  // Color con transparencia
+    this.life = 40 + Math.random() * 60;      // Vida útil (cuánto dura antes de reiniciarse)
   }
-  randomColorBase() {
-    if (body.classList.contains('dark-ages')) {
-      // tonos fuego oscuro marrón/naranja
-      const r = 190 + Math.floor(Math.random() * 60);
-      const g = 60 + Math.floor(Math.random() * 50);
-      const b = 20;
-      return {r, g, b};
-    } else {
-      // tonos rojo fuego para Doom Eternal
-      const r = 255;
-      const g = 70 + Math.floor(Math.random() * 60);
-      const b = 30;
-      return {r, g, b};
-    }
-  }
+
   update() {
-    this.x += this.vx + Math.sin(this.phase) * 0.5;
-    this.y += this.vy;
-    this.phase += this.oscillation;
-    this.life--;
-    this.alpha = Math.min(1, this.life / this.maxLife);
-    if (this.life <= 0 || this.y < -10 || this.x < -10 || this.x > width + 10) {
+    // Actualiza posición en base al ángulo y velocidad
+    this.x += Math.cos(this.angle) * this.speed;
+    this.y += Math.sin(this.angle) * this.speed;
+    this.life--;  // Reduce vida
+
+    // Si se sale de pantalla o muere, se reinicia
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H || this.life <= 0) {
       this.reset();
+      this.y = H + 10;
     }
   }
-  draw(ctx) {
-    const {r, g, b} = this.colorBase;
-    const alpha = this.alpha * 0.7;
-    const glowAlpha = this.alpha * 0.3;
+
+  draw() {
+    ctx.strokeStyle = this.color;      // Color de la línea
+    ctx.lineWidth = this.size;         // Grosor de línea
+    ctx.shadowColor = '#f44336';       // Sombra roja
+    ctx.shadowBlur = 10;               // Difuminado sombra
     ctx.beginPath();
-    ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
-    ctx.shadowColor = `rgba(${r},${g},${b},${glowAlpha})`;
-    ctx.shadowBlur = this.size * 4;
-    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-    ctx.fill();
+    ctx.moveTo(this.x, this.y);        // Punto inicio línea (posición actual)
+    ctx.lineTo(
+      this.x - Math.cos(this.angle) * this.length,  // Punto final línea (detrás en dirección opuesta)
+      this.y - Math.sin(this.angle) * this.length
+    );
+    ctx.stroke();                      // Dibuja la línea
   }
 }
 
-const particulas = [];
-const maxParticulas = 150;
-
-for (let i = 0; i < maxParticulas; i++) {
-  particulas.push(new Particula());
+// --- Creación de todas las partículas ---
+const sparks = [];
+const maxSparks = 120;
+for (let i = 0; i < maxSparks; i++) {
+  sparks.push(new Spark());
 }
 
-function animar() {
-  ctx.clearRect(0, 0, width, height);
+// --- En el loop principal, actualizar y dibujar cada partícula ---
+function loop() {
+  ctx.clearRect(0, 0, W, H);
 
-  for (const p of particulas) {
-    p.update();
-    p.draw(ctx);
-  }
+  // Fondo con degradado
+  let gradient = ctx.createLinearGradient(0, 0, 0, H);
+  gradient.addColorStop(0, '#100000');
+  gradient.addColorStop(1, '#000000');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, W, H);
 
-  requestAnimationFrame(animar);
+  // Actualiza y dibuja cada partícula
+  sparks.forEach((spark) => {
+    spark.update();
+    spark.draw();
+  });
+
+  requestAnimationFrame(loop);
 }
-animar();
+
+loop();
+
 
 btnTema.addEventListener('click', () => {
   if (body.classList.contains('dark-ages')) {

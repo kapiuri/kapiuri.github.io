@@ -106,7 +106,7 @@ body {
   transition: opacity 0.5s ease;
 }
 
-.apagar {
+.modo {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
@@ -189,14 +189,14 @@ body.dark-ages .cruz {
   opacity: 0.7;
 }
 
-body.dark-ages .apagar {
+body.dark-ages .modo {
   background: #240000;
   color: #ffccbb;
   border-color: #6c2a1a;
   box-shadow: 0 0 10px #7f1f1f;
 }
 
-body.dark-ages .apagar:hover {
+body.dark-ages .modo:hover {
   background: #420000;
   color: #fff;
 }
@@ -270,14 +270,14 @@ body.doom-eternal .cruz {
   opacity: 0.9;
 }
 
-body.doom-eternal .apagar {
+body.doom-eternal .modo {
   background: #440000;
   color: #ff9999;
   border-color: #ff5555;
   box-shadow: 0 0 10px #ff5555;
 }
 
-body.doom-eternal .apagar:hover {
+body.doom-eternal .modo:hover {
   background: #ff0000;
   color: #fff;
 }
