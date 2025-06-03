@@ -9,69 +9,78 @@ function resize() {
   canvas.height = H;
 }
 resize();
+
 window.addEventListener('resize', resize);
 
-class Particula {
+// Partículas rápidas tipo chispas y líneas, con colores marrones rojizos
+
+class Spark {
   constructor() {
     this.reset();
   }
 
   reset() {
-    // Partículas nacen en la parte baja central o dispersas en la mitad inferior
-    this.x = W / 2 + (Math.random() - 0.5) * 200;
-    this.y = H * 0.8 + (Math.random() - 0.5) * 50;
-    const speed = 0.5 + Math.random() * 2.5;
-    const angle = Math.random() * 2 * Math.PI; // dirección aleatoria
-    this.vx = Math.cos(angle) * speed;
-    this.vy = Math.sin(angle) * speed;
-    this.size = 1 + Math.random() * 3;
-    this.life = 60 + Math.random() * 40;
-    this.color = `rgba(${180 + Math.floor(Math.random() * 75)}, ${90 + Math.floor(Math.random() * 60)}, 40, 1)`; // marrones naranjas
-    this.alpha = 1;
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.length = 10 + Math.random() * 20;
+    this.speed = 5 + Math.random() * 8;
+    this.angle = Math.random() * 2 * Math.PI;
+    this.size = 1 + Math.random() * 2;
+    this.alpha = 0.2 + Math.random() * 0.8;
+    // Color marrón rojizo con transparencia variable
+    this.color = `rgba(${165 + Math.floor(Math.random() * 50)}, ${50 + Math.floor(Math.random() * 30)}, 25, ${this.alpha})`;
+    this.life = 40 + Math.random() * 60;
   }
 
   update() {
-    this.x += this.vx;
-    this.y += this.vy;
+    this.x += Math.cos(this.angle) * this.speed;
+    this.y += Math.sin(this.angle) * this.speed;
     this.life--;
-    this.alpha = this.life / 100;
+
     if (
-      this.life <= 0 || 
-      this.x < -50 || this.x > W + 50 || 
-      this.y < -50 || this.y > H + 50
+      this.x < 0 || this.x > W ||
+      this.y < 0 || this.y > H ||
+      this.life <= 0
     ) {
       this.reset();
+      this.y = H + 10;
     }
   }
 
   draw() {
-    ctx.save();
-    ctx.globalAlpha = this.alpha;
-    ctx.fillStyle = this.color;
-    ctx.shadowColor = this.color;
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = this.size;
+    ctx.shadowColor = `rgba(${165 + Math.floor(Math.random() * 50)}, ${50 + Math.floor(Math.random() * 30)}, 25, 0.8)`;
     ctx.shadowBlur = 10;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.restore();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(
+      this.x - Math.cos(this.angle) * this.length,
+      this.y - Math.sin(this.angle) * this.length
+    );
+    ctx.stroke();
   }
 }
 
-const particulas = [];
-const maxParticulas = 150;
-
-for (let i = 0; i < maxParticulas; i++) {
-  particulas.push(new Particula());
+const sparks = [];
+const maxSparks = 120;
+for (let i = 0; i < maxSparks; i++) {
+  sparks.push(new Spark());
 }
 
 function loop() {
-  // Fondo con transparencia marrón oscuro para ambiente tétrico
-  ctx.fillStyle = 'rgba(30, 18, 8, 0.85)';
+  ctx.clearRect(0, 0, W, H);
+
+  // Fondo con gradiente marrón oscuro intenso
+  let gradient = ctx.createLinearGradient(0, 0, 0, H);
+  gradient.addColorStop(0, '#2e1b0f'); // marrón oscuro
+  gradient.addColorStop(1, '#1a0d04'); // marrón casi negro
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, W, H);
 
-  particulas.forEach(p => {
-    p.update();
-    p.draw();
+  sparks.forEach((spark) => {
+    spark.update();
+    spark.draw();
   });
 
   requestAnimationFrame(loop);
