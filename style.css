@@ -8,7 +8,7 @@
 body, html {
   height: 100%;
   overflow: hidden;
-  font-family: 'Cinzel', serif;
+  font-family: 'Cormorant Garamond', serif;
   background: #1a0d04; /* fondo marrón muy oscuro */
   color: #d4b084; /* tono beige claro para texto */
   user-select: none;
