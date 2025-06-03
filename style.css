@@ -1,50 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Aboreto&display=swap');
+
 body {
-    margin: 0;
-    overflow: hidden;
-    font-family: 'Courier New', monospace;
-    background: black;
-    color: white;
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Aboreto', cursive;
+  background: linear-gradient(to bottom, #0a0f1c, #1c1f2f);
+  color: #e0e0f0;
 }
 
-.ruido {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif');
-    opacity: 0.03;
-    pointer-events: none;
-    z-index: 10;
+.niebla {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://www.transparenttextures.com/patterns/fog.png');
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .contenido {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    z-index: 20;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 20;
 }
 
 h1 {
-    font-size: 3em;
-    color: white;
-    mix-blend-mode: difference;
-    animation: glitch 1.5s infinite;
-}
-
-@keyframes glitch {
-    0% { transform: translate(0, 0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(2px, -2px); }
-    60% { transform: translate(-1px, 1px); }
-    80% { transform: translate(1px, -1px); }
-    100% { transform: translate(0, 0); }
+  font-size: 4em;
+  color: #c0c8ff;
+  text-shadow: 0 0 10px rgba(180,180,255,0.3);
+  animation: desvanecer 6s ease-in-out infinite alternate;
 }
 
 p {
-    font-size: 1.2em;
-    color: #aaa;
-    font-style: italic;
+  font-size: 1.4em;
+  color: #aab;
+  margin-top: 1rem;
+  animation: desvanecer 10s ease-in-out infinite alternate;
+}
+
+@keyframes desvanecer {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.02); }
 }
