@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=UnifrakturCook&display=swap');
+
 /* Estilos comunes */
 body {
   margin: 0;
@@ -141,6 +143,7 @@ body {
 
 /* === DARK AGES === */
 body.dark-ages {
+  font-family: 'UnifrakturCook', cursive;
   background: #1a1007 url('https://i.imgur.com/CS3rfTq.jpg') no-repeat center center fixed;
   background-size: cover;
   color: #b04a2c;
@@ -209,6 +212,7 @@ body.dark-ages .imagen img:hover {
 
 /* === DOOM ETERNAL === */
 body.doom-eternal {
+  font-family: 'Orbitron', sans-serif;
   background: url('https://i.imgur.com/XXrI0Q0.jpg') no-repeat center center fixed;
   background-size: cover;
   color: #c3c3c3;
