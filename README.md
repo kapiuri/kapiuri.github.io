@@ -1,2 +1,2 @@
 # kapiuri.github.io
-Pagina
+Pagina web
