@@ -1,24 +1,28 @@
-/* Fuente Orbitron para estilo futurista y tecnológico */
+/* Fuente UnifrakturCook para estilo gótico medieval */
 body {
   margin: 0;
-  background: #0a0a0a;
-  color: #f44336;
-  font-family: 'Orbitron', sans-serif;
+  background: #1a1007 url('https://i.imgur.com/CS3rfTq.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #b04a2c;
+  font-family: 'UnifrakturCook', cursive, serif;
   overflow-x: hidden;
   height: 100vh;
   position: relative;
   user-select: none;
+  text-shadow: 1px 1px 3px #3a1f0a;
 }
 
-/* Menú estilo panel tecnológico */
+/* Menú estilo tablilla de madera antigua */
 .menu {
   position: fixed;
   top: 0;
   width: 100%;
-  background: #120000cc;
-  border-bottom: 2px solid #f44336;
+  background: #3e2f1cdd;
+  border-bottom: 3px solid #7c4825;
+  box-shadow: inset 0 0 10px #5a3b19;
   z-index: 20;
   user-select: none;
+  font-weight: 700;
 }
 
 .menu ul {
@@ -31,145 +35,62 @@ body {
 }
 
 .menu ul li a {
-  color: #f44336;
+  color: #d8a97a;
   text-decoration: none;
   font-weight: 700;
   font-size: 1.1rem;
   padding: 0.3rem 0.8rem;
   border: 1.5px solid transparent;
   transition: all 0.3s ease;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  box-shadow: 0 0 4px #f44336;
+  text-shadow: 0 0 3px #6f3d0b;
+  background: #3b2611aa;
+  border-radius: 3px;
 }
 
 .menu ul li a:hover,
 .menu ul li a:focus {
-  background: #f44336;
-  color: #0a0a0a;
-  border-color: #f44336;
-  box-shadow: 0 0 20px #ff0000, 0 0 8px #f44336;
+  background: #a35122cc;
+  color: #fff5e6;
+  border-color: #d2691e;
+  box-shadow: 0 0 10px #d2691e;
   cursor: pointer;
 }
 
 /* Contenido central */
 .contenido {
   position: absolute;
-  top: 45%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
   z-index: 15;
   max-width: 90vw;
+  padding: 0 1rem;
 }
 
-/* Efecto glitch inspirado en DOOM Eternal */
-.glitch {
-  position: relative;
-  color: #f44336;
+/* Título estilo medieval con sombra y textura */
+.titulo {
   font-size: 4rem;
-  letter-spacing: 4px;
-  animation: flicker 2.5s infinite;
+  color: #d86e3f;
+  text-shadow:
+    2px 2px 0 #5a2e0a,
+    4px 4px 10px rgba(0,0,0,0.8);
+  letter-spacing: 6px;
   text-transform: uppercase;
-}
-
-.glitch::before,
-.glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  overflow: hidden;
-  clip: rect(0, 900px, 0, 0);
-}
-
-.glitch::before {
-  animation: glitchTop 2s infinite linear alternate-reverse;
-  color: #ff0000;
-  z-index: -1;
-  left: 2px;
-  text-shadow: -2px 0 red;
-}
-
-.glitch::after {
-  animation: glitchBottom 2.5s infinite linear alternate-reverse;
-  color: #c80000;
-  z-index: -1;
-  left: -2px;
-  text-shadow: 2px 0 #ff4444;
-}
-
-@keyframes flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    opacity: 1;
-  }
-  20%, 22%, 24%, 55% {
-    opacity: 0.4;
-  }
-}
-
-@keyframes glitchTop {
-  0% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
-  10% {
-    clip: rect(0, 9999px, 10px, 0);
-    transform: translate(-2px, -2px);
-  }
-  20% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
-  30% {
-    clip: rect(0, 9999px, 8px, 0);
-    transform: translate(2px, 2px);
-  }
-  40% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
-  100% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
-}
-
-@keyframes glitchBottom {
-  0% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
-  15% {
-    clip: rect(8px, 9999px, 20px, 0);
-    transform: translate(2px, 2px);
-  }
-  25% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
-  35% {
-    clip: rect(10px, 9999px, 22px, 0);
-    transform: translate(-2px, -2px);
-  }
-  45% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
-  100% {
-    clip: rect(0, 9999px, 0, 0);
-    transform: translate(0);
-  }
+  line-height: 1.1;
+  user-select: none;
 }
 
 /* Subtítulo */
 .subtitulo {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   margin-top: 1rem;
-  color: #ff4c4c;
-  text-shadow: 0 0 10px #ff0000;
-  letter-spacing: 2px;
+  color: #e0a96a;
+  text-shadow: 0 0 8px #af6c2a;
+  font-weight: 600;
+  font-style: italic;
 }
 
 /* Canvas estilo fondo */
@@ -181,5 +102,5 @@ body {
   width: 100vw;
   height: 100vh;
   display: block;
-  background: #0a0a0a;
+  pointer-events: none;
 }
