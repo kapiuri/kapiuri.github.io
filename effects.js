@@ -18,6 +18,9 @@ for (let i = 0; i < 60; i++) {
 }
 
 function animar() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Fondo semi-transparente para efecto de "persistencia"
   ctx.fillStyle = 'rgba(10, 15, 28, 0.1)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -30,11 +33,19 @@ function animar() {
     p.x += p.dx;
     p.y += p.dy;
 
-    if (p.x < -p.r || p.x > canvas.width + p.r) p.x = Math.random() * canvas.width;
-    if (p.y < -p.r || p.y > canvas.height + p.r) p.y = Math.random() * canvas.height;
+    if (p.x < -p.r) p.x = canvas.width + p.r;
+    else if (p.x > canvas.width + p.r) p.x = -p.r;
+
+    if (p.y < -p.r) p.y = canvas.height + p.r;
+    else if (p.y > canvas.height + p.r) p.y = -p.r;
   });
 
   requestAnimationFrame(animar);
 }
 
 animar();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
