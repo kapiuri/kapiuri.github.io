@@ -4,52 +4,68 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const lineas = [];
+const PARTICULAS = 100;
+const particulas = [];
 
-class Linea {
-  constructor(y, amplitude, speed, phase, color) {
-    this.y = y;
-    this.amplitude = amplitude;
-    this.speed = speed;
-    this.phase = phase;
-    this.color = color;
+class Particula {
+  constructor() {
+    this.reset();
   }
 
-  dibujar(t) {
-    ctx.beginPath();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = this.color;
-    let x0 = 0;
-    ctx.moveTo(x0, this.y);
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = 1 + Math.random() * 2;
+    this.speedX = (Math.random() - 0.5) * 0.2;
+    this.speedY = (Math.random() - 0.5) * 0.2;
+    this.alpha = 0.1 + Math.random() * 0.3;
+    this.alphaChange = (Math.random() * 0.005) + 0.001;
+    this.alphaIncreasing = true;
+  }
 
-    for (let x = 0; x <= canvas.width; x += 5) {
-      const y = this.y + this.amplitude * Math.sin((x * 0.02) + this.phase + t * this.speed);
-      ctx.lineTo(x, y);
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    if (this.x < 0) this.x = canvas.width;
+    if (this.x > canvas.width) this.x = 0;
+    if (this.y < 0) this.y = canvas.height;
+    if (this.y > canvas.height) this.y = 0;
+
+    // Oscilar alpha para efecto de brillo
+    if (this.alphaIncreasing) {
+      this.alpha += this.alphaChange;
+      if (this.alpha >= 0.4) this.alphaIncreasing = false;
+    } else {
+      this.alpha -= this.alphaChange;
+      if (this.alpha <= 0.1) this.alphaIncreasing = true;
     }
+  }
 
-    ctx.stroke();
+  dibujar() {
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(180, 180, 255, ${this.alpha})`;
+    ctx.shadowColor = `rgba(180, 180, 255, ${this.alpha})`;
+    ctx.shadowBlur = 8;
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
   }
 }
 
-// Crear varias líneas con distintas propiedades
-for (let i = 0; i < 12; i++) {
-  lineas.push(new Linea(
-    canvas.height / 2 + (i - 6) * 25,
-    10 + Math.random() * 8,
-    0.5 + Math.random() * 0.7,
-    Math.random() * Math.PI * 2,
-    `rgba(180, 180, 255, 0.1)`
-  ));
+// Crear partículas
+for (let i = 0; i < PARTICULAS; i++) {
+  particulas.push(new Particula());
 }
 
-function animar(t = 0) {
+function animar() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Fondo semi-transparente para dejar rastro muy sutil
-  ctx.fillStyle = 'rgba(10, 15, 28, 0.05)';
+  ctx.fillStyle = 'rgba(10, 15, 28, 0.1)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  lineas.forEach(linea => linea.dibujar(t / 1000));
+  particulas.forEach(p => {
+    p.update();
+    p.dibujar();
+  });
 
   requestAnimationFrame(animar);
 }

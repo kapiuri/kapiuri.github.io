@@ -62,7 +62,7 @@ body {
 
 .contenido {
   position: absolute;
-  top: 20%;
+  top: 35%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -93,48 +93,5 @@ p {
   100% {
     opacity: 1;
     transform: scale(1.02);
-  }
-}
-
-/* Galería */
-
-.galeria {
-  position: absolute;
-  top: 65%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 1000px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
-  z-index: 15;
-  user-select: none;
-}
-
-.galeria img {
-  width: 240px;
-  max-height: 300px;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(150, 160, 255, 0.1);
-  opacity: 0;
-  transform: scale(0.9);
-  animation: aparecer 2s forwards ease-in;
-  animation-delay: calc(var(--i) * 0.3s);
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.galeria img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(180, 180, 255, 0.5);
-}
-
-@keyframes aparecer {
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }
