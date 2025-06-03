@@ -1,85 +1,102 @@
+const btnTema = document.getElementById('btnTema');
+const body = document.body;
+const titulo = document.querySelector('.titulo');
+const subtitulo = document.querySelector('.subtitulo');
 const canvas = document.getElementById('fondo');
 const ctx = canvas.getContext('2d');
 
-let W, H;
-function resize() {
-  W = window.innerWidth;
-  H = window.innerHeight;
-  canvas.width = W;
-  canvas.height = H;
+let width, height;
+function ajustarTamañoCanvas() {
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
 }
-resize();
-window.addEventListener('resize', resize);
+ajustarTamañoCanvas();
+window.addEventListener('resize', ajustarTamañoCanvas);
 
-class Spark {
+// Partículas (fuego oscuro para Dark Ages, fuego rojo para Doom Eternal)
+class Particula {
   constructor() {
     this.reset();
   }
-
   reset() {
-    this.x = Math.random() * W;
-    this.y = Math.random() * H;
-    this.length = 10 + Math.random() * 20;
-    this.speed = 5 + Math.random() * 8;
-    this.angle = Math.random() * 2 * Math.PI;
+    this.x = Math.random() * width;
+    this.y = height + Math.random() * 100;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = - (1 + Math.random() * 1.5);
     this.size = 1 + Math.random() * 2;
-    this.alpha = 0.2 + Math.random() * 0.8;
-    this.color = `rgba(244, 67, 54, ${this.alpha})`;
-    this.life = 40 + Math.random() * 60;
+    this.life = 30 + Math.random() * 30;
+    this.color = this.randomColor();
   }
-
-  update() {
-    this.x += Math.cos(this.angle) * this.speed;
-    this.y += Math.sin(this.angle) * this.speed;
-    this.life--;
-
-    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H || this.life <= 0) {
-      this.reset();
-      this.y = H + 10;
+  randomColor() {
+    if (body.classList.contains('dark-ages')) {
+      // tonos fuego oscuro marrón/naranja
+      const r = 180 + Math.floor(Math.random() * 75);
+      const g = 50 + Math.floor(Math.random() * 40);
+      const b = 20;
+      return `rgba(${r},${g},${b},`;
+    } else {
+      // tonos rojo fuego para Doom Eternal
+      const r = 255;
+      const g = 50 + Math.floor(Math.random() * 50);
+      const b = 20;
+      return `rgba(${r},${g},${b},`;
     }
   }
-
-  draw() {
-    ctx.strokeStyle = this.color;
-    ctx.lineWidth = this.size;
-    ctx.shadowColor = '#f44336';
-    ctx.shadowBlur = 10;
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life--;
+    if (this.life <= 0 || this.y < 0 || this.x < 0 || this.x > width) {
+      this.reset();
+    }
+  }
+  draw(ctx) {
     ctx.beginPath();
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(
-      this.x - Math.cos(this.angle) * this.length,
-      this.y - Math.sin(this.angle) * this.length
-    );
-    ctx.stroke();
+    ctx.fillStyle = this.color + (this.life / 60) + ')';
+    ctx.shadowColor = this.color + (this.life / 60) + ')';
+    ctx.shadowBlur = 10;
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+    ctx.fill();
   }
 }
 
-const sparks = [];
-const maxSparks = 120;
-for (let i = 0; i < maxSparks; i++) {
-  sparks.push(new Spark());
+const particulas = [];
+const maxParticulas = 120;
+
+for (let i = 0; i < maxParticulas; i++) {
+  particulas.push(new Particula());
 }
 
-function loop() {
-  ctx.clearRect(0, 0, W, H);
-  let gradient = ctx.createLinearGradient(0, 0, 0, H);
-  gradient.addColorStop(0, '#100000');
-  gradient.addColorStop(1, '#000000');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, W, H);
+function animar() {
+  ctx.clearRect(0, 0, width, height);
 
-  sparks.forEach((spark) => {
-    spark.update();
-    spark.draw();
-  });
+  for (const p of particulas) {
+    p.update();
+    p.draw(ctx);
+  }
 
-  requestAnimationFrame(loop);
+  requestAnimationFrame(animar);
 }
+animar();
 
-loop();
+btnTema.addEventListener('click', () => {
+  if (body.classList.contains('dark-ages')) {
+    // Cambiar a Doom Eternal
+    body.classList.remove('dark-ages');
+    body.classList.add('doom-eternal');
 
-// Función "Apagar Todo"
-function apagarTodo() {
-  document.body.innerHTML = '';
-  document.body.style.background = 'black';
-}
+    btnTema.textContent = 'Cambiar a Doom The Dark Ages';
+    titulo.textContent = 'Galería Doom: Eternal';
+    subtitulo.textContent = 'Furia, velocidad y caos infernal.';
+  } else {
+    // Cambiar a Doom The Dark Ages
+    body.classList.remove('doom-eternal');
+    body.classList.add('dark-ages');
+
+    btnTema.textContent = 'Cambiar a Doom Eternal';
+    titulo.textContent = 'Galería Doom: The Dark Ages';
+    subtitulo.textContent = 'Oscuridad, fuego y sombras del pasado.';
+  }
+});
