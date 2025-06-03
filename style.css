@@ -10,6 +10,44 @@ body {
   position: relative;
 }
 
+/* Menú */
+
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(12, 14, 22, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 30;
+  user-select: none;
+}
+
+.menu ul {
+  margin: 0;
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  list-style: none;
+}
+
+.menu ul li {
+  margin: 0 1.5rem;
+}
+
+.menu ul li a {
+  text-decoration: none;
+  color: #c0c8ff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+.menu ul li a:hover {
+  color: #8a92ff;
+  text-shadow: 0 0 8px #8a92ff;
+}
+
 .niebla {
   position: fixed;
   top: 0;
@@ -24,7 +62,7 @@ body {
 
 .contenido {
   position: absolute;
-  top: 15%;
+  top: 20%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -62,7 +100,7 @@ p {
 
 .galeria {
   position: absolute;
-  top: 60%;
+  top: 65%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
