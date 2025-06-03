@@ -1,82 +1,88 @@
-const canvas = document.getElementById('lienzo');
+const canvas = document.getElementById('fondo');
 const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+let W, H;
+function resize() {
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W;
+  canvas.height = H;
+}
+resize();
 
-const PARTICULAS = 120;
-const particulas = [];
+window.addEventListener('resize', resize);
 
-class Particula {
+// Partículas rápidas tipo chispas y líneas
+
+class Spark {
   constructor() {
     this.reset();
   }
 
   reset() {
-    this.x = Math.random() * canvas.width;
-    this.y = canvas.height + Math.random() * 100;
-    this.size = 1 + Math.random() * 3;
-    this.speedX = (Math.random() - 0.5) * 1.5;
-    this.speedY = -(1 + Math.random() * 1.5);
-    this.alpha = 0.2 + Math.random() * 0.5;
-    this.alphaChange = 0.005 + Math.random() * 0.01;
-    this.alphaIncreasing = Math.random() > 0.5;
-    this.color = `rgba(${200 + Math.floor(Math.random() * 55)}, 0, 0, ${this.alpha})`;
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.length = 10 + Math.random() * 20;
+    this.speed = 5 + Math.random() * 8;
+    this.angle = Math.random() * 2 * Math.PI;
+    this.size = 1 + Math.random() * 2;
+    this.alpha = 0.2 + Math.random() * 0.8;
+    this.color = `rgba(244, 67, 54, ${this.alpha})`;
+    this.life = 40 + Math.random() * 60;
   }
 
   update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
+    this.x += Math.cos(this.angle) * this.speed;
+    this.y += Math.sin(this.angle) * this.speed;
+    this.life--;
 
-    if (this.alphaIncreasing) {
-      this.alpha += this.alphaChange;
-      if (this.alpha >= 0.8) this.alphaIncreasing = false;
-    } else {
-      this.alpha -= this.alphaChange;
-      if (this.alpha <= 0.2) this.alphaIncreasing = true;
-    }
-
-    if (this.y < -this.size || this.x < -this.size || this.x > canvas.width + this.size) {
+    if (
+      this.x < 0 || this.x > W ||
+      this.y < 0 || this.y > H ||
+      this.life <= 0
+    ) {
       this.reset();
-      this.y = canvas.height + Math.random() * 50;
+      this.y = H + 10;
     }
   }
 
-  dibujar() {
-    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3);
-    gradient.addColorStop(0, `rgba(255, 60, 60, ${this.alpha})`);
-    gradient.addColorStop(1, 'rgba(0,0,0,0)');
-
-    ctx.beginPath();
-    ctx.fillStyle = gradient;
-    ctx.shadowColor = `rgba(255, 50, 50, ${this.alpha})`;
+  draw() {
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = this.size;
+    ctx.shadowColor = '#f44336';
     ctx.shadowBlur = 10;
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(
+      this.x - Math.cos(this.angle) * this.length,
+      this.y - Math.sin(this.angle) * this.length
+    );
+    ctx.stroke();
   }
 }
 
-// Crear partículas
-for (let i = 0; i < PARTICULAS; i++) {
-  particulas.push(new Particula());
+const sparks = [];
+const maxSparks = 120;
+for (let i = 0; i < maxSparks; i++) {
+  sparks.push(new Spark());
 }
 
-function animar() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = 'rgba(18, 0, 0, 0.3)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+function loop() {
+  ctx.clearRect(0, 0, W, H);
 
-  particulas.forEach(p => {
-    p.update();
-    p.dibujar();
+  // Fondo con gradiente oscuro intenso
+  let gradient = ctx.createLinearGradient(0, 0, 0, H);
+  gradient.addColorStop(0, '#100000');
+  gradient.addColorStop(1, '#000000');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, W, H);
+
+  sparks.forEach((spark) => {
+    spark.update();
+    spark.draw();
   });
 
-  requestAnimationFrame(animar);
+  requestAnimationFrame(loop);
 }
 
-animar();
-
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+loop();
