@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const PARTICULAS = 100;
+const PARTICULAS = 120;
 const particulas = [];
 
 class Particula {
@@ -14,39 +14,43 @@ class Particula {
 
   reset() {
     this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.size = 1 + Math.random() * 2;
-    this.speedX = (Math.random() - 0.5) * 0.2;
-    this.speedY = (Math.random() - 0.5) * 0.2;
-    this.alpha = 0.1 + Math.random() * 0.3;
-    this.alphaChange = (Math.random() * 0.005) + 0.001;
-    this.alphaIncreasing = true;
+    this.y = canvas.height + Math.random() * 100;
+    this.size = 1 + Math.random() * 3;
+    this.speedX = (Math.random() - 0.5) * 1.5;
+    this.speedY = -(1 + Math.random() * 1.5);
+    this.alpha = 0.2 + Math.random() * 0.5;
+    this.alphaChange = 0.005 + Math.random() * 0.01;
+    this.alphaIncreasing = Math.random() > 0.5;
+    this.color = `rgba(${200 + Math.floor(Math.random() * 55)}, 0, 0, ${this.alpha})`;
   }
 
   update() {
     this.x += this.speedX;
     this.y += this.speedY;
 
-    if (this.x < 0) this.x = canvas.width;
-    if (this.x > canvas.width) this.x = 0;
-    if (this.y < 0) this.y = canvas.height;
-    if (this.y > canvas.height) this.y = 0;
-
-    // Oscilar alpha para efecto de brillo
     if (this.alphaIncreasing) {
       this.alpha += this.alphaChange;
-      if (this.alpha >= 0.4) this.alphaIncreasing = false;
+      if (this.alpha >= 0.8) this.alphaIncreasing = false;
     } else {
       this.alpha -= this.alphaChange;
-      if (this.alpha <= 0.1) this.alphaIncreasing = true;
+      if (this.alpha <= 0.2) this.alphaIncreasing = true;
+    }
+
+    if (this.y < -this.size || this.x < -this.size || this.x > canvas.width + this.size) {
+      this.reset();
+      this.y = canvas.height + Math.random() * 50;
     }
   }
 
   dibujar() {
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3);
+    gradient.addColorStop(0, `rgba(255, 60, 60, ${this.alpha})`);
+    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
     ctx.beginPath();
-    ctx.fillStyle = `rgba(180, 180, 255, ${this.alpha})`;
-    ctx.shadowColor = `rgba(180, 180, 255, ${this.alpha})`;
-    ctx.shadowBlur = 8;
+    ctx.fillStyle = gradient;
+    ctx.shadowColor = `rgba(255, 50, 50, ${this.alpha})`;
+    ctx.shadowBlur = 10;
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
   }
@@ -59,7 +63,7 @@ for (let i = 0; i < PARTICULAS; i++) {
 
 function animar() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = 'rgba(10, 15, 28, 0.1)';
+  ctx.fillStyle = 'rgba(18, 0, 0, 0.3)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   particulas.forEach(p => {
