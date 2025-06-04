@@ -38,7 +38,6 @@ body {
   transition: all 0.3s ease;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  border-radius: 3px;
 }
 
 .menu ul li a:hover {
