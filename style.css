@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=UnifrakturCook&display=swap');
 
-/* Estilos comunes */
 body {
   margin: 0;
   font-family: 'UnifrakturCook', cursive, serif;
@@ -8,7 +7,6 @@ body {
   height: 100vh;
   position: relative;
   user-select: none;
-  text-shadow: 1px 1px 3px #3a1f0a;
   transition: all 0.5s ease;
 }
 
@@ -17,7 +15,6 @@ body {
   top: 0;
   width: 100%;
   border-bottom: 3px solid;
-  box-shadow: inset 0 0 10px;
   z-index: 20;
   user-select: none;
   font-weight: 700;
@@ -42,7 +39,6 @@ body {
   letter-spacing: 1.2px;
   text-transform: uppercase;
   border-radius: 3px;
-  text-shadow: 0 0 3px;
 }
 
 .menu ul li a:hover {
@@ -66,13 +62,7 @@ body {
   text-transform: uppercase;
   line-height: 1.1;
   user-select: none;
-  animation: fuego 1.2s infinite alternate;
-  transition: color 0.5s ease, text-shadow 0.5s ease;
-}
-
-@keyframes fuego {
-  0%   { text-shadow: 0 0 6px, 0 0 15px; }
-  100% { text-shadow: 0 0 10px, 0 0 30px; }
+  transition: color 0.5s ease;
 }
 
 .subtitulo {
@@ -80,7 +70,7 @@ body {
   margin-top: 1rem;
   font-weight: 600;
   font-style: italic;
-  transition: color 0.5s ease, text-shadow 0.5s ease;
+  transition: color 0.5s ease;
 }
 
 #fondo {
@@ -116,8 +106,6 @@ body {
   z-index: 100;
   cursor: pointer;
   border-radius: 5px;
-  text-shadow: 1px 1px 3px #000;
-  box-shadow: 0 0 10px;
   transition: all 0.3s ease;
   border: 2px solid;
 }
@@ -129,71 +117,59 @@ body {
   gap: 2rem;
   flex-wrap: wrap;
 }
+
 .imagen img {
   width: 180px;
   height: auto;
   border: 3px solid;
-  box-shadow: 0 0 15px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.imagen img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px;
+  transition: transform 0.3s ease;
 }
 
-/* === DARK AGES === */
+.imagen img:hover {
+  transform: scale(1.05);
+}
+
+/* DARK AGES */
 body.dark-ages {
   font-family: 'UnifrakturCook', cursive;
   background: #1a1007 url('https://i.imgur.com/CS3rfTq.jpg') no-repeat center center fixed;
   background-size: cover;
   color: #b04a2c;
-  text-shadow: 1px 1px 3px #3a1f0a;
 }
 
 body.dark-ages .menu {
   background: #3e2f1cdd;
   border-color: #7c4825;
-  box-shadow: inset 0 0 10px #5a3b19;
 }
 
 body.dark-ages .menu ul li a {
   color: #d8a97a;
   background: #3b2611aa;
   border-color: transparent;
-  text-shadow: 0 0 3px #6f3d0b;
 }
 
 body.dark-ages .menu ul li a:hover {
   background: #a35122cc;
   color: #fff5e6;
   border-color: #d2691e;
-  box-shadow: 0 0 10px #d2691e;
 }
 
 body.dark-ages .titulo {
   color: #d86e3f;
-  text-shadow: 2px 2px 0 #5a2e0a, 4px 4px 10px rgba(0,0,0,0.8);
-  animation-name: fuego;
 }
 
 body.dark-ages .subtitulo {
   color: #e0a96a;
-  text-shadow: 0 0 8px #af6c2a;
 }
 
 body.dark-ages #fondo {
   background: linear-gradient(0deg, #100000, #000000);
 }
 
-body.dark-ages .cruz {
-  opacity: 0.7;
-}
-
 body.dark-ages .modo {
   background: #240000;
   color: #ffccbb;
   border-color: #6c2a1a;
-  box-shadow: 0 0 10px #7f1f1f;
 }
 
 body.dark-ages .modo:hover {
@@ -203,41 +179,35 @@ body.dark-ages .modo:hover {
 
 body.dark-ages .imagen img {
   border-color: #7c4825;
-  box-shadow: 0 0 15px #5a3b19;
 }
 
 body.dark-ages .imagen img:hover {
-  box-shadow: 0 0 25px #ff7847;
+  border-color: #ff7847;
 }
 
-/* === DOOM ETERNAL === */
+/* DOOM ETERNAL */
 body.doom-eternal {
   font-family: 'Orbitron', sans-serif;
   background: url('https://i.imgur.com/XXrI0Q0.jpg') no-repeat center center fixed;
   background-size: cover;
   color: #c3c3c3;
-  text-shadow: 0 0 5px #ff0000;
 }
 
 body.doom-eternal .menu {
   background: #330000cc;
   border-color: #ff0000cc;
-  box-shadow: 0 0 15px #ff0000cc inset;
 }
 
 body.doom-eternal .menu ul li a {
   color: #ff5555;
   background: #440000bb;
   border-color: transparent;
-  text-shadow: 0 0 6px #ff4444;
-  font-weight: 700;
 }
 
 body.doom-eternal .menu ul li a:hover {
   background: #ff0000cc;
   color: #fff;
   border-color: #fff;
-  box-shadow: 0 0 15px #ff0000;
 }
 
 body.doom-eternal .titulo {
@@ -245,13 +215,6 @@ body.doom-eternal .titulo {
   font-weight: 900;
   font-size: 4rem;
   color: #ff4444;
-  text-shadow: 0 0 15px #ff0000, 0 0 25px #ff0000cc;
-  animation: pulse 1.2s infinite alternate;
-}
-
-@keyframes pulse {
-  0% { text-shadow: 0 0 15px #ff0000, 0 0 25px #ff0000cc; }
-  100% { text-shadow: 0 0 25px #ff4444, 0 0 40px #ff5555cc; }
 }
 
 body.doom-eternal .subtitulo {
@@ -259,22 +222,16 @@ body.doom-eternal .subtitulo {
   font-weight: 600;
   font-size: 1.8rem;
   color: #ff9999;
-  text-shadow: 0 0 10px #ff2222;
 }
 
 body.doom-eternal #fondo {
   background: linear-gradient(0deg, #220000, #330000);
 }
 
-body.doom-eternal .cruz {
-  opacity: 0.9;
-}
-
 body.doom-eternal .modo {
   background: #440000;
   color: #ff9999;
   border-color: #ff5555;
-  box-shadow: 0 0 10px #ff5555;
 }
 
 body.doom-eternal .modo:hover {
@@ -284,9 +241,8 @@ body.doom-eternal .modo:hover {
 
 body.doom-eternal .imagen img {
   border-color: #ff4444;
-  box-shadow: 0 0 25px #ff2222;
 }
 
 body.doom-eternal .imagen img:hover {
-  box-shadow: 0 0 40px #ff5555;
+  border-color: #ff5555;
 }
