@@ -8,16 +8,16 @@ body {
   position: relative;
   user-select: none;
   transition: all 0.5s ease;
-  background-color: #121212;
-  color: #ccc;
 }
 
 .menu {
   position: fixed;
   top: 0;
   width: 100%;
+  border-bottom: 3px solid;
   z-index: 20;
-  background-color: #222;
+  user-select: none;
+  font-weight: 700;
 }
 
 .menu ul {
@@ -34,16 +34,15 @@ body {
   font-weight: 700;
   font-size: 1.1rem;
   padding: 0.3rem 0.8rem;
+  border: 1.5px solid transparent;
   transition: all 0.3s ease;
   letter-spacing: 1.2px;
   text-transform: uppercase;
   border-radius: 3px;
-  color: #ccc;
 }
 
 .menu ul li a:hover {
-  background: #444;
-  color: #fff;
+  cursor: pointer;
 }
 
 .contenido {
@@ -63,7 +62,7 @@ body {
   text-transform: uppercase;
   line-height: 1.1;
   user-select: none;
-  color: #ddd;
+  transition: color 0.5s ease;
 }
 
 .subtitulo {
@@ -71,7 +70,7 @@ body {
   margin-top: 1rem;
   font-weight: 600;
   font-style: italic;
-  color: #aaa;
+  transition: color 0.5s ease;
 }
 
 #fondo {
@@ -81,8 +80,9 @@ body {
   z-index: 10;
   width: 100vw;
   height: 100vh;
-  background: #000;
+  display: block;
   pointer-events: none;
+  transition: background 0.5s ease;
 }
 
 .cruz {
@@ -90,9 +90,10 @@ body {
   bottom: 0;
   left: 0;
   width: 100px;
-  opacity: 0.3;
+  opacity: 0.7;
   z-index: 5;
   pointer-events: none;
+  transition: opacity 0.5s ease;
 }
 
 .modo {
@@ -106,14 +107,7 @@ body {
   cursor: pointer;
   border-radius: 5px;
   transition: all 0.3s ease;
-  border: 1px solid #666;
-  background-color: #222;
-  color: #ddd;
-}
-
-.modo:hover {
-  background: #333;
-  color: #fff;
+  border: 2px solid;
 }
 
 .galeria {
@@ -127,11 +121,128 @@ body {
 .imagen img {
   width: 180px;
   height: auto;
-  border: 2px solid #444;
+  border: 3px solid;
   transition: transform 0.3s ease;
 }
 
 .imagen img:hover {
   transform: scale(1.05);
-  border-color: #888;
+}
+
+/* DARK AGES */
+body.dark-ages {
+  font-family: 'UnifrakturCook', cursive;
+  background: #1a1007 url('https://i.imgur.com/CS3rfTq.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #b04a2c;
+}
+
+body.dark-ages .menu {
+  background: #3e2f1cdd;
+  border-color: #7c4825;
+}
+
+body.dark-ages .menu ul li a {
+  color: #d8a97a;
+  background: #3b2611aa;
+  border-color: transparent;
+}
+
+body.dark-ages .menu ul li a:hover {
+  background: #a35122cc;
+  color: #fff5e6;
+  border-color: #d2691e;
+}
+
+body.dark-ages .titulo {
+  color: #d86e3f;
+}
+
+body.dark-ages .subtitulo {
+  color: #e0a96a;
+}
+
+body.dark-ages #fondo {
+  background: linear-gradient(0deg, #100000, #000000);
+}
+
+body.dark-ages .modo {
+  background: #240000;
+  color: #ffccbb;
+  border-color: #6c2a1a;
+}
+
+body.dark-ages .modo:hover {
+  background: #420000;
+  color: #fff;
+}
+
+body.dark-ages .imagen img {
+  border-color: #7c4825;
+}
+
+body.dark-ages .imagen img:hover {
+  border-color: #ff7847;
+}
+
+/* DOOM ETERNAL */
+body.doom-eternal {
+  font-family: 'Orbitron', sans-serif;
+  background: url('https://i.imgur.com/XXrI0Q0.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #c3c3c3;
+}
+
+body.doom-eternal .menu {
+  background: #330000cc;
+  border-color: #ff0000cc;
+}
+
+body.doom-eternal .menu ul li a {
+  color: #ff5555;
+  background: #440000bb;
+  border-color: transparent;
+}
+
+body.doom-eternal .menu ul li a:hover {
+  background: #ff0000cc;
+  color: #fff;
+  border-color: #fff;
+}
+
+body.doom-eternal .titulo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 4rem;
+  color: #ff4444;
+}
+
+body.doom-eternal .subtitulo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 1.8rem;
+  color: #ff9999;
+}
+
+body.doom-eternal #fondo {
+  background: linear-gradient(0deg, #220000, #330000);
+}
+
+body.doom-eternal .modo {
+  background: #440000;
+  color: #ff9999;
+  border-color: #ff5555;
+}
+
+body.doom-eternal .modo:hover {
+  background: #ff0000;
+  color: #fff;
+}
+
+body.doom-eternal .imagen img {
+  border-color: #ff4444;
+}
+
+body.doom-eternal .imagen img:hover {
+  border-color: #ff5555;
 }
