@@ -136,6 +136,7 @@ body {
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
+    padding-bottom: 2rem;
 }
 
 .formulario-contacto input,
@@ -146,10 +147,6 @@ body {
     border-radius: 5px;
     background-color: #fff;
     color: #000;
-}
-
-.boton-submit {
-    margin-bottom: 1rem;
 }
 
 /* DARK AGES */
