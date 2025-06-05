@@ -148,6 +148,10 @@ body {
     color: #000;
 }
 
+.boton-submit {
+    margin-top: 1rem;
+}
+
 /* DARK AGES */
 body.dark-ages {
   font-family: 'UnifrakturCook', cursive;
