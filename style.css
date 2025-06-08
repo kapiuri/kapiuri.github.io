@@ -265,24 +265,38 @@ body.doom-eternal .imagen img:hover {
   border-color: #ff5555;
 }
 
-@media (max-width: 600px) {
-    .menu ul {
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem 0;
-    }
-
-    .menu ul li {
-        width: 100%;
-        text-align: center;
-    }
-
-    .menu ul li a {
-        display: block;
-        width: 100%;
-        padding: 1rem 0;
-        font-size: 1.2rem;
-    }
+/* Ocultar botón hamburguesa por defecto */
+.menu-toggle {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  z-index: 30;
 }
 
+/* MODO MÓVIL */
+@media (max-width: 600px) {
+  .menu ul {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: inherit;
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .menu ul.mostrar {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    right: 1rem;
+    top: 0.5rem;
+  }
+}
