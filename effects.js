@@ -24,15 +24,15 @@ class Spark {
   }
 
   reset() {
-    this.x = Math.random() * W;                // Posición inicial aleatoria X
-    this.y = Math.random() * H;                // Posición inicial aleatoria Y
-    this.length = 10 + Math.random() * 20;    // Longitud de la línea
-    this.speed = 5 + Math.random() * 8;       // Velocidad de movimiento
-    this.angle = Math.random() * 2 * Math.PI; // Ángulo de dirección
-    this.size = 1 + Math.random() * 2;        // Grosor de línea
-    this.alpha = 0.2 + Math.random() * 0.8;   // Transparencia
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.length = 10 + Math.random() * 20;
+    this.speed = 5 + Math.random() * 8;
+    this.angle = Math.random() * 2 * Math.PI;
+    this.size = 1 + Math.random() * 2;
+    this.alpha = 0.2 + Math.random() * 0.8;
     this.color = `rgba(244, 67, 54, ${this.alpha})`;
-    this.life = 40 + Math.random() * 60;      // Vida útil
+    this.life = 40 + Math.random() * 60;
   }
 
   update() {
@@ -83,7 +83,17 @@ btnTema.addEventListener('click', () => {
     body.classList.add('dark-ages');
     btnTema.textContent = 'Cambiar a Doom Eternal';
   }
+
   // Actualizar variables de tamaño para las partículas al cambiar tema (opcional)
   W = window.innerWidth;
   H = window.innerHeight;
+});
+
+
+// === Menú desplegable para móviles ===
+const btn = document.getElementById('menuToggle');
+const menu = document.getElementById('menuLinks');
+
+btn.addEventListener('click', () => {
+  menu.classList.toggle('mostrar');
 });
