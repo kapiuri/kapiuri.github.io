@@ -13,11 +13,13 @@ function ajustarTamañoCanvas() {
 ajustarTamañoCanvas();
 window.addEventListener('resize', ajustarTamañoCanvas);
 
-// Variables globales para ancho y alto
+// Variables globales
 let W = window.innerWidth;
 let H = window.innerHeight;
 
-// Clase que define cada partícula (spark)
+// ==========================
+// EFECTO 1: CHISPAS (doom-eternal)
+// ==========================
 class Spark {
   constructor() {
     this.reset();
@@ -49,30 +51,79 @@ class Spark {
     ctx.lineWidth = this.size;
     ctx.beginPath();
     ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.x - this.length * Math.cos(this.angle), this.y - this.length * Math.sin(this.angle));
+    ctx.lineTo(
+      this.x - this.length * Math.cos(this.angle),
+      this.y - this.length * Math.sin(this.angle)
+    );
     ctx.stroke();
   }
 }
 
-const sparks = [];
-const maxSparks = 100;
-for (let i = 0; i < maxSparks; i++) {
-  sparks.push(new Spark());
+// ==========================
+// EFECTO 2: TORMENTA DE ARENA (dark-ages)
+// ==========================
+class Dust {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.speedX = 0.5 + Math.random();
+    this.speedY = 0.2 + Math.random() * 0.3;
+    this.size = 1 + Math.random() * 2;
+    this.alpha = 0.05 + Math.random() * 0.1;
+    this.color = `rgba(194, 178, 128, ${this.alpha})`;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x > W || this.y > H) {
+      this.reset();
+      this.x = 0;
+      this.y = Math.random() * H;
+    }
+  }
+
+  draw(ctx) {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
+
+// Instancias
+const sparks = [];
+const dusts = [];
+const maxSparks = 100;
+const maxDust = 150;
+
+for (let i = 0; i < maxSparks; i++) sparks.push(new Spark());
+for (let i = 0; i < maxDust; i++) dusts.push(new Dust());
 
 function animar() {
   ctx.clearRect(0, 0, width, height);
 
-  for (let spark of sparks) {
-    spark.update();
-    spark.draw(ctx);
+  if (body.classList.contains('doom-eternal')) {
+    for (let spark of sparks) {
+      spark.update();
+      spark.draw(ctx);
+    }
+  } else if (body.classList.contains('dark-ages')) {
+    for (let dust of dusts) {
+      dust.update();
+      dust.draw(ctx);
+    }
   }
 
   requestAnimationFrame(animar);
 }
 animar();
 
-// Función para cambiar tema
+// Tema toggle
 btnTema.addEventListener('click', () => {
   if (body.classList.contains('dark-ages')) {
     body.classList.remove('dark-ages');
@@ -84,16 +135,6 @@ btnTema.addEventListener('click', () => {
     btnTema.textContent = 'Cambiar a Doom Eternal';
   }
 
-  // Actualizar variables de tamaño para las partículas al cambiar tema (opcional)
   W = window.innerWidth;
   H = window.innerHeight;
-});
-
-
-// === Menú desplegable para móviles ===
-const btn = document.getElementById('menuToggle');
-const menu = document.getElementById('menuLinks');
-
-btn.addEventListener('click', () => {
-  menu.classList.toggle('mostrar');
 });
