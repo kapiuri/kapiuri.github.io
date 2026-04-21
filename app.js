@@ -1,16 +1,22 @@
+// ==================== CONFIGURACIÓN DE APIs ====================
+
+const API_CONFIG = {
+    openWeather: {
+        enabled: true, // ✅ ACTIVADO
+        apiKey: '81554ba113d09fb80323eb05e07d7cd7', // 🔑 Tu API key
+        baseUrl: 'https://api.openweathermap.org/data/2.5'
+    }
+};
+
 // ==================== DATOS ESPECÍFICOS DE GALICIA ====================
 
 const ubicacionesGalicia = [
-    { id: 1, nombre: 'Rías Altas', zona: 'Costa da Morte', lat: 43.2, lng: -8.9 },
-    { id: 2, nombre: 'Ría de Arousa', zona: 'Rías Baixas', lat: 42.5, lng: -8.75 },
-    { id: 3, nombre: 'Ría de Pontevedra', zona: 'Rías Baixas', lat: 42.35, lng: -8.65 },
-    { id: 4, nombre: 'Ría de Vigo', zona: 'Rías Baixas', lat: 42.22, lng: -8.75 },
-    { id: 5, nombre: 'Seo de Cambados', zona: 'Rías Baixas', lat: 42.5, lng: -8.8 },
-    { id: 6, nombre: 'Porto de Mós', zona: 'Costa da Morte', lat: 43.1, lng: -9.2 },
-    { id: 7, nombre: 'Noia', zona: 'Rías Baixas', lat: 42.77, lng: -9.04 },
-    { id: 8, nombre: 'Aguincha', zona: 'Rías Altas', lat: 43.28, lng: -8.28 },
-    { id: 9, nombre: 'Ferrol', zona: 'Rías Altas', lat: 43.48, lng: -8.25 },
-    { id: 10, nombre: 'Cedeira', zona: 'Rías Altas', lat: 43.37, lng: -8.27 }
+    { id: 1, nombre: 'Ría de Arousa', zona: 'Rías Baixas', lat: 42.5, lng: -8.75, puerto: 'Vilagarcía' },
+    { id: 2, nombre: 'Ría de Pontevedra', zona: 'Rías Baixas', lat: 42.35, lng: -8.65, puerto: 'Pontevedra' },
+    { id: 3, nombre: 'Ría de Vigo', zona: 'Rías Baixas', lat: 42.22, lng: -8.75, puerto: 'Vigo' },
+    { id: 4, nombre: 'Rías Altas', zona: 'Costa da Morte', lat: 43.2, lng: -8.9, puerto: 'Cedeira' },
+    { id: 5, nombre: 'Costa da Morte', zona: 'Atlántico', lat: 43.1, lng: -9.2, puerto: 'Corcubión' },
+    { id: 6, nombre: 'Ría Artabra', zona: 'Rías Altas', lat: 43.3, lng: -8.3, puerto: 'Ferrol' },
 ];
 
 const especiesGalicia = [
@@ -24,8 +30,7 @@ const especiesGalicia = [
         profundidad_optima: '2-8m',
         mejor_hora: '06:00-08:00',
         emoji: '🐟',
-        estacion: 'Otoño, Invierno',
-        zona_galicia: 'Ríos interiores'
+        estacion: 'Otoño, Invierno'
     },
     {
         id: 2,
@@ -37,8 +42,7 @@ const especiesGalicia = [
         profundidad_optima: '10-30m',
         mejor_hora: '05:00-07:00',
         emoji: '🐠',
-        estacion: 'Primavera, Otoño',
-        zona_galicia: 'Rías Baixas'
+        estacion: 'Primavera, Otoño'
     },
     {
         id: 3,
@@ -50,8 +54,7 @@ const especiesGalicia = [
         profundidad_optima: '8-25m',
         mejor_hora: '08:00-10:00',
         emoji: '🐟',
-        estacion: 'Verano',
-        zona_galicia: 'Rías Baixas, Costa da Morte'
+        estacion: 'Verano'
     },
     {
         id: 4,
@@ -63,8 +66,7 @@ const especiesGalicia = [
         profundidad_optima: '20-50m',
         mejor_hora: '09:00-15:00',
         emoji: '🐟',
-        estacion: 'Verano, Otoño',
-        zona_galicia: 'Frente costero'
+        estacion: 'Verano, Otoño'
     },
     {
         id: 5,
@@ -76,8 +78,7 @@ const especiesGalicia = [
         profundidad_optima: '5-20m',
         mejor_hora: '07:00-09:00',
         emoji: '🐠',
-        estacion: 'Primavera, Verano',
-        zona_galicia: 'Rías Altas, Rías Baixas'
+        estacion: 'Primavera, Verano'
     },
     {
         id: 6,
@@ -89,8 +90,7 @@ const especiesGalicia = [
         profundidad_optima: '10-40m',
         mejor_hora: '07:00-17:00',
         emoji: '🐟',
-        estacion: 'Primavera, Otoño',
-        zona_galicia: 'Aguas abiertas'
+        estacion: 'Primavera, Otoño'
     },
     {
         id: 7,
@@ -102,8 +102,7 @@ const especiesGalicia = [
         profundidad_optima: '30-100m',
         mejor_hora: '18:00-22:00',
         emoji: '🐠',
-        estacion: 'Invierno, Primavera',
-        zona_galicia: 'Talud continental'
+        estacion: 'Invierno, Primavera'
     },
     {
         id: 8,
@@ -115,8 +114,7 @@ const especiesGalicia = [
         profundidad_optima: '5-40m',
         mejor_hora: '08:00-14:00',
         emoji: '🐟',
-        estacion: 'Verano',
-        zona_galicia: 'Rías Baixas'
+        estacion: 'Verano'
     },
     {
         id: 9,
@@ -128,8 +126,7 @@ const especiesGalicia = [
         profundidad_optima: '10-30m',
         mejor_hora: '18:00-22:00',
         emoji: '🐠',
-        estacion: 'Primavera, Verano',
-        zona_galicia: 'Fondos arenosos'
+        estacion: 'Primavera, Verano'
     },
     {
         id: 10,
@@ -141,54 +138,35 @@ const especiesGalicia = [
         profundidad_optima: '20-60m',
         mejor_hora: '06:00-08:00',
         emoji: '🐟',
-        estacion: 'Invierno',
-        zona_galicia: 'Aguas profundas'
+        estacion: 'Invierno'
     }
 ];
-
-const zonasGalicia = [
-    { x: 150, y: 100, radio: 70, calidad: 'excelente', nombre: 'Rías Altas', profundidad_prom: 25, ubicacion: 'Costa da Morte' },
-    { x: 250, y: 200, radio: 85, calidad: 'excelente', nombre: 'Ría de Arousa', profundidad_prom: 18, ubicacion: 'Rías Baixas' },
-    { x: 380, y: 250, radio: 75, calidad: 'buena', nombre: 'Ría Pontevedra', profundidad_prom: 20, ubicacion: 'Rías Baixas' },
-    { x: 420, y: 320, radio: 80, calidad: 'excelente', nombre: 'Ría de Vigo', profundidad_prom: 22, ubicacion: 'Rías Baixas' },
-    { x: 150, y: 350, radio: 60, calidad: 'buena', nombre: 'Costa da Morte', profundidad_prom: 30, ubicacion: 'Aguas profundas' }
-];
-
-const batimetria_galicia = Array.from({ length: 50 }, (_, i) =>
-    Array.from({ length: 50 }, (_, j) => {
-        // Simular profundidades más realistas para Galicia
-        const dist = Math.sqrt((i - 25) ** 2 + (j - 25) ** 2);
-        return Math.min(100, dist * 1.5 + Math.random() * 20);
-    })
-);
 
 // ==================== ESTADO GLOBAL ====================
 
 let estado = {
-    zoom: 1,
-    panX: 0,
-    panY: 0,
+    ubicacionActual: ubicacionesGalicia[0],
     capturas: [],
-    clima: {
-        temperatura: 16,
-        viento: 12,
-        humedad: 70,
-        visibilidad: 50,
-        indice: 70
-    }
+    mapa: null,
+    marcadores: []
 };
 
 // ==================== INICIALIZACIÓN ====================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🎣 FishFinder Galicia - Inicializando con API OpenWeatherMap en tiempo real');
+    
     inicializarTabs();
-    inicializarMapa();
-    inicializarBatimetria();
     cargarEspecies();
-    actualizarMetereologia();
+    inicializarMapa();
     cargarCapturas();
     inicializarEventos();
-    console.log('🎣 FishFinder Galicia iniciado correctamente');
+    
+    // Cargar datos de meteorología de la ubicación por defecto
+    await actualizarMetereologia();
+    
+    // Mostrar información de ubicaciones
+    cargarUbicacionesLista();
 });
 
 // ==================== TABS ====================
@@ -206,306 +184,109 @@ function inicializarTabs() {
 
             btn.classList.add('active');
             document.getElementById(tab).classList.add('active');
-
-            if (tab === 'mapa') {
-                setTimeout(() => dibujarMapa(), 100);
-            } else if (tab === 'batimetria') {
-                setTimeout(() => dibujarBatimetria(), 100);
-            }
         });
     });
 }
 
-// ==================== MAPA ====================
+// ==================== MAPA CON LEAFLET ====================
 
 function inicializarMapa() {
-    const canvas = document.getElementById('mapaCanvas');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    // Crear mapa centrado en Galicia
+    estado.mapa = L.map('mapLeaflet').setView([42.7, -8.5], 9);
 
-    dibujarMapa();
-    cargarUbicaciones();
+    // Agregar tiles de OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+    }).addTo(estado.mapa);
 
-    canvas.addEventListener('mousedown', (e) => iniciarPan(e, canvas));
-    canvas.addEventListener('mousemove', (e) => hacerPan(e, canvas));
-    canvas.addEventListener('mouseup', () => finalizarPan());
-    canvas.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        hacerZoom(e, canvas);
-    });
-    canvas.addEventListener('click', (e) => seleccionarZona(e, canvas));
-
-    document.getElementById('zoomIn').addEventListener('click', () => {
-        estado.zoom *= 1.2;
-        dibujarMapa();
-    });
-
-    document.getElementById('zoomOut').addEventListener('click', () => {
-        estado.zoom /= 1.2;
-        dibujarMapa();
-    });
-
-    document.getElementById('resetMapa').addEventListener('click', () => {
-        estado.zoom = 1;
-        estado.panX = 0;
-        estado.panY = 0;
-        dibujarMapa();
-    });
-}
-
-let panInicio = null;
-
-function iniciarPan(e, canvas) {
-    panInicio = { x: e.offsetX, y: e.offsetY };
-}
-
-function hacerPan(e, canvas) {
-    if (panInicio) {
-        const dx = e.offsetX - panInicio.x;
-        const dy = e.offsetY - panInicio.y;
-        estado.panX += dx;
-        estado.panY += dy;
-        panInicio = { x: e.offsetX, y: e.offsetY };
-        dibujarMapa();
-    }
-}
-
-function finalizarPan() {
-    panInicio = null;
-}
-
-function hacerZoom(e, canvas) {
-    const zoom_factor = e.deltaY > 0 ? 0.9 : 1.1;
-    estado.zoom *= zoom_factor;
-    dibujarMapa();
-}
-
-function dibujarMapa() {
-    const canvas = document.getElementById('mapaCanvas');
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = '#0f1f3c';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Dibujar océano
-    ctx.fillStyle = '#1a3a4a';
-    ctx.fillRect(300, 0, canvas.width - 300, canvas.height);
-
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.scale(estado.zoom, estado.zoom);
-    ctx.translate(-canvas.width / 2 + estado.panX, -canvas.height / 2 + estado.panY);
-
-    // Dibujar zonas de pesca
-    zonasGalicia.forEach(zona => {
-        const colores = {
-            'excelente': '#4CAF50',
-            'buena': '#FFC107',
-            'regular': '#FF9800'
-        };
-
-        ctx.fillStyle = colores[zona.calidad] + '30';
-        ctx.beginPath();
-        ctx.arc(zona.x, zona.y, zona.radio, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = colores[zona.calidad];
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.arc(zona.x, zona.y, zona.radio, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(zona.nombre, zona.x, zona.y - zona.radio - 15);
-
-        // Icono de zona
-        ctx.fillStyle = colores[zona.calidad];
-        ctx.beginPath();
-        ctx.arc(zona.x, zona.y, 5, 0, Math.PI * 2);
-        ctx.fill();
-    });
-
-    // Dibujar puntos de interés (puertos)
+    // Agregar marcadores de ubicaciones
     ubicacionesGalicia.forEach(ubi => {
-        ctx.fillStyle = '#FF6B6B';
-        ctx.beginPath();
-        ctx.arc(ubi.lat * 10, ubi.lng * 10, 6, 0, Math.PI * 2);
-        ctx.fill();
+        const marker = L.circleMarker([ubi.lat, ubi.lng], {
+            radius: 8,
+            fillColor: '#4CAF50',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        })
+        .bindPopup(`<strong>${ubi.nombre}</strong><br>${ubi.zona}`)
+        .addTo(estado.mapa)
+        .on('click', () => seleccionarUbicacion(ubi));
+
+        estado.marcadores.push(marker);
     });
 
-    // Dibujar línea de costa simplificada
-    ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(300, 0);
-    ctx.quadraticCurveTo(280, 150, 300, 300);
-    ctx.quadraticCurveTo(250, 350, 280, 400);
-    ctx.stroke();
+    // Botón de geolocalización
+    document.getElementById('btnGeolocalizacion').addEventListener('click', () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords;
+                estado.mapa.setView([latitude, longitude], 12);
+                
+                L.circleMarker([latitude, longitude], {
+                    radius: 10,
+                    fillColor: '#FF6B6B',
+                    color: '#fff',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                })
+                .bindPopup('📍 Tu ubicación')
+                .addTo(estado.mapa);
 
-    ctx.restore();
+                document.getElementById('mapaInfo').innerHTML = `
+                    <h4>📍 Tu Ubicación</h4>
+                    <p><strong>Latitud:</strong> ${latitude.toFixed(4)}°</p>
+                    <p><strong>Longitud:</strong> ${longitude.toFixed(4)}°</p>
+                `;
+            });
+        } else {
+            alert('Geolocalización no disponible en tu navegador');
+        }
+    });
 
-    // Dibujar grid
-    ctx.strokeStyle = '#2a3142';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < canvas.width; i += 50) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, canvas.height);
-        ctx.stroke();
-    }
-    for (let i = 0; i < canvas.height; i += 50) {
-        ctx.beginPath();
-        ctx.moveTo(0, i);
-        ctx.lineTo(canvas.width, i);
-        ctx.stroke();
-    }
+    // Botón centrar en Arousa
+    document.getElementById('btnCentrarArousa').addEventListener('click', () => {
+        estado.mapa.setView([42.5, -8.75], 11);
+    });
+
+    // Click en mapa para obtener información
+    estado.mapa.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        document.getElementById('mapaInfo').innerHTML = `
+            <h4>📍 Coordenadas</h4>
+            <p><strong>Latitud:</strong> ${lat.toFixed(4)}°</p>
+            <p><strong>Longitud:</strong> ${lng.toFixed(4)}°</p>
+            <p><strong>Zoom:</strong> ${estado.mapa.getZoom()}</p>
+        `;
+    });
 }
 
-function cargarUbicaciones() {
+function seleccionarUbicacion(ubicacion) {
+    estado.ubicacionActual = ubicacion;
+    document.getElementById('mapaInfo').innerHTML = `
+        <h4>🎣 ${ubicacion.nombre}</h4>
+        <p><strong>Zona:</strong> ${ubicacion.zona}</p>
+        <p><strong>Coordenadas:</strong> ${ubicacion.lat.toFixed(4)}°, ${ubicacion.lng.toFixed(4)}°</p>
+        <p><strong>Puerto:</strong> ${ubicacion.puerto}</p>
+    `;
+}
+
+function cargarUbicacionesLista() {
     const container = document.getElementById('ubicacionesList');
     container.innerHTML = '';
 
     ubicacionesGalicia.forEach(ubi => {
         const btn = document.createElement('button');
         btn.className = 'ubicacion-btn';
-        btn.innerHTML = `<i style="margin-right: 0.5rem;">📍</i> ${ubi.nombre}<br><span style="font-size: 0.8rem; opacity: 0.8;">${ubi.zona}</span>`;
-        btn.addEventListener('click', () => mostrarInfoUbicacion(ubi));
+        btn.innerHTML = `📍 ${ubi.nombre}<br><span style="font-size: 0.8rem; opacity: 0.8;">${ubi.zona}</span>`;
+        btn.addEventListener('click', () => {
+            seleccionarUbicacion(ubi);
+            estado.mapa.setView([ubi.lat, ubi.lng], 11);
+        });
         container.appendChild(btn);
     });
-}
-
-function mostrarInfoUbicacion(ubicacion) {
-    const especies_zona = especiesGalicia.filter(e => e.zona_galicia.includes(ubicacion.zona));
-    let html = `
-        <h4>📍 ${ubicacion.nombre}</h4>
-        <p><strong>Zona:</strong> ${ubicacion.zona}</p>
-        <p><strong>Coordenadas:</strong> ${ubicacion.lat.toFixed(2)}°, ${ubicacion.lng.toFixed(2)}°</p>
-        <p><strong>Especies comunes:</strong></p>
-        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
-    `;
-    especies_zona.forEach(esp => {
-        html += `<li>${esp.emoji} ${esp.nombre} (${esp.peso_promedio}kg promedio)</li>`;
-    });
-    html += '</ul>';
-
-    document.getElementById('mapaInfo').innerHTML = html;
-}
-
-function seleccionarZona(e, canvas) {
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left - canvas.width / 2) / estado.zoom + canvas.width / 2 - estado.panX;
-    const y = (e.clientY - rect.top - canvas.height / 2) / estado.zoom + canvas.height / 2 - estado.panY;
-
-    for (let zona of zonasGalicia) {
-        const dist = Math.sqrt((x - zona.x) ** 2 + (y - zona.y) ** 2);
-        if (dist < zona.radio) {
-            mostrarInfoZona(zona);
-            return;
-        }
-    }
-}
-
-function mostrarInfoZona(zona) {
-    const especies_zona = especiesGalicia.filter(e => e.zona_galicia.includes(zona.ubicacion));
-    let html = `
-        <h4>🎣 ${zona.nombre}</h4>
-        <p><strong>Calidad:</strong> ${zona.calidad.toUpperCase()}</p>
-        <p><strong>Ubicación:</strong> ${zona.ubicacion}</p>
-        <p><strong>Profundidad promedio:</strong> ${zona.profundidad_prom}m</p>
-        <p><strong>Especies principales:</strong></p>
-        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
-    `;
-    especies_zona.slice(0, 5).forEach(esp => {
-        html += `<li>${esp.emoji} ${esp.nombre}</li>`;
-    });
-    html += '</ul>';
-
-    document.getElementById('mapaInfo').innerHTML = html;
-}
-
-// ==================== BATIMETRÍA ====================
-
-function inicializarBatimetria() {
-    const canvas = document.getElementById('batimetriaCanvas');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-
-    canvas.addEventListener('mousemove', (e) => mostrarProfundidad(e, canvas));
-    canvas.addEventListener('mouseleave', () => {
-        document.getElementById('batimetriaInfo').innerHTML = '<p>Pasa el mouse sobre el mapa para ver la profundidad exacta</p>';
-    });
-
-    dibujarBatimetria();
-}
-
-function dibujarBatimetria() {
-    const canvas = document.getElementById('batimetriaCanvas');
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.createImageData(canvas.width, canvas.height);
-    const data = imageData.data;
-
-    const cellWidth = canvas.width / batimetria_galicia[0].length;
-    const cellHeight = canvas.height / batimetria_galicia.length;
-
-    for (let i = 0; i < canvas.height; i++) {
-        for (let j = 0; j < canvas.width; j++) {
-            const dataI = Math.floor(i / cellHeight);
-            const dataJ = Math.floor(j / cellWidth);
-            const profundidad = batimetria_galicia[dataI] ? batimetria_galicia[dataI][dataJ] : 50;
-
-            let r, g, b;
-            if (profundidad < 5) {
-                r = 135; g = 206; b = 235; // Azul claro
-            } else if (profundidad < 20) {
-                r = 76; g = 175; b = 80; // Verde (óptimo)
-            } else if (profundidad < 50) {
-                r = 33; g = 150; b = 243; // Azul
-            } else {
-                r = 26; g = 35; b = 126; // Azul oscuro
-            }
-
-            const pixelIndex = (i * canvas.width + j) * 4;
-            data[pixelIndex] = r;
-            data[pixelIndex + 1] = g;
-            data[pixelIndex + 2] = b;
-            data[pixelIndex + 3] = 255;
-        }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-}
-
-function mostrarProfundidad(e, canvas) {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const dataI = Math.floor((y / canvas.height) * batimetria_galicia.length);
-    const dataJ = Math.floor((x / canvas.width) * batimetria_galicia[0].length);
-
-    const profundidad = batimetria_galicia[dataI] ? batimetria_galicia[dataI][dataJ] : 0;
-
-    let tipo = 'Muy Superficial';
-    let recomendacion = 'No recomendado para pesca';
-
-    if (profundidad > 5 && profundidad < 20) {
-        tipo = 'Óptimo (Zona de Pesca)';
-        recomendacion = 'Excelente para lubinas, doradas y sargos';
-    } else if (profundidad >= 20 && profundidad < 50) {
-        tipo = 'Profundo';
-        recomendacion = 'Ideal para meros, besugo y pez espada';
-    } else if (profundidad >= 50) {
-        tipo = 'Muy Profundo';
-        recomendacion = 'Especies de aguas profundas';
-    }
-
-    document.getElementById('batimetriaInfo').innerHTML = `
-        <h4>🌊 Profundidad: ${profundidad.toFixed(1)}m</h4>
-        <p><strong>Tipo:</strong> ${tipo}</p>
-        <p><strong>Recomendación:</strong> ${recomendacion}</p>
-    `;
 }
 
 // ==================== ESPECIES ====================
@@ -548,10 +329,6 @@ function cargarEspecies() {
                     <span>Estación:</span>
                     <span>${esp.estacion}</span>
                 </div>
-                <div class="especie-detalle">
-                    <span>Zona Galicia:</span>
-                    <span style="font-size: 0.85rem;">${esp.zona_galicia}</span>
-                </div>
             </div>
         `;
         container.appendChild(card);
@@ -591,142 +368,249 @@ function aplicarFiltrosEspecies() {
     });
 }
 
-// ==================== METEOROLOGÍA ====================
+// ==================== METEOROLOGÍA CON OPENWEATHERMAP ====================
 
-function actualizarMetereologia() {
-    // Simular datos climáticos realistas para Galicia
-    const hora = new Date().getHours();
-    const mes = new Date().getMonth();
+async function actualizarMetereologia() {
+    const ubicacion = estado.ubicacionActual;
+    const selectUbicacion = document.getElementById('meteorologiaUbicacion');
 
-    // Temperaturas medias de Galicia por estación
-    const tempBase = mes >= 5 && mes <= 9 ? 18 : 12;
+    // Llenar selector de ubicaciones
+    if (selectUbicacion.children.length <= 1) {
+        ubicacionesGalicia.forEach(ubi => {
+            const option = document.createElement('option');
+            option.value = ubi.id;
+            option.textContent = ubi.nombre;
+            selectUbicacion.appendChild(option);
+        });
+    }
 
-    estado.clima = {
-        temperatura: tempBase + Math.random() * 8 + (hora > 12 ? 3 : -2),
-        viento: 8 + Math.random() * 18, // Galicia tiene vientos más fuertes
-        humedad: 65 + Math.random() * 25,
-        visibilidad: 40 + Math.random() * 50,
-        indice: 55 + Math.random() * 40
-    };
+    selectUbicacion.addEventListener('change', async () => {
+        const ubiId = parseInt(selectUbicacion.value);
+        estado.ubicacionActual = ubicacionesGalicia.find(u => u.id === ubiId);
+        await cargarMeteoOpenWeatherMap();
+    });
 
-    actualizarInterfazMeteo();
-    generarPronostico();
-    generarMareas();
-
-    setInterval(actualizarInterfazMeteo, 30000); // Actualizar cada 30 segundos
+    await cargarMeteoOpenWeatherMap();
 }
 
-function actualizarInterfazMeteo() {
+async function cargarMeteoOpenWeatherMap() {
+    const ubicacion = estado.ubicacionActual;
+    const cargaDiv = document.getElementById('cargaMeteo');
+    const climaDiv = document.getElementById('climaActual');
+    const indiceDiv = document.getElementById('indicePesca');
+    const pronosticoDiv = document.getElementById('pronosticoContainer');
+
+    cargaDiv.style.display = 'block';
+    climaDiv.style.display = 'none';
+
+    try {
+        // 1️⃣ Obtener datos actuales con OpenWeatherMap
+        const currentUrl = `${API_CONFIG.openWeather.baseUrl}/weather?lat=${ubicacion.lat}&lon=${ubicacion.lng}&appid=${API_CONFIG.openWeather.apiKey}&lang=es&units=metric`;
+        
+        // 2️⃣ Obtener pronóstico con OpenWeatherMap
+        const forecastUrl = `${API_CONFIG.openWeather.baseUrl}/forecast?lat=${ubicacion.lat}&lon=${ubicacion.lng}&appid=${API_CONFIG.openWeather.apiKey}&lang=es&units=metric`;
+
+        const [responseActual, responseForecast] = await Promise.all([
+            fetch(currentUrl),
+            fetch(forecastUrl)
+        ]);
+
+        if (!responseActual.ok || !responseForecast.ok) {
+            throw new Error('Error en la API de OpenWeatherMap');
+        }
+
+        const dataActual = await responseActual.json();
+        const dataForecast = await responseForecast.json();
+
+        // Actualizar datos actuales
+        const main = dataActual.main;
+        const wind = dataActual.wind;
+        const clouds = dataActual.clouds;
+        const weather = dataActual.weather[0];
+
+        document.getElementById('temp').textContent = main.temp.toFixed(1) + '°C';
+        document.getElementById('viento').textContent = (wind.speed * 3.6).toFixed(1) + ' km/h'; // Convertir m/s a km/h
+        document.getElementById('humedad').textContent = main.humidity + '%';
+        document.getElementById('presion').textContent = main.pressure + ' hPa';
+        document.getElementById('lluvia').textContent = (dataActual.rain?.['1h'] || 0).toFixed(1) + ' mm';
+        document.getElementById('uvIndex').textContent = 'N/A'; // OpenWeatherMap requiere API separada para UV
+
+        // Interpretaciones
+        actualizarInterpretacionesOWM(main, wind, clouds, weather);
+
+        // Calcular índice de pesca
+        const indice = calcularIndicePescaOWM(main, wind, weather);
+        actualizarIndicePesca(indice);
+
+        // Pronóstico
+        generarPronosticoOWM(dataForecast);
+
+        cargaDiv.style.display = 'none';
+        climaDiv.style.display = 'grid';
+        indiceDiv.style.display = 'block';
+        pronosticoDiv.style.display = 'block';
+
+    } catch (error) {
+        console.error('Error cargando meteorología:', error);
+        cargaDiv.innerHTML = `
+            <div style="text-align: center;">
+                <i class="fas fa-exclamation-circle"></i> 
+                <p>Error cargando datos meteorológicos</p>
+                <small>${error.message}</small>
+            </div>
+        `;
+    }
+}
+
+function actualizarInterpretacionesOWM(main, wind, clouds, weather) {
+    const temp = main.temp;
+    const vientoKmh = wind.speed * 3.6;
+    const humedad = main.humidity;
+
     // Temperatura
-    document.getElementById('temp').textContent = estado.clima.temperatura.toFixed(1) + '°C';
-    const tempDetalle = estado.clima.temperatura < 10 ? 'Fría' : estado.clima.temperatura < 18 ? 'Templada' : 'Cálida';
+    let tempDetalle = 'Fría';
+    if (temp >= 18) tempDetalle = 'Templada';
+    if (temp >= 25) tempDetalle = 'Cálida';
     document.getElementById('tempDetalle').textContent = tempDetalle;
 
     // Viento
-    document.getElementById('viento').textContent = estado.clima.viento.toFixed(1) + ' km/h';
-    const vientoDetalle = estado.clima.viento < 10 ? 'Calma' : estado.clima.viento < 20 ? 'Moderado' : 'Fuerte';
+    let vientoDetalle = 'Calma';
+    if (vientoKmh >= 10) vientoDetalle = 'Moderado';
+    if (vientoKmh >= 20) vientoDetalle = 'Fuerte';
+    if (vientoKmh >= 40) vientoDetalle = 'Muy Fuerte';
     document.getElementById('vientoDetalle').textContent = vientoDetalle;
 
     // Humedad
-    document.getElementById('humedad').textContent = estado.clima.humedad.toFixed(0) + '%';
-    const humedadDetalle = estado.clima.humedad > 80 ? 'Muy alta' : estado.clima.humedad > 60 ? 'Alta' : 'Normal';
+    let humedadDetalle = 'Baja';
+    if (humedad >= 60) humedadDetalle = 'Normal';
+    if (humedad >= 80) humedadDetalle = 'Alta';
     document.getElementById('humedadDetalle').textContent = humedadDetalle;
 
-    // Visibilidad
-    document.getElementById('visibilidad').textContent = estado.clima.visibilidad.toFixed(0) + ' m';
-    const visDetalle = estado.clima.visibilidad > 50 ? 'Buena' : estado.clima.visibilidad > 30 ? 'Regular' : 'Mala';
-    document.getElementById('visibilidadDetalle').textContent = visDetalle;
+    // Presión
+    const presion = main.pressure;
+    let presionDetalle = 'Baja';
+    if (presion >= 1013) presionDetalle = 'Normal';
+    if (presion >= 1025) presionDetalle = 'Alta';
+    document.getElementById('presionDetalle').textContent = presionDetalle;
 
-    // Índice de pesca
+    // Lluvia
+    const lluvia = weather.description || 'Sin lluvia';
+    let lluviaDetalle = lluvia.includes('lluvia') ? 'Con lluvia' : 'Sin lluvia';
+    document.getElementById('lluviaDetalle').textContent = lluvia.charAt(0).toUpperCase() + lluvia.slice(1);
+
+    // UV Index (simulado basado en nubes)
+    const cloudCover = clouds.all;
+    let uvDetalle = 'Bajo';
+    if (cloudCover < 50) uvDetalle = 'Moderado';
+    if (cloudCover < 30) uvDetalle = 'Alto';
+    document.getElementById('uvDetalle').textContent = uvDetalle;
+}
+
+function calcularIndicePescaOWM(main, wind, weather) {
+    let puntos = 100;
+
+    // Temperatura: óptimo 15-20°C
+    const temp = main.temp;
+    if (temp < 10 || temp > 25) puntos -= 20;
+    else if (temp < 12 || temp > 23) puntos -= 10;
+
+    // Viento: óptimo 5-15 km/h
+    const vientoKmh = wind.speed * 3.6;
+    if (vientoKmh > 30) puntos -= 30;
+    else if (vientoKmh > 20) puntos -= 15;
+    else if (vientoKmh < 3) puntos -= 5;
+
+    // Humedad: óptimo 60-80%
+    const humedad = main.humidity;
+    if (humedad < 50 || humedad > 90) puntos -= 10;
+
+    // Presión: estable es mejor
+    const presion = main.pressure;
+    if (presion < 1000 || presion > 1030) puntos -= 15;
+
+    // Condición del clima: lluvia es mala
+    const weatherId = weather.id;
+    if (weatherId >= 500 && weatherId < 600) puntos -= 25; // Lluvia
+    if (weatherId >= 800 && weatherId <= 804) puntos += 10; // Cielo despejado
+
+    return Math.max(0, Math.min(100, puntos));
+}
+
+function actualizarIndicePesca(indice) {
     const indiceProgreso = document.getElementById('indiceGeneral');
     const indiceTexto = document.getElementById('indiceGeneralTexto');
 
-    indiceProgreso.style.width = estado.clima.indice + '%';
+    indiceProgreso.style.width = indice + '%';
 
-    if (estado.clima.indice > 70) {
+    if (indice > 75) {
         indiceProgreso.style.background = 'linear-gradient(90deg, #4CAF50, #8BC34A)';
         indiceTexto.textContent = 'Excelente ✓✓';
-    } else if (estado.clima.indice > 50) {
+    } else if (indice > 50) {
         indiceProgreso.style.background = 'linear-gradient(90deg, #FFC107, #FF9800)';
         indiceTexto.textContent = 'Bueno ✓';
     } else {
         indiceProgreso.style.background = 'linear-gradient(90deg, #FF9800, #F44336)';
         indiceTexto.textContent = 'Regular';
     }
-
-    // Fases lunares
-    const faseLunar = document.getElementById('faseLunar');
-    const faseLunarTexto = document.getElementById('faseLunarTexto');
-    const dia = new Date().getDate() % 30;
-    const fases = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
-    const fasesNombres = ['Luna Nueva', 'Creciente', 'Cuarto Creciente', 'Gibosa', 'Luna Llena', 'Gibosa', 'Cuarto Menguante', 'Menguante'];
-    const faseIndex = Math.floor((dia / 30) * fases.length);
-
-    faseLunar.innerHTML = fases[faseIndex];
-    faseLunarTexto.textContent = fasesNombres[faseIndex];
 }
 
-function generarPronostico() {
-    const container = document.getElementById('pronosticoContainer');
+function generarPronosticoOWM(dataForecast) {
+    const container = document.getElementById('pronosticoGrid');
     container.innerHTML = '';
 
-    for (let i = 0; i < 5; i++) {
-        const fecha = new Date();
-        fecha.setDate(fecha.getDate() + i);
+    // Agrupar por día
+    const datosPorDia = {};
+    dataForecast.list.forEach(item => {
+        const fecha = item.dt_txt.split(' ')[0];
+        if (!datosPorDia[fecha]) {
+            datosPorDia[fecha] = [];
+        }
+        datosPorDia[fecha].push(item);
+    });
 
-        const iconos = ['☀️', '⛅', '🌤️', '☁️', '🌧️', '⛈️'];
-        const descripciones = ['Soleado', 'Parcialmente nublado', 'Nublado', 'Muy nublado', 'Lluvioso', 'Tormentoso'];
+    // Mostrar máximo 7 días
+    Object.keys(datosPorDia).slice(0, 7).forEach(fecha => {
+        const items = datosPorDia[fecha];
+        const itemMidDay = items[Math.floor(items.length / 2)];
 
-        const aleatorio = Math.floor(Math.random() * iconos.length);
-        const temp = (14 + Math.random() * 10).toFixed(0);
+        const tempMax = Math.max(...items.map(i => i.main.temp_max));
+        const tempMin = Math.min(...items.map(i => i.main.temp_min));
+        const weather = itemMidDay.weather[0];
+
+        const fechaObj = new Date(fecha);
+        const iconoClima = obtenerIconoClimaOWM(weather.main);
 
         const dia_div = document.createElement('div');
         dia_div.className = 'pronostico-dia';
         dia_div.innerHTML = `
-            <div class="pronostico-fecha">${fecha.toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-            <div class="pronostico-icono">${iconos[aleatorio]}</div>
-            <div class="pronostico-temp">${temp}°C</div>
-            <div class="pronostico-desc">${descripciones[aleatorio]}</div>
+            <div class="pronostico-fecha">${fechaObj.toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            <div class="pronostico-icono">${iconoClima}</div>
+            <div class="pronostico-temp">${tempMax.toFixed(0)}°C / ${tempMin.toFixed(0)}°C</div>
+            <div class="pronostico-desc">${weather.description.charAt(0).toUpperCase() + weather.description.slice(1)}</div>
         `;
         container.appendChild(dia_div);
-    }
+    });
 }
 
-function generarMareas() {
-    const container = document.getElementById('mareasContainer');
-    container.innerHTML = '';
-
-    const ubicacionesMareas = ['Ría de Arousa', 'Ría de Vigo', 'Rías Altas'];
-    const horas = ['06:30', '12:45', '18:15', '00:30'];
-    const alturas = [2.5, 0.8, 2.3, 0.7];
-
-    ubicacionesMareas.forEach((ubicacion, idx) => {
-        const card = document.createElement('div');
-        card.className = 'marea-card';
-
-        card.innerHTML = `
-            <div class="marea-titulo">
-                <i class="fas fa-water"></i> ${ubicacion}
-            </div>
-            <div class="marea-dato">
-                <span>Pleamar:</span>
-                <span>${horas[0]} (${alturas[0]}m)</span>
-            </div>
-            <div class="marea-dato">
-                <span>Bajamar:</span>
-                <span>${horas[1]} (${alturas[1]}m)</span>
-            </div>
-            <div class="marea-dato">
-                <span>Pleamar (noche):</span>
-                <span>${horas[2]} (${alturas[2]}m)</span>
-            </div>
-            <div class="marea-dato">
-                <span>Bajamar (madrugada):</span>
-                <span>${horas[3]} (${alturas[3]}m)</span>
-            </div>
-        `;
-        container.appendChild(card);
-    });
+function obtenerIconoClimaOWM(main) {
+    const iconos = {
+        'Clear': '☀️',
+        'Clouds': '☁️',
+        'Rain': '🌧️',
+        'Drizzle': '🌧️',
+        'Thunderstorm': '⛈️',
+        'Snow': '❄️',
+        'Mist': '🌫️',
+        'Smoke': '🌫️',
+        'Haze': '🌫️',
+        'Dust': '🌪️',
+        'Fog': '🌫️',
+        'Sand': '🌪️',
+        'Ash': '🌫️',
+        'Squall': '💨',
+        'Tornado': '🌪️'
+    };
+    return iconos[main] || '🌤️';
 }
 
 // ==================== REGISTRO ====================
@@ -745,18 +629,11 @@ function guardarCapturas() {
 
 function mostrarCapturas() {
     const container = document.getElementById('historialContainer');
-    const filtroEspecie = document.getElementById('filtroEspecie');
-    const especieFiltrada = filtroEspecie.value;
 
-    let capturas_filtradas = estado.capturas;
-    if (especieFiltrada) {
-        capturas_filtradas = estado.capturas.filter(c => c.especie == especieFiltrada);
-    }
-
-    if (capturas_filtradas.length === 0) {
+    if (estado.capturas.length === 0) {
         container.innerHTML = '<p class="sin-registros">📭 No hay capturas registradas. ¡Sal a pescar!</p>';
     } else {
-        container.innerHTML = capturas_filtradas.map(captura => {
+        container.innerHTML = estado.capturas.map(captura => {
             const esp = especiesGalicia.find(e => e.id == captura.especie);
             const ubi = ubicacionesGalicia.find(u => u.id == captura.ubicacion);
             const fecha = new Date(captura.fecha);
@@ -853,11 +730,6 @@ function inicializarEventos() {
         alert('✅ ¡Captura registrada correctamente! 🎣');
     });
 
-    // Filtro de historial
-    document.getElementById('filtroEspecie').addEventListener('change', () => {
-        mostrarCapturas();
-    });
-
     // Exportar CSV
     document.getElementById('btnExportarCSV').addEventListener('click', () => {
         if (estado.capturas.length === 0) {
@@ -886,33 +758,27 @@ function inicializarEventos() {
         document.body.removeChild(link);
     });
 
-    // Llenar selector de especies en filtro
-    const filtroEspecie = document.getElementById('filtroEspecie');
-    especiesGalicia.forEach(esp => {
-        const option = document.createElement('option');
-        option.value = esp.id;
-        option.textContent = `${esp.emoji} ${esp.nombre}`;
-        filtroEspecie.appendChild(option);
+    // Limpiar datos
+    document.getElementById('btnLimpiarDatos').addEventListener('click', () => {
+        if (confirm('⚠️ ¿Estás seguro de que quieres eliminar todos los registros?')) {
+            estado.capturas = [];
+            guardarCapturas();
+            mostrarCapturas();
+            alert('✅ Datos eliminados');
+        }
     });
 
     // Setear hora actual
     const ahora = new Date().toISOString().slice(0, 16);
     document.getElementById('tiempoCaptura').value = ahora;
-}
 
-// ==================== FUNCIONES AUXILIARES ====================
-
-function formatearFecha(fecha) {
-    return new Date(fecha).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-}
-
-function formatearHora(fecha) {
-    return new Date(fecha).toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit'
+    // Créditos API
+    document.getElementById('creditosAPI').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('🌍 Datos proporcionados por:\n\n' +
+            '📍 Mapas: OpenStreetMap (osm.org)\n' +
+            '🌥️ Meteorología: OpenWeatherMap (openweathermap.org)\n' +
+            '🗺️ Mapa interactivo: Leaflet.js\n\n' +
+            'Datos meteorológicos en TIEMPO REAL desde OpenWeatherMap');
     });
 }
