@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FishFinder Galicia - Aplicación de Pesca Inteligente</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-fish"></i>
+                    <div class="logo-text">
+                        <h1>FishFinder</h1>
+                        <span class="galicia-badge">🇪🇸 GALICIA</span>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-tab="mapa">
+                        <i class="fas fa-map"></i> Mapa
+                    </button>
+                    <button class="nav-btn" data-tab="batimetria">
+                        <i class="fas fa-water"></i> Batimetría
+                    </button>
+                    <button class="nav-btn" data-tab="especies">
+                        <i class="fas fa-frog"></i> Especies
+                    </button>
+                    <button class="nav-btn" data-tab="meteorologia">
+                        <i class="fas fa-cloud"></i> Meteorología
+                    </button>
+                    <button class="nav-btn" data-tab="registro">
+                        <i class="fas fa-book"></i> Registro
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- TAB: MAPA -->
+            <section class="tab-content active" id="mapa">
+                <div class="section-title">
+                    <h2><i class="fas fa-map"></i> Zonas de Pesca de Galicia</h2>
+                </div>
+                <div class="mapa-container">
+                    <canvas id="mapaCanvas"></canvas>
+                    <div class="mapa-controles">
+                        <button id="zoomIn" class="control-btn" title="Zoom In">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button id="zoomOut" class="control-btn" title="Zoom Out">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button id="resetMapa" class="control-btn" title="Resetear">
+                            <i class="fas fa-home"></i>
+                        </button>
+                    </div>
+                    <div class="mapa-leyenda">
+                        <h4>Leyenda</h4>
+                        <div class="leyenda-item">
+                            <span class="color-box" style="background: #4CAF50;"></span>
+                            <span>Zona Excelente</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="color-box" style="background: #FFC107;"></span>
+                            <span>Zona Buena</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="color-box" style="background: #FF9800;"></span>
+                            <span>Zona Regular</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="color-box" style="background: #2196F3;"></span>
+                            <span>Agua Profunda</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <span class="color-box" style="background: #FF6B6B;"></span>
+                            <span>Punto de Interés</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mapa-info-container">
+                    <div class="mapa-info">
+                        <h3>Información de Pesca</h3>
+                        <div id="mapaInfo" class="info-panel">
+                            <p>Haz clic en una zona del mapa para ver información detallada</p>
+                        </div>
+                    </div>
+                    <div class="ubicaciones-galicia">
+                        <h3>Ubicaciones Principales</h3>
+                        <div id="ubicacionesList" class="ubicaciones-list">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: BATIMETRÍA -->
+            <section class="tab-content" id="batimetria">
+                <div class="section-title">
+                    <h2><i class="fas fa-water"></i> Batimetría de Galicia</h2>
+                </div>
+                <div class="batimetria-container">
+                    <canvas id="batimetriaCanvas"></canvas>
+                    <div class="batimetria-escala">
+                        <h4>Escala de Profundidad (metros)</h4>
+                        <div class="escala-item">
+                            <span class="escala-color" style="background: #87CEEB;"></span>
+                            <span>0-5m (Muy Superficial)</span>
+                        </div>
+                        <div class="escala-item">
+                            <span class="escala-color" style="background: #4CAF50;"></span>
+                            <span>5-20m (Óptimo)</span>
+                        </div>
+                        <div class="escala-item">
+                            <span class="escala-color" style="background: #2196F3;"></span>
+                            <span>20-50m (Profundo)</span>
+                        </div>
+                        <div class="escala-item">
+                            <span class="escala-color" style="background: #1a237e;"></span>
+                            <span>50m+ (Muy Profundo)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="batimetria-info">
+                    <h3>Análisis Batimétrico</h3>
+                    <div id="batimetriaInfo" class="info-panel">
+                        <p>Pasa el mouse sobre el mapa para ver la profundidad exacta</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: ESPECIES -->
+            <section class="tab-content" id="especies">
+                <div class="section-title">
+                    <h2><i class="fas fa-frog"></i> Especies de Galicia</h2>
+                </div>
+                <div class="especies-container">
+                    <div class="especies-filtros">
+                        <input type="text" id="especiesFiltro" placeholder="Buscar especie..." class="filtro-input">
+                        <select id="especiesTipo" class="filtro-select">
+                            <option value="">Todas las especies</option>
+                            <option value="agua-dulce">Agua Dulce</option>
+                            <option value="agua-salada">Agua Salada (Costera)</option>
+                            <option value="agua-profunda">Agua Profunda</option>
+                            <option value="ambos">Ambos Ambientes</option>
+                        </select>
+                    </div>
+                    <div id="especiesList" class="especies-grid">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: METEOROLOGÍA -->
+            <section class="tab-content" id="meteorologia">
+                <div class="section-title">
+                    <h2><i class="fas fa-cloud"></i> Meteorología de Galicia</h2>
+                </div>
+                <div class="meteorologia-container">
+                    <div class="clima-actual">
+                        <div class="clima-card">
+                            <i class="fas fa-thermometer-half"></i>
+                            <div class="clima-info">
+                                <h4>Temperatura</h4>
+                                <p id="temp">--°C</p>
+                                <span class="clima-detalle" id="tempDetalle"></span>
+                            </div>
+                        </div>
+                        <div class="clima-card">
+                            <i class="fas fa-wind"></i>
+                            <div class="clima-info">
+                                <h4>Viento</h4>
+                                <p id="viento">-- km/h</p>
+                                <span class="clima-detalle" id="vientoDetalle"></span>
+                            </div>
+                        </div>
+                        <div class="clima-card">
+                            <i class="fas fa-tint"></i>
+                            <div class="clima-info">
+                                <h4>Humedad</h4>
+                                <p id="humedad">-- %</p>
+                                <span class="clima-detalle" id="humedadDetalle"></span>
+                            </div>
+                        </div>
+                        <div class="clima-card">
+                            <i class="fas fa-eye"></i>
+                            <div class="clima-info">
+                                <h4>Visibilidad</h4>
+                                <p id="visibilidad">-- m</p>
+                                <span class="clima-detalle" id="visibilidadDetalle"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="indice-pesca">
+                        <h3>Índice de Pesca</h3>
+                        <div class="indice-items">
+                            <div class="indice-item">
+                                <span class="indice-label">Condición General</span>
+                                <div class="indice-barra">
+                                    <div id="indiceGeneral" class="indice-progreso"></div>
+                                </div>
+                                <span id="indiceGeneralTexto" class="indice-texto">--</span>
+                            </div>
+                            <div class="indice-item">
+                                <span class="indice-label">Fases Lunares</span>
+                                <div id="faseLunar" class="fase-lunar">
+                                    <i class="fas fa-moon"></i>
+                                </div>
+                                <span id="faseLunarTexto" class="indice-texto">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pronostico">
+                        <h3>Pronóstico 5 Días</h3>
+                        <div id="pronosticoContainer" class="pronostico-grid">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                    </div>
+
+                    <div class="mareas-info">
+                        <h3>Información de Mareas</h3>
+                        <div id="mareasContainer" class="mareas-grid">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: REGISTRO -->
+            <section class="tab-content" id="registro">
+                <div class="section-title">
+                    <h2><i class="fas fa-book"></i> Registro de Capturas</h2>
+                </div>
+                <div class="registro-container">
+                    <div class="registro-formulario">
+                        <h3>Registrar Captura</h3>
+                        <form id="capturaForm">
+                            <div class="form-grupo">
+                                <label for="especieCapturada">Especie</label>
+                                <select id="especieCapturada" required>
+                                    <option value="">Selecciona una especie</option>
+                                </select>
+                            </div>
+                            <div class="form-grupo">
+                                <label for="pesoCaptura">Peso (kg)</label>
+                                <input type="number" id="pesoCaptura" step="0.1" required>
+                            </div>
+                            <div class="form-grupo">
+                                <label for="largoCaptura">Largo (cm)</label>
+                                <input type="number" id="largoCaptura" step="0.1">
+                            </div>
+                            <div class="form-grupo">
+                                <label for="ubicacionCaptura">Ubicación (Galicia)</label>
+                                <select id="ubicacionCaptura" required>
+                                    <option value="">Selecciona una ubicación</option>
+                                </select>
+                            </div>
+                            <div class="form-grupo">
+                                <label for="tiempoCaptura">Hora de Captura</label>
+                                <input type="datetime-local" id="tiempoCaptura" required>
+                            </div>
+                            <div class="form-grupo">
+                                <label for="profundidadCaptura">Profundidad (m)</label>
+                                <input type="number" id="profundidadCaptura" step="0.1">
+                            </div>
+                            <div class="form-grupo">
+                                <label for="tipoCaptura">Tipo de Pesca</label>
+                                <select id="tipoCaptura">
+                                    <option value="caña">Caña de Pescar</option>
+                                    <option value="mosca">Mosca</option>
+                                    <option value="red">Red</option>
+                                    <option value="arpon">Arpón</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-grupo">
+                                <label for="notas">Notas</label>
+                                <textarea id="notas" rows="3" placeholder="Condiciones, técnica usada, etc."></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-check"></i> Registrar Captura
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="registro-historial">
+                        <h3>Historial de Capturas</h3>
+                        <div class="filtros-historial">
+                            <select id="filtroEspecie" class="filtro-select">
+                                <option value="">Todas las especies</option>
+                            </select>
+                            <button id="btnExportarCSV" class="btn-secundario">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                        <div id="historialContainer" class="historial-lista">
+                            <p class="sin-registros">No hay capturas registradas</p>
+                        </div>
+
+                        <div class="estadisticas">
+                            <h3>Estadísticas</h3>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <h4>Total Capturas</h4>
+                                    <p id="totalCapturas" class="stat-numero">0</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Peso Total</h4>
+                                    <p id="pesoTotal" class="stat-numero">0 kg</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Especie Común</h4>
+                                    <p id="especieComun" class="stat-texto">--</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h4>Peso Promedio</h4>
+                                    <p id="pesoPromedio" class="stat-numero">0 kg</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>FishFinder Galicia © 2026 | Aplicación de Pesca Inteligente para la Costa Gallega</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
