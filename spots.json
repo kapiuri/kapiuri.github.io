@@ -1,0 +1,15 @@
+// spots.json
+[
+  {
+    "name": "Ría de Arousa",
+    "lat": 42.6,
+    "lon": -8.9,
+    "species": ["Lubina", "Dorada", "Sargo"]
+  },
+  {
+    "name": "Costa da Morte",
+    "lat": 43.0,
+    "lon": -9.2,
+    "species": ["Pulpo", "Merluza", "Congrio"]
+  }
+]
