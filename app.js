@@ -1,10 +1,17 @@
 // ==================== CONFIGURACIÓN DE APIs ====================
 
+// 📌 OBTÉN TUS CLAVES API AQUÍ:
+// OpenWeatherMap: https://openweathermap.org/api
+
 const API_CONFIG = {
     openWeather: {
-        enabled: true, // ✅ ACTIVADO
-        apiKey: '81554ba113d09fb80323eb05e07d7cd7', // 🔑 Tu API key
+        enabled: true, // ✅ HABILITADO CON TU API KEY
+        apiKey: '81554ba113d09fb80323eb05e07d7cd7', // TU API KEY
         baseUrl: 'https://api.openweathermap.org/data/2.5'
+    },
+    openMeteo: {
+        enabled: true, // Alternativa gratuita como respaldo
+        baseUrl: 'https://api.open-meteo.com/v1'
     }
 };
 
@@ -154,7 +161,7 @@ let estado = {
 // ==================== INICIALIZACIÓN ====================
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🎣 FishFinder Galicia - Inicializando con API OpenWeatherMap en tiempo real');
+    console.log('🎣 FishFinder Galicia - Inicializando con OpenWeatherMap en tiempo real');
     
     inicializarTabs();
     cargarEspecies();
@@ -387,13 +394,13 @@ async function actualizarMetereologia() {
     selectUbicacion.addEventListener('change', async () => {
         const ubiId = parseInt(selectUbicacion.value);
         estado.ubicacionActual = ubicacionesGalicia.find(u => u.id === ubiId);
-        await cargarMeteoOpenWeatherMap();
+        await cargarMeteoOpenWeather();
     });
 
-    await cargarMeteoOpenWeatherMap();
+    await cargarMeteoOpenWeather();
 }
 
-async function cargarMeteoOpenWeatherMap() {
+async function cargarMeteoOpenWeather() {
     const ubicacion = estado.ubicacionActual;
     const cargaDiv = document.getElementById('cargaMeteo');
     const climaDiv = document.getElementById('climaActual');
@@ -404,68 +411,59 @@ async function cargarMeteoOpenWeatherMap() {
     climaDiv.style.display = 'none';
 
     try {
-        // 1️⃣ Obtener datos actuales con OpenWeatherMap
-        const currentUrl = `${API_CONFIG.openWeather.baseUrl}/weather?lat=${ubicacion.lat}&lon=${ubicacion.lng}&appid=${API_CONFIG.openWeather.apiKey}&lang=es&units=metric`;
-        
-        // 2️⃣ Obtener pronóstico con OpenWeatherMap
-        const forecastUrl = `${API_CONFIG.openWeather.baseUrl}/forecast?lat=${ubicacion.lat}&lon=${ubicacion.lng}&appid=${API_CONFIG.openWeather.apiKey}&lang=es&units=metric`;
+        // Llamar API de OpenWeatherMap
+        const url = `${API_CONFIG.openWeather.baseUrl}/weather?lat=${ubicacion.lat}&lon=${ubicacion.lng}&appid=${API_CONFIG.openWeather.apiKey}&units=metric&lang=es`;
+        const urlForecast = `${API_CONFIG.openWeather.baseUrl}/forecast?lat=${ubicacion.lat}&lon=${ubicacion.lng}&appid=${API_CONFIG.openWeather.apiKey}&units=metric&lang=es`;
 
-        const [responseActual, responseForecast] = await Promise.all([
-            fetch(currentUrl),
-            fetch(forecastUrl)
-        ]);
+        const response = await fetch(url);
+        const responseForecast = await fetch(urlForecast);
 
-        if (!responseActual.ok || !responseForecast.ok) {
-            throw new Error('Error en la API de OpenWeatherMap');
+        if (!response.ok || !responseForecast.ok) {
+            throw new Error('Error en la API');
         }
 
-        const dataActual = await responseActual.json();
+        const data = await response.json();
         const dataForecast = await responseForecast.json();
 
-        // Actualizar datos actuales
-        const main = dataActual.main;
-        const wind = dataActual.wind;
-        const clouds = dataActual.clouds;
-        const weather = dataActual.weather[0];
+        // Datos actuales
+        const current = data;
 
-        document.getElementById('temp').textContent = main.temp.toFixed(1) + '°C';
-        document.getElementById('viento').textContent = (wind.speed * 3.6).toFixed(1) + ' km/h'; // Convertir m/s a km/h
-        document.getElementById('humedad').textContent = main.humidity + '%';
-        document.getElementById('presion').textContent = main.pressure + ' hPa';
-        document.getElementById('lluvia').textContent = (dataActual.rain?.['1h'] || 0).toFixed(1) + ' mm';
-        document.getElementById('uvIndex').textContent = 'N/A'; // OpenWeatherMap requiere API separada para UV
+        // Actualizar interfaz con datos reales
+        document.getElementById('temp').textContent = current.main.temp.toFixed(1) + '°C';
+        document.getElementById('viento').textContent = (current.wind.speed * 3.6).toFixed(1) + ' km/h'; // Convertir m/s a km/h
+        document.getElementById('humedad').textContent = current.main.humidity + '%';
+        document.getElementById('presion').textContent = current.main.pressure + ' hPa';
+        document.getElementById('lluvia').textContent = (current.rain?.['1h'] || 0).toFixed(1) + ' mm';
+        document.getElementById('uvIndex').textContent = (current.clouds?.all || 0) / 10; // Aproximación
 
         // Interpretaciones
-        actualizarInterpretacionesOWM(main, wind, clouds, weather);
+        actualizarInterpretacionesOpenWeather(current);
 
         // Calcular índice de pesca
-        const indice = calcularIndicePescaOWM(main, wind, weather);
+        const indice = calcularIndicePescaOpenWeather(current);
         actualizarIndicePesca(indice);
 
         // Pronóstico
-        generarPronosticoOWM(dataForecast);
+        generarPronosticoOpenWeather(dataForecast.list);
 
         cargaDiv.style.display = 'none';
         climaDiv.style.display = 'grid';
         indiceDiv.style.display = 'block';
         pronosticoDiv.style.display = 'block';
 
+        console.log('✅ Datos de OpenWeatherMap cargados correctamente');
+
     } catch (error) {
-        console.error('Error cargando meteorología:', error);
-        cargaDiv.innerHTML = `
-            <div style="text-align: center;">
-                <i class="fas fa-exclamation-circle"></i> 
-                <p>Error cargando datos meteorológicos</p>
-                <small>${error.message}</small>
-            </div>
-        `;
+        console.error('Error cargando meteorología de OpenWeatherMap:', error);
+        console.log('Intentando con Open-Meteo como alternativa...');
+        await cargarMeteoAbierta(); // Alternativa
     }
 }
 
-function actualizarInterpretacionesOWM(main, wind, clouds, weather) {
-    const temp = main.temp;
-    const vientoKmh = wind.speed * 3.6;
-    const humedad = main.humidity;
+function actualizarInterpretacionesOpenWeather(current) {
+    const temp = current.main.temp;
+    const viento = current.wind.speed * 3.6; // m/s a km/h
+    const humedad = current.main.humidity;
 
     // Temperatura
     let tempDetalle = 'Fría';
@@ -475,9 +473,9 @@ function actualizarInterpretacionesOWM(main, wind, clouds, weather) {
 
     // Viento
     let vientoDetalle = 'Calma';
-    if (vientoKmh >= 10) vientoDetalle = 'Moderado';
-    if (vientoKmh >= 20) vientoDetalle = 'Fuerte';
-    if (vientoKmh >= 40) vientoDetalle = 'Muy Fuerte';
+    if (viento >= 10) vientoDetalle = 'Moderado';
+    if (viento >= 20) vientoDetalle = 'Fuerte';
+    if (viento >= 40) vientoDetalle = 'Muy Fuerte';
     document.getElementById('vientoDetalle').textContent = vientoDetalle;
 
     // Humedad
@@ -487,51 +485,54 @@ function actualizarInterpretacionesOWM(main, wind, clouds, weather) {
     document.getElementById('humedadDetalle').textContent = humedadDetalle;
 
     // Presión
-    const presion = main.pressure;
+    const presion = current.main.pressure;
     let presionDetalle = 'Baja';
     if (presion >= 1013) presionDetalle = 'Normal';
     if (presion >= 1025) presionDetalle = 'Alta';
     document.getElementById('presionDetalle').textContent = presionDetalle;
 
     // Lluvia
-    const lluvia = weather.description || 'Sin lluvia';
-    let lluviaDetalle = lluvia.includes('lluvia') ? 'Con lluvia' : 'Sin lluvia';
-    document.getElementById('lluviaDetalle').textContent = lluvia.charAt(0).toUpperCase() + lluvia.slice(1);
+    const lluvia = current.rain?.['1h'] || 0;
+    let lluviaDetalle = lluvia === 0 ? 'Sin lluvia' : 'Lluvia';
+    document.getElementById('lluviaDetalle').textContent = lluviaDetalle;
 
-    // UV Index (simulado basado en nubes)
-    const cloudCover = clouds.all;
+    // UV Index (aproximado con cobertura de nubes)
+    const nubes = current.clouds.all;
     let uvDetalle = 'Bajo';
-    if (cloudCover < 50) uvDetalle = 'Moderado';
-    if (cloudCover < 30) uvDetalle = 'Alto';
+    if (nubes < 30) uvDetalle = 'Moderado';
+    if (nubes < 10) uvDetalle = 'Alto';
     document.getElementById('uvDetalle').textContent = uvDetalle;
 }
 
-function calcularIndicePescaOWM(main, wind, weather) {
+function calcularIndicePescaOpenWeather(current) {
     let puntos = 100;
 
     // Temperatura: óptimo 15-20°C
-    const temp = main.temp;
+    const temp = current.main.temp;
     if (temp < 10 || temp > 25) puntos -= 20;
     else if (temp < 12 || temp > 23) puntos -= 10;
 
     // Viento: óptimo 5-15 km/h
-    const vientoKmh = wind.speed * 3.6;
-    if (vientoKmh > 30) puntos -= 30;
-    else if (vientoKmh > 20) puntos -= 15;
-    else if (vientoKmh < 3) puntos -= 5;
+    const viento = current.wind.speed * 3.6; // m/s a km/h
+    if (viento > 30) puntos -= 30;
+    else if (viento > 20) puntos -= 15;
+    else if (viento < 3) puntos -= 5;
 
     // Humedad: óptimo 60-80%
-    const humedad = main.humidity;
+    const humedad = current.main.humidity;
     if (humedad < 50 || humedad > 90) puntos -= 10;
 
     // Presión: estable es mejor
-    const presion = main.pressure;
+    const presion = current.main.pressure;
     if (presion < 1000 || presion > 1030) puntos -= 15;
 
-    // Condición del clima: lluvia es mala
-    const weatherId = weather.id;
-    if (weatherId >= 500 && weatherId < 600) puntos -= 25; // Lluvia
-    if (weatherId >= 800 && weatherId <= 804) puntos += 10; // Cielo despejado
+    // Lluvia: menos es mejor
+    const lluvia = current.rain?.['1h'] || 0;
+    if (lluvia > 5) puntos -= 25;
+
+    // Cobertura de nubes: afecta la visibilidad
+    const nubes = current.clouds.all;
+    if (nubes > 80) puntos -= 5;
 
     return Math.max(0, Math.min(100, puntos));
 }
@@ -554,63 +555,160 @@ function actualizarIndicePesca(indice) {
     }
 }
 
-function generarPronosticoOWM(dataForecast) {
+function generarPronosticoOpenWeather(forecast) {
     const container = document.getElementById('pronosticoGrid');
     container.innerHTML = '';
 
-    // Agrupar por día
-    const datosPorDia = {};
-    dataForecast.list.forEach(item => {
-        const fecha = item.dt_txt.split(' ')[0];
-        if (!datosPorDia[fecha]) {
-            datosPorDia[fecha] = [];
+    // Agrupar pronóstico por días (cada 8 elementos = 24 horas)
+    const diasPronostico = {};
+    
+    forecast.forEach(item => {
+        const fecha = new Date(item.dt * 1000);
+        const dia = fecha.toLocaleDateString('es-ES');
+        
+        if (!diasPronostico[dia]) {
+            diasPronostico[dia] = [];
         }
-        datosPorDia[fecha].push(item);
+        diasPronostico[dia].push(item);
     });
 
-    // Mostrar máximo 7 días
-    Object.keys(datosPorDia).slice(0, 7).forEach(fecha => {
-        const items = datosPorDia[fecha];
-        const itemMidDay = items[Math.floor(items.length / 2)];
-
+    // Mostrar los primeros 5 días
+    Object.keys(diasPronostico).slice(0, 5).forEach(dia => {
+        const items = diasPronostico[dia];
         const tempMax = Math.max(...items.map(i => i.main.temp_max));
         const tempMin = Math.min(...items.map(i => i.main.temp_min));
-        const weather = itemMidDay.weather[0];
+        const clima = items[0]; // Usar el primer pronóstico del día
 
-        const fechaObj = new Date(fecha);
-        const iconoClima = obtenerIconoClimaOWM(weather.main);
+        const iconoClima = obtenerIconoClima(clima.weather[0].main);
+        const descripcion = clima.weather[0].description;
 
         const dia_div = document.createElement('div');
         dia_div.className = 'pronostico-dia';
         dia_div.innerHTML = `
-            <div class="pronostico-fecha">${fechaObj.toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            <div class="pronostico-fecha">${dia}</div>
             <div class="pronostico-icono">${iconoClima}</div>
             <div class="pronostico-temp">${tempMax.toFixed(0)}°C / ${tempMin.toFixed(0)}°C</div>
-            <div class="pronostico-desc">${weather.description.charAt(0).toUpperCase() + weather.description.slice(1)}</div>
+            <div class="pronostico-desc">${descripcion.charAt(0).toUpperCase() + descripcion.slice(1)}</div>
         `;
         container.appendChild(dia_div);
     });
 }
 
-function obtenerIconoClimaOWM(main) {
-    const iconos = {
-        'Clear': '☀️',
-        'Clouds': '☁️',
-        'Rain': '🌧️',
-        'Drizzle': '🌧️',
-        'Thunderstorm': '⛈️',
-        'Snow': '❄️',
-        'Mist': '🌫️',
-        'Smoke': '🌫️',
-        'Haze': '🌫️',
-        'Dust': '🌪️',
-        'Fog': '🌫️',
-        'Sand': '🌪️',
-        'Ash': '🌫️',
-        'Squall': '💨',
-        'Tornado': '🌪️'
-    };
-    return iconos[main] || '🌤️';
+function obtenerIconoClima(condition) {
+    // Condiciones de OpenWeatherMap
+    if (condition.includes('Clear')) return '☀️';
+    if (condition.includes('Clouds')) return '☁️';
+    if (condition.includes('Overcast')) return '☁️';
+    if (condition.includes('Rain') || condition.includes('Drizzle')) return '🌧️';
+    if (condition.includes('Thunderstorm')) return '⛈️';
+    if (condition.includes('Snow')) return '❄️';
+    if (condition.includes('Mist') || condition.includes('Fog')) return '🌫️';
+    return '🌤️';
+}
+
+// ==================== ALTERNATIVA: OPEN-METEO (COMO RESPALDO) ====================
+
+async function cargarMeteoAbierta() {
+    const ubicacion = estado.ubicacionActual;
+    const cargaDiv = document.getElementById('cargaMeteo');
+    const climaDiv = document.getElementById('climaActual');
+    const indiceDiv = document.getElementById('indicePesca');
+    const pronosticoDiv = document.getElementById('pronosticoContainer');
+
+    cargaDiv.style.display = 'block';
+    climaDiv.style.display = 'none';
+
+    try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${ubicacion.lat}&longitude=${ubicacion.lng}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl,precipitation,cloud_cover,uv_index&timezone=Europe/Madrid&forecast_days=7`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+        const current = data.current;
+
+        document.getElementById('temp').textContent = current.temperature_2m.toFixed(1) + '°C';
+        document.getElementById('viento').textContent = current.wind_speed_10m.toFixed(1) + ' km/h';
+        document.getElementById('humedad').textContent = current.relative_humidity_2m + '%';
+        document.getElementById('presion').textContent = (current.pressure_msl / 100).toFixed(0) + ' hPa';
+        document.getElementById('lluvia').textContent = (current.precipitation || 0).toFixed(1) + ' mm';
+        document.getElementById('uvIndex').textContent = current.uv_index.toFixed(1);
+
+        actualizarInterpretacionesOpenMeteo(current);
+
+        const indice = calcularIndicePescaOpenMeteo(current);
+        actualizarIndicePesca(indice);
+
+        cargaDiv.style.display = 'none';
+        climaDiv.style.display = 'grid';
+        indiceDiv.style.display = 'block';
+
+        console.log('✅ Datos de Open-Meteo cargados como alternativa');
+
+    } catch (error) {
+        console.error('Error en ambas APIs:', error);
+        cargaDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error cargando datos meteorológicos. Verifica tu conexión.';
+    }
+}
+
+function actualizarInterpretacionesOpenMeteo(current) {
+    const temp = current.temperature_2m;
+    const viento = current.wind_speed_10m;
+    const humedad = current.relative_humidity_2m;
+
+    let tempDetalle = 'Fría';
+    if (temp >= 18) tempDetalle = 'Templada';
+    if (temp >= 25) tempDetalle = 'Cálida';
+    document.getElementById('tempDetalle').textContent = tempDetalle;
+
+    let vientoDetalle = 'Calma';
+    if (viento >= 10) vientoDetalle = 'Moderado';
+    if (viento >= 20) vientoDetalle = 'Fuerte';
+    if (viento >= 40) vientoDetalle = 'Muy Fuerte';
+    document.getElementById('vientoDetalle').textContent = vientoDetalle;
+
+    let humedadDetalle = 'Baja';
+    if (humedad >= 60) humedadDetalle = 'Normal';
+    if (humedad >= 80) humedadDetalle = 'Alta';
+    document.getElementById('humedadDetalle').textContent = humedadDetalle;
+
+    const presion = (current.pressure_msl / 100);
+    let presionDetalle = 'Baja';
+    if (presion >= 1013) presionDetalle = 'Normal';
+    if (presion >= 1025) presionDetalle = 'Alta';
+    document.getElementById('presionDetalle').textContent = presionDetalle;
+
+    const lluvia = current.precipitation || 0;
+    let lluviaDetalle = lluvia === 0 ? 'Sin lluvia' : 'Lluvia';
+    document.getElementById('lluviaDetalle').textContent = lluviaDetalle;
+
+    const uv = current.uv_index;
+    let uvDetalle = 'Bajo';
+    if (uv >= 3) uvDetalle = 'Moderado';
+    if (uv >= 6) uvDetalle = 'Alto';
+    if (uv >= 8) uvDetalle = 'Muy Alto';
+    document.getElementById('uvDetalle').textContent = uvDetalle;
+}
+
+function calcularIndicePescaOpenMeteo(current) {
+    let puntos = 100;
+
+    const temp = current.temperature_2m;
+    if (temp < 10 || temp > 25) puntos -= 20;
+    else if (temp < 12 || temp > 23) puntos -= 10;
+
+    const viento = current.wind_speed_10m;
+    if (viento > 30) puntos -= 30;
+    else if (viento > 20) puntos -= 15;
+    else if (viento < 3) puntos -= 5;
+
+    const humedad = current.relative_humidity_2m;
+    if (humedad < 50 || humedad > 90) puntos -= 10;
+
+    const presion = current.pressure_msl / 100;
+    if (presion < 1000 || presion > 1030) puntos -= 15;
+
+    if (current.precipitation > 5) puntos -= 25;
+
+    return Math.max(0, Math.min(100, puntos));
 }
 
 // ==================== REGISTRO ====================
@@ -764,7 +862,7 @@ function inicializarEventos() {
             estado.capturas = [];
             guardarCapturas();
             mostrarCapturas();
-            alert('✅ Datos eliminados');
+            alert('Datos eliminados');
         }
     });
 
@@ -779,6 +877,6 @@ function inicializarEventos() {
             '📍 Mapas: OpenStreetMap (osm.org)\n' +
             '🌥️ Meteorología: OpenWeatherMap (openweathermap.org)\n' +
             '🗺️ Mapa interactivo: Leaflet.js\n\n' +
-            'Datos meteorológicos en TIEMPO REAL desde OpenWeatherMap');
+            'Datos en tiempo real actualizado continuamente.');
     });
 }
