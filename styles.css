@@ -1,0 +1,27 @@
+/* styles.css */
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: #0a0f1c;
+  color: #fff;
+}
+
+header {
+  background: #111827;
+  padding: 10px;
+  text-align: center;
+}
+
+#map {
+  height: 65vh;
+}
+
+#panel {
+  padding: 15px;
+  background: #111827;
+  border-top: 1px solid #222;
+}
+
+#data {
+  line-height: 1.6;
+}
