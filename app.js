@@ -1,4 +1,4 @@
-const STORMGLASS_KEY = af77a478-3dbd-11f1-a882-0242ac120004-af77a4e6-3dbd-11f1-a882-0242ac120004;
+const STORMGLASS_KEY = "af77a478-3dbd-11f1-a882-0242ac120004-af77a4e6-3dbd-11f1-a882-0242ac120004";
 
 const map = L.map('map').setView([42.6, -8.9], 8);
 
