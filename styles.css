@@ -1,0 +1,1051 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-primary: #1976D2;
+    --color-secondary: #0D47A1;
+    --color-accent: #FF6B6B;
+    --color-success: #4CAF50;
+    --color-warning: #FFC107;
+    --color-danger: #F44336;
+    --color-galicia: #0066CC;
+    --color-bg: #0F1419;
+    --color-surface: #1A1F2E;
+    --color-surface-light: #2A3142;
+    --color-text: #E1E8ED;
+    --color-text-secondary: #8892A6;
+    --radius: 12px;
+    --transition: all 0.3s ease;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    overflow-x: hidden;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(135deg, #003399 0%, #0066CC 50%, #0055AA 100%);
+    padding: 1rem 0;
+    box-shadow: 0 8px 32px rgba(0, 51, 153, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid #FFD700;
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+}
+
+.logo i {
+    font-size: 2.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.logo-text h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.galicia-badge {
+    display: inline-block;
+    background: rgba(255, 215, 0, 0.2);
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-top: 0.25rem;
+}
+
+.nav {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.nav-btn.active {
+    background: #FFD700;
+    color: #003399;
+    border-color: white;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 2rem;
+}
+
+.section-title {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--color-primary);
+}
+
+.section-title h2 {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--color-primary);
+}
+
+.section-title h2 i {
+    font-size: 2.5rem;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MAPA */
+.mapa-container {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+#mapaCanvas, #batimetriaCanvas {
+    border: 3px solid var(--color-primary);
+    border-radius: var(--radius);
+    background: #1a1a2e;
+    cursor: crosshair;
+    flex: 1;
+    min-width: 300px;
+    max-width: 800px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.mapa-controles {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+}
+
+.control-btn {
+    background: var(--color-primary);
+    border: none;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:hover {
+    background: var(--color-secondary);
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.mapa-leyenda {
+    background: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    min-width: 220px;
+    border-left: 4px solid var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mapa-leyenda h4 {
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+    font-size: 1.1rem;
+}
+
+.leyenda-item, .escala-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background: var(--color-surface-light);
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.leyenda-item:hover {
+    background: #3a4454;
+    transform: translateX(5px);
+}
+
+.color-box, .escala-color {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mapa-info-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.mapa-info, .batimetria-info, .indice-pesca, .pronostico, .mareas-info {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mapa-info h3, .batimetria-info h3, .indice-pesca h3, .pronostico h3, .mareas-info h3 {
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-panel {
+    background: var(--color-surface-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-warning);
+}
+
+.info-panel p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.ubicaciones-galicia {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius);
+    border-left: 4px solid #4CAF50;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ubicaciones-galicia h3 {
+    margin-bottom: 1rem;
+    color: #4CAF50;
+    font-size: 1.3rem;
+}
+
+.ubicaciones-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.ubicacion-btn {
+    background: var(--color-surface-light);
+    border: 2px solid transparent;
+    color: var(--color-text);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.ubicacion-btn:hover {
+    background: #3a4454;
+    border-color: #4CAF50;
+    transform: translateX(5px);
+}
+
+/* BATIMETRÍA */
+.batimetria-container {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.batimetria-escala {
+    background: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    min-width: 220px;
+    border-left: 4px solid var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.batimetria-escala h4 {
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+    font-size: 1.1rem;
+}
+
+.batimetria-info {
+    width: 100%;
+    margin-top: 2rem;
+}
+
+/* ESPECIES */
+.especies-container {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.especies-filtros {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filtro-input, .filtro-select {
+    padding: 0.75rem 1rem;
+    background: var(--color-surface-light);
+    border: 2px solid transparent;
+    color: var(--color-text);
+    border-radius: 8px;
+    transition: var(--transition);
+    flex: 1;
+    min-width: 200px;
+    font-size: 0.95rem;
+}
+
+.filtro-input:focus, .filtro-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: #3a4454;
+    box-shadow: 0 0 10px rgba(25, 118, 210, 0.2);
+}
+
+.especies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.especie-card {
+    background: var(--color-surface-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.especie-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: 0 12px 32px rgba(25, 118, 210, 0.3);
+}
+
+.especie-imagen {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+}
+
+.especie-contenido {
+    padding: 1.5rem;
+}
+
+.especie-nombre {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.especie-cientifico {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.especie-detalle {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-surface);
+    font-size: 0.9rem;
+}
+
+.especie-detalle span:first-child {
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+/* METEOROLOGÍA */
+.meteorologia-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.clima-actual {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.clima-card {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border-left: 4px solid var(--color-primary);
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.clima-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.clima-card i {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    min-width: 60px;
+    text-align: center;
+}
+
+.clima-info h4 {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.clima-info p {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+}
+
+.clima-detalle {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.indice-items {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.indice-item {
+    display: grid;
+    grid-template-columns: 150px 2fr 100px;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    border-left: 4px solid var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.indice-label {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.indice-barra {
+    background: #2a3142;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 35px;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.indice-progreso {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #FFC107);
+    border-radius: 10px;
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 35px;
+    font-weight: bold;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.indice-texto {
+    text-align: right;
+    font-weight: bold;
+    color: var(--color-primary);
+    font-size: 0.95rem;
+}
+
+.fase-lunar {
+    font-size: 3rem;
+    text-align: center;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    0%, 100% { transform: rotateY(0deg); }
+    25% { transform: rotateY(90deg); }
+    50% { transform: rotateY(180deg); }
+    75% { transform: rotateY(270deg); }
+}
+
+.pronostico-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem;
+}
+
+.pronostico-dia {
+    background: var(--color-surface-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    border-top: 3px solid var(--color-primary);
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.pronostico-dia:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.pronostico-fecha {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.pronostico-icono {
+    font-size: 2.5rem;
+    margin: 1rem 0;
+}
+
+.pronostico-temp {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.pronostico-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.mareas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.marea-card {
+    background: var(--color-surface-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-top: 3px solid #2196F3;
+    transition: var(--transition);
+}
+
+.marea-card:hover {
+    transform: translateY(-5px);
+}
+
+.marea-titulo {
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.marea-dato {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--color-surface);
+}
+
+.marea-dato span:first-child {
+    color: var(--color-text-secondary);
+}
+
+/* REGISTRO */
+.registro-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 2rem;
+}
+
+.registro-formulario, .registro-historial {
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.registro-formulario h3, .registro-historial h3 {
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-grupo {
+    margin-bottom: 1.5rem;
+}
+
+.form-grupo label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+.form-grupo input, .form-grupo select, .form-grupo textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--color-surface-light);
+    border: 2px solid transparent;
+    color: var(--color-text);
+    border-radius: 8px;
+    font-family: inherit;
+    transition: var(--transition);
+    font-size: 0.95rem;
+}
+
+.form-grupo input:focus, .form-grupo select:focus, .form-grupo textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: #3a4454;
+    box-shadow: 0 0 10px rgba(25, 118, 210, 0.2);
+}
+
+.btn-primary, .btn-secundario {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0066CC, #003399);
+    color: white;
+    border: 2px solid transparent;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 102, 204, 0.4);
+    border-color: #FFD700;
+}
+
+.btn-primary:active {
+    transform: translateY(0px);
+}
+
+.btn-secundario {
+    background: var(--color-surface-light);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    width: auto;
+    margin-top: 1rem;
+}
+
+.btn-secundario:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.filtros-historial {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+#filtroEspecie {
+    flex: 1;
+    min-width: 150px;
+}
+
+.historial-lista {
+    display: grid;
+    gap: 1rem;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.captura-item {
+    background: var(--color-surface-light);
+    padding: 1.25rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--color-success);
+    transition: var(--transition);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.captura-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.captura-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.captura-especie {
+    font-weight: bold;
+    color: var(--color-primary);
+    font-size: 1rem;
+}
+
+.captura-peso {
+    background: var(--color-success);
+    padding: 0.35rem 0.85rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.captura-detalles {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.captura-detalle-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sin-registros {
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+}
+
+.estadisticas {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--color-surface-light);
+}
+
+.estadisticas h3 {
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.stat-card {
+    background: var(--color-surface-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    border-top: 3px solid var(--color-primary);
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.stat-card h4 {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-numero {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.stat-texto {
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* FOOTER */
+.footer {
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: 2rem;
+    border-top: 2px solid var(--color-surface-light);
+    margin-top: 3rem;
+}
+
+.footer p {
+    font-size: 0.95rem;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .registro-container {
+        grid-template-columns: 1fr;
+    }
+
+    .mapa-info-container {
+        grid-template-columns: 1fr;
+    }
+
+    .indice-item {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .nav-btn {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .nav-btn i {
+        display: none;
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+
+    .section-title h2 {
+        font-size: 1.5rem;
+    }
+
+    .mapa-container {
+        flex-direction: column;
+    }
+
+    #mapaCanvas, #batimetriaCanvas {
+        max-width: 100%;
+    }
+
+    .especies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .clima-actual {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pronostico-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .mareas-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        padding: 0 1rem;
+    }
+
+    .logo i {
+        font-size: 1.5rem;
+    }
+
+    .logo-text h1 {
+        font-size: 1.2rem;
+    }
+
+    .galicia-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .main-content {
+        padding: 0.5rem;
+    }
+
+    .section-title h2 {
+        font-size: 1.2rem;
+    }
+
+    .mapa-leyenda, .batimetria-escala {
+        min-width: 100%;
+    }
+
+    .clima-actual {
+        grid-template-columns: 1fr;
+    }
+
+    .especies-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pronostico-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .mapa-info-container {
+        display: flex;
+        flex-direction: column;
+    }
+}
