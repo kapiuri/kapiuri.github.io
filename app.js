@@ -1,42 +1,50 @@
 // app.js
-const map = L.map('map').setView([42.6, -8.9], 8);
+    const hours = data.hours;
+    const current = hours[0];
 
-// Mapa base
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    // Actual
+    document.getElementById("data").innerHTML = `
+      🌡 Aire: ${current.airTemperature.noaa} °C<br>
+      🌊 Agua: ${current.waterTemperature.noaa} °C<br>
+      🌊 Oleaje: ${current.waveHeight.noaa} m<br>
+      💨 Viento: ${current.windSpeed.noaa} m/s<br>
+      🧭 Dirección: ${current.windDirection.noaa}°<br>
+      📊 Presión: ${current.pressure.noaa} hPa
+    `;
 
-// Batimetría (EMODnet WMS)
-L.tileLayer.wms("https://ows.emodnet-bathymetry.eu/wms", {
-  layers: 'emodnet:mean_atlas_land',
-  format: 'image/png',
-  transparent: true,
-  opacity: 0.5
-}).addTo(map);
+    drawWind(lat, lon, current.windDirection.noaa);
 
-let marker;
-let windLayer;
+    // Forecast 12h
+    let forecastHTML = "";
+    hours.slice(0, 12).forEach(h => {
+      forecastHTML += `
+        🕒 ${h.time.slice(11,16)} | 🌊 ${h.waveHeight.noaa}m | 💨 ${h.windSpeed.noaa}m/s<br>
+      `;
+    });
+    document.getElementById("forecast").innerHTML = forecastHTML;
 
-async function getMarineData(lat, lon) {
-  const url = `https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lon}&params=windSpeed,windDirection,waveHeight,waterTemperature,airTemperature,pressure&source=noaa`;
+    // Fishing logic
+    evaluateFishing(current);
 
-  const res = await fetch(url, {
-    headers: {
-      'Authorization': CONFIG.STORMGLASS_KEY
-    }
-  });
+  } catch (err) {
+    document.getElementById("data").innerHTML = "❌ Error cargando datos";
+  }
+}
 
-  const data = await res.json();
-  const current = data.hours[0];
+function evaluateFishing(d) {
+  let score = 0;
 
-  document.getElementById("data").innerHTML = `
-    🌡 Aire: ${current.airTemperature.noaa} °C<br>
-    🌊 Agua: ${current.waterTemperature.noaa} °C<br>
-    🌊 Oleaje: ${current.waveHeight.noaa} m<br>
-    💨 Viento: ${current.windSpeed.noaa} m/s<br>
-    🧭 Dirección: ${current.windDirection.noaa}°<br>
-    📊 Presión: ${current.pressure.noaa} hPa
-  `;
+  if (d.waveHeight.noaa < 1.5) score++;
+  if (d.windSpeed.noaa < 6) score++;
+  if (d.pressure.noaa > 1010) score++;
 
-  drawWind(lat, lon, current.windDirection.noaa);
+  let result = "";
+
+  if (score >= 3) result = "🔥 Muy buenas condiciones";
+  else if (score === 2) result = "👍 Condiciones decentes";
+  else result = "⚠️ Malas condiciones";
+
+  document.getElementById("fishing").innerHTML = result;
 }
 
 function drawWind(lat, lon, deg) {
@@ -49,8 +57,7 @@ function drawWind(lat, lon, deg) {
   const lon2 = lon + len * Math.sin(rad);
 
   windLayer = L.polyline([[lat, lon], [lat2, lon2]], {
-    color: 'cyan',
-    weight: 3
+    color: 'cyan', weight: 3
   }).addTo(map);
 }
 
@@ -63,21 +70,24 @@ map.on('click', (e) => {
   getMarineData(lat, lng);
 });
 
-// Zonas de pesca
-fetch('spots.json')
+// Spots
+fetch('./spots.json')
   .then(res => res.json())
   .then(spots => {
-    spots.forEach(spot => {
-      const m = L.marker([spot.lat, spot.lon]).addTo(map);
-      m.bindPopup(`<b>${spot.name}</b><br>🐟 ${spot.species.join(', ')}`);
+    spots.forEach(s => {
+      L.marker([s.lat, s.lon]).addTo(map)
+        .bindPopup(`<b>${s.name}</b><br>🐟 ${s.species.join(', ')}`);
     });
-  });
+  })
+  .catch(() => console.log("Error cargando spots"));
 
 // Geolocalización
-navigator.geolocation.getCurrentPosition(pos => {
-  const { latitude, longitude } = pos.coords;
-  map.setView([latitude, longitude], 10);
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    map.setView([latitude, longitude], 10);
 
-  L.marker([latitude, longitude]).addTo(map)
-    .bindPopup("📍 Tu posición").openPopup();
-});
+    L.marker([latitude, longitude]).addTo(map)
+      .bindPopup("📍 Tu posición").openPopup();
+  });
+}
