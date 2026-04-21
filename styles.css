@@ -12,9 +12,7 @@ header {
   text-align: center;
 }
 
-#map {
-  height: 65vh;
-}
+#map { height: 60vh; }
 
 #panel {
   padding: 15px;
@@ -22,6 +20,4 @@ header {
   border-top: 1px solid #222;
 }
 
-#data {
-  line-height: 1.6;
-}
+#data, #forecast, #fishing { margin-bottom: 15px; }
