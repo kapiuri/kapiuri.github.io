@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pesca kapiuri</title>
+  <title>Pesca Galicia PRO</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,157 +12,278 @@
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
       <div class="header-brand">
         <div class="brand-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-            <circle cx="8" cy="10" r="1" fill="currentColor"/>
-          </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="10" r="1" fill="currentColor"/></svg>
         </div>
-        <span class="brand-name">Pesca kapiuri</span>
+        <span class="brand-name">PESCA GALICIA <em>PRO</em></span>
       </div>
-      <div class="header-status">
-        <span class="status-dot" id="apiStatus"></span>
-        <span class="status-label" id="statusLabel">Listo</span>
+
+      <div class="layer-controls" id="layerControls">
+        <button class="layer-btn active" data-layer="bathy">Batimetría</button>
+        <button class="layer-btn" data-layer="sst">SST</button>
+        <button class="layer-btn" data-layer="protected">Protegidas</button>
+        <button class="layer-btn" data-layer="ports">Puertos</button>
+        <button class="layer-btn" data-layer="spots">Spots</button>
       </div>
-      <button class="header-locate-btn" id="locateBtn" title="Ir a mi posición">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-        </svg>
-        Mi posición
-      </button>
+
+      <div class="header-right">
+        <div class="header-status">
+          <span class="status-dot" id="apiStatus"></span>
+          <span class="status-label" id="statusLabel">Listo</span>
+        </div>
+        <button class="header-btn" id="locateBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          Mi posición
+        </button>
+        <button class="header-btn accent" id="shareBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Compartir
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- MAIN LAYOUT -->
   <main class="app-layout">
 
-    <!-- MAP -->
     <section class="map-section">
       <div id="map"></div>
       <div class="map-hint" id="mapHint">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Haz clic en cualquier punto del mapa para obtener condiciones
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Haz clic en el mapa para ver condiciones
       </div>
     </section>
 
-    <!-- PANEL -->
-    <aside class="data-panel" id="dataPanel">
+    <aside class="data-panel">
 
-      <!-- ESTADO INICIAL -->
-      <div class="panel-empty" id="panelEmpty">
-        <div class="empty-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-            <path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke-linejoin="round"/>
-          </svg>
+      <nav class="tab-bar">
+        <button class="tab active" data-tab="conditions">Condiciones</button>
+        <button class="tab" data-tab="forecast">Predicción</button>
+        <button class="tab" data-tab="fishing">Pesca</button>
+        <button class="tab" data-tab="log">Diario</button>
+      </nav>
+
+      <!-- TAB: CONDITIONS -->
+      <div class="tab-content active" id="tab-conditions">
+
+        <div class="panel-empty" id="panelEmpty">
+          <div class="empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke-linejoin="round"/></svg></div>
+          <p class="empty-title">Selecciona un punto</p>
+          <p class="empty-sub">Haz clic en el mapa para obtener condiciones marinas completas.</p>
         </div>
-        <p class="empty-title">Selecciona un punto</p>
-        <p class="empty-sub">Haz clic en el mapa para ver condiciones marinas y predicciones para ese punto.</p>
+
+        <div class="panel-loading hidden" id="panelLoading">
+          <div class="loading-spinner"></div>
+          <p>Cargando datos marinos…</p>
+        </div>
+
+        <div class="panel-data hidden" id="panelData">
+
+          <div class="section-header">
+            <span class="section-label">Punto seleccionado</span>
+            <span class="coords-badge mono" id="coordsBadge">—</span>
+          </div>
+
+          <div class="fishing-score-card" id="fishingScoreCard">
+            <div class="score-left">
+              <span class="score-sublabel">Condición de pesca</span>
+              <span class="score-value" id="scoreValue">—</span>
+            </div>
+            <div class="score-bars" id="scoreBars"></div>
+            <div class="moon-block">
+              <span class="moon-icon" id="moonIcon">🌑</span>
+              <span class="moon-label" id="moonLabel">—</span>
+            </div>
+          </div>
+
+          <div class="alert-banner hidden" id="alertBanner">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span id="alertText">Condiciones adversas</span>
+          </div>
+
+          <div class="section-header mt">
+            <span class="section-label">Condiciones actuales</span>
+            <span class="data-time mono" id="dataTime">—</span>
+          </div>
+
+          <div class="conditions-grid">
+            <div class="condition-card">
+              <div class="cond-icon air"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div>
+              <span class="cond-label">Aire</span>
+              <span class="cond-value mono" id="airTemp">—</span>
+              <span class="cond-unit">°C</span>
+            </div>
+            <div class="condition-card">
+              <div class="cond-icon water"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div>
+              <span class="cond-label">Agua</span>
+              <span class="cond-value mono" id="waterTemp">—</span>
+              <span class="cond-unit">°C</span>
+            </div>
+            <div class="condition-card">
+              <div class="cond-icon wave"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3-4 6-4 6 4 6 4 3-4 6-4"/><path d="M2 18s3-4 6-4 6 4 6 4 3-4 6-4"/></svg></div>
+              <span class="cond-label">Oleaje</span>
+              <span class="cond-value mono" id="waveHeight">—</span>
+              <span class="cond-unit">m</span>
+            </div>
+            <div class="condition-card">
+              <div class="cond-icon wind"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></div>
+              <span class="cond-label">Viento</span>
+              <span class="cond-value mono" id="windSpeed">—</span>
+              <span class="cond-unit">m/s</span>
+            </div>
+            <div class="condition-card">
+              <div class="cond-icon compass"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8l-4 8 4-2 4 2-4-8z" fill="currentColor"/></svg></div>
+              <span class="cond-label">Dirección</span>
+              <span class="cond-value mono" id="windDir">—</span>
+              <span class="cond-unit">°</span>
+            </div>
+            <div class="condition-card">
+              <div class="cond-icon pressure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <span class="cond-label">Presión</span>
+              <span class="cond-value mono" id="pressure">—</span>
+              <span class="cond-unit">hPa</span>
+            </div>
+            <div class="condition-card">
+              <div class="cond-icon uv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+              <span class="cond-label">Índice UV</span>
+              <span class="cond-value mono" id="uvIndex">—</span>
+              <span class="cond-unit">UV</span>
+            </div>
+            <div class="condition-card">
+              <div class="cond-icon rain"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="16" y1="13" x2="16" y2="21"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="12" y1="15" x2="12" y2="23"/><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg></div>
+              <span class="cond-label">Lluvia</span>
+              <span class="cond-value mono" id="rainProb">—</span>
+              <span class="cond-unit">%</span>
+            </div>
+          </div>
+
+          <div class="section-header mt">
+            <span class="section-label">Mareas hoy</span>
+          </div>
+          <div class="tides-row" id="tidesRow">
+            <div class="tide-shimmer"></div><div class="tide-shimmer"></div>
+            <div class="tide-shimmer"></div><div class="tide-shimmer"></div>
+          </div>
+
+        </div>
       </div>
 
-      <!-- CARGANDO -->
-      <div class="panel-loading hidden" id="panelLoading">
-        <div class="loading-spinner"></div>
-        <p>Cargando datos marinos…</p>
+      <!-- TAB: FORECAST -->
+      <div class="tab-content" id="tab-forecast">
+        <div class="tab-inner">
+          <div class="no-data-msg" id="forecastEmpty">Selecciona un punto en el mapa para ver la predicción.</div>
+          <div id="forecastContent" class="hidden">
+            <div class="section-header">
+              <span class="section-label">Oleaje — próximas 48h</span>
+            </div>
+            <div class="chart-wrap"><canvas id="waveChart"></canvas></div>
+
+            <div class="section-header mt">
+              <span class="section-label">Viento — próximas 48h</span>
+            </div>
+            <div class="chart-wrap"><canvas id="windChart"></canvas></div>
+
+            <div class="section-header mt">
+              <span class="section-label">Tabla horaria</span>
+            </div>
+            <div class="forecast-table">
+              <div class="forecast-header">
+                <span>Hora</span><span>Oleaje</span><span>Viento</span><span>Estado</span>
+              </div>
+              <div id="forecastRows"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- DATOS -->
-      <div class="panel-data hidden" id="panelData">
+      <!-- TAB: FISHING -->
+      <div class="tab-content" id="tab-fishing">
+        <div class="tab-inner">
 
-        <!-- Coordenadas seleccionadas -->
-        <div class="section-header">
-          <span class="section-label">Punto seleccionado</span>
-          <span class="coords-badge" id="coordsBadge">—</span>
-        </div>
+          <div class="section-header">
+            <span class="section-label">Mejor hora del día</span>
+          </div>
+          <div class="best-hour-card" id="bestHourCard">
+            <div class="best-hour-icon">⏰</div>
+            <div>
+              <div class="best-hour-time" id="bestHourTime">Selecciona un punto</div>
+              <div class="best-hour-reason" id="bestHourReason">Calculamos la mejor ventana de pesca</div>
+            </div>
+          </div>
 
-        <!-- Puntuación de pesca -->
-        <div class="fishing-score-card" id="fishingScoreCard">
-          <div class="score-left">
-            <span class="score-label">Condición</span>
-            <span class="score-value" id="scoreValue">—</span>
+          <div class="section-header mt">
+            <span class="section-label">Especies recomendadas ahora</span>
           </div>
-          <div class="score-bars" id="scoreBars"></div>
-        </div>
+          <div class="species-grid" id="speciesGrid">
+            <div class="species-placeholder">Carga datos para ver recomendaciones</div>
+          </div>
 
-        <!-- Condiciones actuales -->
-        <div class="section-header mt">
-          <span class="section-label">Condiciones actuales</span>
-          <span class="data-time" id="dataTime"></span>
-        </div>
+          <div class="section-header mt">
+            <span class="section-label">Calendario de vedas — Galicia</span>
+          </div>
+          <div id="vedasList"></div>
 
-        <div class="conditions-grid">
-          <div class="condition-card" data-key="airTemp">
-            <div class="cond-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
-            </div>
-            <span class="cond-label">Aire</span>
-            <span class="cond-value" id="airTemp">—</span>
-            <span class="cond-unit">°C</span>
+          <div class="section-header mt" style="flex-wrap:wrap;gap:8px;">
+            <span class="section-label">Tallas mínimas legales</span>
+            <input type="text" id="speciesSearch" placeholder="Buscar especie…" class="mini-search">
           </div>
-          <div class="condition-card" data-key="waterTemp">
-            <div class="cond-icon water">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-            </div>
-            <span class="cond-label">Agua</span>
-            <span class="cond-value" id="waterTemp">—</span>
-            <span class="cond-unit">°C</span>
-          </div>
-          <div class="condition-card" data-key="waveHeight">
-            <div class="cond-icon wave">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3-4 6-4 6 4 6 4 3-4 6-4"/><path d="M2 18s3-4 6-4 6 4 6 4 3-4 6-4"/></svg>
-            </div>
-            <span class="cond-label">Oleaje</span>
-            <span class="cond-value" id="waveHeight">—</span>
-            <span class="cond-unit">m</span>
-          </div>
-          <div class="condition-card" data-key="windSpeed">
-            <div class="cond-icon wind">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
-            </div>
-            <span class="cond-label">Viento</span>
-            <span class="cond-value" id="windSpeed">—</span>
-            <span class="cond-unit">m/s</span>
-          </div>
-          <div class="condition-card" data-key="windDir">
-            <div class="cond-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8l-4 8 4-2 4 2-4-8z" fill="currentColor"/></svg>
-            </div>
-            <span class="cond-label">Dirección</span>
-            <span class="cond-value" id="windDir">—</span>
-            <span class="cond-unit">°</span>
-          </div>
-          <div class="condition-card" data-key="pressure">
-            <div class="cond-icon pressure">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </div>
-            <span class="cond-label">Presión</span>
-            <span class="cond-value" id="pressure">—</span>
-            <span class="cond-unit">hPa</span>
-          </div>
-        </div>
+          <div id="speciesTable"></div>
 
-        <!-- Forecast -->
-        <div class="section-header mt">
-          <span class="section-label">Próximas 12 horas</span>
         </div>
-        <div class="forecast-table" id="forecastTable">
-          <div class="forecast-header">
-            <span>Hora</span>
-            <span>Oleaje</span>
-            <span>Viento</span>
-            <span>Estado</span>
-          </div>
-          <div id="forecastRows"></div>
-        </div>
-
       </div>
+
+      <!-- TAB: LOG -->
+      <div class="tab-content" id="tab-log">
+        <div class="tab-inner">
+
+          <div class="section-header">
+            <span class="section-label">Nueva captura</span>
+          </div>
+          <div class="log-form">
+            <div class="form-row">
+              <label>Fecha</label>
+              <input type="date" id="logDate" class="form-input">
+            </div>
+            <div class="form-row">
+              <label>Especie</label>
+              <input type="text" id="logSpecies" class="form-input" placeholder="Ej: Lubina">
+            </div>
+            <div class="form-row">
+              <label>Peso (kg)</label>
+              <input type="number" id="logWeight" class="form-input" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="form-row">
+              <label>Coordenadas</label>
+              <input type="text" id="logCoords" class="form-input" placeholder="Clic en mapa para capturar" readonly>
+            </div>
+            <div class="form-row">
+              <label>Notas</label>
+              <textarea id="logNotes" class="form-input" rows="2" placeholder="Cebo, técnica, condiciones…"></textarea>
+            </div>
+            <button class="save-btn" id="saveLogBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Guardar captura
+            </button>
+          </div>
+
+          <div class="section-header mt">
+            <span class="section-label">Historial (<span id="logCount">0</span>)</span>
+            <button class="export-btn" id="exportBtn">Exportar CSV</button>
+          </div>
+          <div id="logEntries"></div>
+
+        </div>
+      </div>
+
     </aside>
   </main>
 
+  <div class="toast hidden" id="toast"></div>
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
