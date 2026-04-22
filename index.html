@@ -2,29 +2,165 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pesca Galicia PRO</title>
-
-  <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-  <header>
-    <h1>🎣 Pesca Galicia PRO</h1>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="8" cy="10" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="brand-name">PESCA GALICIA <em>PRO</em></span>
+      </div>
+      <div class="header-status">
+        <span class="status-dot" id="apiStatus"></span>
+        <span class="status-label" id="statusLabel">Listo</span>
+      </div>
+      <button class="header-locate-btn" id="locateBtn" title="Ir a mi posición">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
+        Mi posición
+      </button>
+    </div>
   </header>
 
-  <div id="map"></div>
+  <!-- MAIN LAYOUT -->
+  <main class="app-layout">
 
-  <div id="panel">
-    <h2>Condiciones</h2>
-    <div id="data">Selecciona un punto en el mapa</div>
+    <!-- MAP -->
+    <section class="map-section">
+      <div id="map"></div>
+      <div class="map-hint" id="mapHint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Haz clic en cualquier punto del mapa para obtener condiciones
+      </div>
+    </section>
 
-    <h2>🎯 Predicción próximas horas</h2>
-    <div id="forecast"></div>
+    <!-- PANEL -->
+    <aside class="data-panel" id="dataPanel">
 
-    <h2>🐟 Recomendación pesca</h2>
-    <div id="fishing"></div>
-  </div>
+      <!-- ESTADO INICIAL -->
+      <div class="panel-empty" id="panelEmpty">
+        <div class="empty-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="empty-title">Selecciona un punto</p>
+        <p class="empty-sub">Haz clic en el mapa para ver condiciones marinas y predicciones para ese punto.</p>
+      </div>
+
+      <!-- CARGANDO -->
+      <div class="panel-loading hidden" id="panelLoading">
+        <div class="loading-spinner"></div>
+        <p>Cargando datos marinos…</p>
+      </div>
+
+      <!-- DATOS -->
+      <div class="panel-data hidden" id="panelData">
+
+        <!-- Coordenadas seleccionadas -->
+        <div class="section-header">
+          <span class="section-label">Punto seleccionado</span>
+          <span class="coords-badge" id="coordsBadge">—</span>
+        </div>
+
+        <!-- Puntuación de pesca -->
+        <div class="fishing-score-card" id="fishingScoreCard">
+          <div class="score-left">
+            <span class="score-label">Condición</span>
+            <span class="score-value" id="scoreValue">—</span>
+          </div>
+          <div class="score-bars" id="scoreBars"></div>
+        </div>
+
+        <!-- Condiciones actuales -->
+        <div class="section-header mt">
+          <span class="section-label">Condiciones actuales</span>
+          <span class="data-time" id="dataTime"></span>
+        </div>
+
+        <div class="conditions-grid">
+          <div class="condition-card" data-key="airTemp">
+            <div class="cond-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+            </div>
+            <span class="cond-label">Aire</span>
+            <span class="cond-value" id="airTemp">—</span>
+            <span class="cond-unit">°C</span>
+          </div>
+          <div class="condition-card" data-key="waterTemp">
+            <div class="cond-icon water">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            </div>
+            <span class="cond-label">Agua</span>
+            <span class="cond-value" id="waterTemp">—</span>
+            <span class="cond-unit">°C</span>
+          </div>
+          <div class="condition-card" data-key="waveHeight">
+            <div class="cond-icon wave">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3-4 6-4 6 4 6 4 3-4 6-4"/><path d="M2 18s3-4 6-4 6 4 6 4 3-4 6-4"/></svg>
+            </div>
+            <span class="cond-label">Oleaje</span>
+            <span class="cond-value" id="waveHeight">—</span>
+            <span class="cond-unit">m</span>
+          </div>
+          <div class="condition-card" data-key="windSpeed">
+            <div class="cond-icon wind">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+            </div>
+            <span class="cond-label">Viento</span>
+            <span class="cond-value" id="windSpeed">—</span>
+            <span class="cond-unit">m/s</span>
+          </div>
+          <div class="condition-card" data-key="windDir">
+            <div class="cond-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8l-4 8 4-2 4 2-4-8z" fill="currentColor"/></svg>
+            </div>
+            <span class="cond-label">Dirección</span>
+            <span class="cond-value" id="windDir">—</span>
+            <span class="cond-unit">°</span>
+          </div>
+          <div class="condition-card" data-key="pressure">
+            <div class="cond-icon pressure">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="cond-label">Presión</span>
+            <span class="cond-value" id="pressure">—</span>
+            <span class="cond-unit">hPa</span>
+          </div>
+        </div>
+
+        <!-- Forecast -->
+        <div class="section-header mt">
+          <span class="section-label">Próximas 12 horas</span>
+        </div>
+        <div class="forecast-table" id="forecastTable">
+          <div class="forecast-header">
+            <span>Hora</span>
+            <span>Oleaje</span>
+            <span>Viento</span>
+            <span>Estado</span>
+          </div>
+          <div id="forecastRows"></div>
+        </div>
+
+      </div>
+    </aside>
+  </main>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="app.js"></script>
