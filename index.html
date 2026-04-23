@@ -2,285 +2,379 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pesca Galicia PRO</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>PESCA GALICIA PRO</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="header-brand">
-        <div class="brand-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="10" r="1" fill="currentColor"/></svg>
-        </div>
-        <span class="brand-name">PESCA GALICIA <em>PRO</em></span>
-      </div>
+  <!-- SCANLINE OVERLAY -->
+  <div class="scanline"></div>
+  <div class="grid-bg"></div>
 
-      <div class="layer-controls" id="layerControls">
-        <button class="layer-btn active" data-layer="bathy">Batimetría</button>
-        <button class="layer-btn" data-layer="sst">SST</button>
-        <button class="layer-btn" data-layer="protected">Protegidas</button>
-        <button class="layer-btn" data-layer="ports">Puertos</button>
-        <button class="layer-btn" data-layer="spots">Spots</button>
+  <!-- ============ HEADER ============ -->
+  <header class="hud-header">
+    <div class="hud-header-left">
+      <div class="hud-logo">
+        <canvas id="radarMini" width="36" height="36"></canvas>
       </div>
+      <div class="hud-title-block">
+        <span class="hud-title">PESCA GALICIA</span>
+        <span class="hud-sub">SISTEMA DE ANÁLISIS MARINO · PRO</span>
+      </div>
+    </div>
 
-      <div class="header-right">
-        <div class="header-status">
-          <span class="status-dot" id="apiStatus"></span>
-          <span class="status-label" id="statusLabel">Listo</span>
-        </div>
-        <button class="header-btn" id="locateBtn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-          Mi posición
-        </button>
-        <button class="header-btn accent" id="shareBtn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          Compartir
-        </button>
+    <nav class="hud-nav" id="hudNav">
+      <button class="nav-item active" data-page="radar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/></svg>
+        <span>RADAR</span>
+      </button>
+      <button class="nav-item" data-page="map">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+        <span>MAPA</span>
+      </button>
+      <button class="nav-item" data-page="forecast">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>PREDICCIÓN</span>
+      </button>
+      <button class="nav-item" data-page="fishing">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17"/></svg>
+        <span>PESCA</span>
+      </button>
+      <button class="nav-item" data-page="log">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>DIARIO</span>
+      </button>
+    </nav>
+
+    <div class="hud-header-right">
+      <div class="hud-clock" id="hudClock">00:00:00</div>
+      <div class="hud-status-row">
+        <span class="status-pip" id="statusPip"></span>
+        <span class="status-txt" id="statusTxt">STANDBY</span>
       </div>
     </div>
   </header>
 
-  <main class="app-layout">
+  <!-- ============ PAGES ============ -->
 
-    <section class="map-section">
-      <div id="map"></div>
-      <div class="map-hint" id="mapHint">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        Haz clic en el mapa para ver condiciones
-      </div>
-    </section>
+  <!-- PAGE: RADAR (home dashboard) -->
+  <section class="page active" id="page-radar">
+    <div class="radar-layout">
 
-    <aside class="data-panel">
-
-      <nav class="tab-bar">
-        <button class="tab active" data-tab="conditions">Condiciones</button>
-        <button class="tab" data-tab="forecast">Predicción</button>
-        <button class="tab" data-tab="fishing">Pesca</button>
-        <button class="tab" data-tab="log">Diario</button>
-      </nav>
-
-      <!-- TAB: CONDITIONS -->
-      <div class="tab-content active" id="tab-conditions">
-
-        <div class="panel-empty" id="panelEmpty">
-          <div class="empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17C20 17 22 14 22 12C22 10 20 6 20 6Z" stroke-linejoin="round"/></svg></div>
-          <p class="empty-title">Selecciona un punto</p>
-          <p class="empty-sub">Haz clic en el mapa para obtener condiciones marinas completas.</p>
+      <!-- Left: Big radar + wave anim -->
+      <div class="radar-left">
+        <div class="radar-container">
+          <canvas id="radarMain" width="320" height="320"></canvas>
+          <div class="radar-center-info" id="radarCenter">
+            <span class="rci-label">SELECCIONA</span>
+            <span class="rci-value">PUNTO</span>
+            <span class="rci-sub">EN EL MAPA</span>
+          </div>
         </div>
-
-        <div class="panel-loading hidden" id="panelLoading">
-          <div class="loading-spinner"></div>
-          <p>Cargando datos marinos…</p>
-        </div>
-
-        <div class="panel-data hidden" id="panelData">
-
-          <div class="section-header">
-            <span class="section-label">Punto seleccionado</span>
-            <span class="coords-badge mono" id="coordsBadge">—</span>
-          </div>
-
-          <div class="fishing-score-card" id="fishingScoreCard">
-            <div class="score-left">
-              <span class="score-sublabel">Condición de pesca</span>
-              <span class="score-value" id="scoreValue">—</span>
-            </div>
-            <div class="score-bars" id="scoreBars"></div>
-            <div class="moon-block">
-              <span class="moon-icon" id="moonIcon">🌑</span>
-              <span class="moon-label" id="moonLabel">—</span>
-            </div>
-          </div>
-
-          <div class="alert-banner hidden" id="alertBanner">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <span id="alertText">Condiciones adversas</span>
-          </div>
-
-          <div class="section-header mt">
-            <span class="section-label">Condiciones actuales</span>
-            <span class="data-time mono" id="dataTime">—</span>
-          </div>
-
-          <div class="conditions-grid">
-            <div class="condition-card">
-              <div class="cond-icon air"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div>
-              <span class="cond-label">Aire</span>
-              <span class="cond-value mono" id="airTemp">—</span>
-              <span class="cond-unit">°C</span>
-            </div>
-            <div class="condition-card">
-              <div class="cond-icon water"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div>
-              <span class="cond-label">Agua</span>
-              <span class="cond-value mono" id="waterTemp">—</span>
-              <span class="cond-unit">°C</span>
-            </div>
-            <div class="condition-card">
-              <div class="cond-icon wave"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3-4 6-4 6 4 6 4 3-4 6-4"/><path d="M2 18s3-4 6-4 6 4 6 4 3-4 6-4"/></svg></div>
-              <span class="cond-label">Oleaje</span>
-              <span class="cond-value mono" id="waveHeight">—</span>
-              <span class="cond-unit">m</span>
-            </div>
-            <div class="condition-card">
-              <div class="cond-icon wind"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></div>
-              <span class="cond-label">Viento</span>
-              <span class="cond-value mono" id="windSpeed">—</span>
-              <span class="cond-unit">m/s</span>
-            </div>
-            <div class="condition-card">
-              <div class="cond-icon compass"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8l-4 8 4-2 4 2-4-8z" fill="currentColor"/></svg></div>
-              <span class="cond-label">Dirección</span>
-              <span class="cond-value mono" id="windDir">—</span>
-              <span class="cond-unit">°</span>
-            </div>
-            <div class="condition-card">
-              <div class="cond-icon pressure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-              <span class="cond-label">Presión</span>
-              <span class="cond-value mono" id="pressure">—</span>
-              <span class="cond-unit">hPa</span>
-            </div>
-            <div class="condition-card">
-              <div class="cond-icon uv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
-              <span class="cond-label">Índice UV</span>
-              <span class="cond-value mono" id="uvIndex">—</span>
-              <span class="cond-unit">UV</span>
-            </div>
-            <div class="condition-card">
-              <div class="cond-icon rain"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="16" y1="13" x2="16" y2="21"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="12" y1="15" x2="12" y2="23"/><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg></div>
-              <span class="cond-label">Lluvia</span>
-              <span class="cond-value mono" id="rainProb">—</span>
-              <span class="cond-unit">%</span>
-            </div>
-          </div>
-
-          <div class="section-header mt">
-            <span class="section-label">Mareas hoy</span>
-          </div>
-          <div class="tides-row" id="tidesRow">
-            <div class="tide-shimmer"></div><div class="tide-shimmer"></div>
-            <div class="tide-shimmer"></div><div class="tide-shimmer"></div>
-          </div>
-
+        <div class="wave-canvas-wrap">
+          <div class="wcw-label">OLEAJE EN TIEMPO REAL</div>
+          <canvas id="waveAnim" width="440" height="90"></canvas>
         </div>
       </div>
 
-      <!-- TAB: FORECAST -->
-      <div class="tab-content" id="tab-forecast">
-        <div class="tab-inner">
-          <div class="no-data-msg" id="forecastEmpty">Selecciona un punto en el mapa para ver la predicción.</div>
-          <div id="forecastContent" class="hidden">
-            <div class="section-header">
-              <span class="section-label">Oleaje — próximas 48h</span>
+      <!-- Center: Primary metrics -->
+      <div class="radar-center-col">
+        <div class="hud-section-label">// CONDICIONES ACTUALES</div>
+        <div class="metrics-grid">
+          <div class="metric-card" id="mc-wave">
+            <div class="mc-label">OLEAJE</div>
+            <div class="mc-value" id="mv-wave">—</div>
+            <div class="mc-unit">METROS</div>
+            <div class="mc-bar"><div class="mc-bar-fill" id="mb-wave"></div></div>
+          </div>
+          <div class="metric-card" id="mc-wind">
+            <div class="mc-label">VIENTO</div>
+            <div class="mc-value" id="mv-wind">—</div>
+            <div class="mc-unit">M/S</div>
+            <div class="mc-bar"><div class="mc-bar-fill" id="mb-wind"></div></div>
+          </div>
+          <div class="metric-card" id="mc-water">
+            <div class="mc-label">T. AGUA</div>
+            <div class="mc-value" id="mv-water">—</div>
+            <div class="mc-unit">°C</div>
+            <div class="mc-bar"><div class="mc-bar-fill water" id="mb-water"></div></div>
+          </div>
+          <div class="metric-card" id="mc-air">
+            <div class="mc-label">T. AIRE</div>
+            <div class="mc-value" id="mv-air">—</div>
+            <div class="mc-unit">°C</div>
+            <div class="mc-bar"><div class="mc-bar-fill air" id="mb-air"></div></div>
+          </div>
+          <div class="metric-card" id="mc-pressure">
+            <div class="mc-label">PRESIÓN</div>
+            <div class="mc-value" id="mv-pressure">—</div>
+            <div class="mc-unit">HPA</div>
+            <div class="mc-bar"><div class="mc-bar-fill pressure" id="mb-pressure"></div></div>
+          </div>
+          <div class="metric-card" id="mc-dir">
+            <div class="mc-label">DIRECCIÓN</div>
+            <div class="mc-value" id="mv-dir">—</div>
+            <div class="mc-unit">GRADOS</div>
+            <div class="mc-compass" id="compassArrow">
+              <svg viewBox="0 0 40 40" width="32" height="32"><circle cx="20" cy="20" r="18" stroke="var(--g)" stroke-width="1" fill="none" opacity=".3"/><polygon points="20,4 23,20 20,24 17,20" fill="var(--acc)" id="compassPoly"/></svg>
             </div>
-            <div class="chart-wrap"><canvas id="waveChart"></canvas></div>
+          </div>
+        </div>
 
-            <div class="section-header mt">
-              <span class="section-label">Viento — próximas 48h</span>
+        <!-- Score bar -->
+        <div class="score-hud" id="scoreHud">
+          <div class="score-hud-label">// ÍNDICE DE PESCA</div>
+          <div class="score-hud-body">
+            <div class="score-segments" id="scoreSegs"></div>
+            <div class="score-text-block">
+              <span class="score-main" id="scoreMain">—</span>
+              <span class="score-sub" id="scoreSub">Selecciona punto</span>
             </div>
-            <div class="chart-wrap"><canvas id="windChart"></canvas></div>
+          </div>
+        </div>
 
-            <div class="section-header mt">
-              <span class="section-label">Tabla horaria</span>
-            </div>
-            <div class="forecast-table">
-              <div class="forecast-header">
-                <span>Hora</span><span>Oleaje</span><span>Viento</span><span>Estado</span>
-              </div>
-              <div id="forecastRows"></div>
-            </div>
+        <!-- Moon + UV + Rain row -->
+        <div class="aux-row">
+          <div class="aux-card">
+            <span class="aux-icon" id="moonEmoji">🌑</span>
+            <span class="aux-label" id="moonName">—</span>
+            <span class="aux-key">LUNA</span>
+          </div>
+          <div class="aux-card">
+            <span class="aux-icon">☀️</span>
+            <span class="aux-label" id="uvVal">—</span>
+            <span class="aux-key">ÍNDICE UV</span>
+          </div>
+          <div class="aux-card">
+            <span class="aux-icon">🌧</span>
+            <span class="aux-label" id="rainVal">—</span>
+            <span class="aux-key">LLUVIA %</span>
+          </div>
+          <div class="aux-card">
+            <span class="aux-icon" id="bestHourIcon">⏰</span>
+            <span class="aux-label" id="bestHourVal">—</span>
+            <span class="aux-key">MEJOR HORA</span>
           </div>
         </div>
       </div>
 
-      <!-- TAB: FISHING -->
-      <div class="tab-content" id="tab-fishing">
-        <div class="tab-inner">
+      <!-- Right: Tides + alerts + coords -->
+      <div class="radar-right">
+        <div class="hud-section-label">// MAREAS HOY</div>
+        <div class="tides-col" id="tidesCol">
+          <div class="tide-shimmer"></div><div class="tide-shimmer"></div>
+          <div class="tide-shimmer"></div><div class="tide-shimmer"></div>
+        </div>
 
-          <div class="section-header">
-            <span class="section-label">Mejor hora del día</span>
+        <div class="hud-section-label" style="margin-top:18px">// POSICIÓN ACTIVA</div>
+        <div class="coords-display" id="coordsDisplay">
+          <div class="cd-line">LAT <span id="dispLat">—</span></div>
+          <div class="cd-line">LON <span id="dispLon">—</span></div>
+        </div>
+
+        <div class="alert-panel" id="alertPanel"></div>
+
+        <button class="hud-btn-primary" id="goMapBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          SELECCIONAR PUNTO
+        </button>
+        <button class="hud-btn-secondary" id="shareBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          COMPARTIR DATOS
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE: MAP -->
+  <section class="page" id="page-map">
+    <div class="map-page-layout">
+      <div class="map-controls-bar">
+        <div class="mcb-left">
+          <span class="hud-section-label">// CARTA NÁUTICA INTERACTIVA</span>
+        </div>
+        <div class="mcb-layers">
+          <button class="layer-btn active" data-layer="bathy">BATIMETRÍA</button>
+          <button class="layer-btn" data-layer="protected">PROTEGIDAS</button>
+          <button class="layer-btn" data-layer="ports">PUERTOS</button>
+          <button class="layer-btn" data-layer="spots">SPOTS</button>
+        </div>
+        <button class="hud-btn-sm" id="locateBtn">◎ MI POSICIÓN</button>
+      </div>
+      <div class="map-wrapper">
+        <div id="map"></div>
+        <div class="map-crosshair">
+          <div class="mch-h"></div><div class="mch-v"></div>
+        </div>
+        <div class="map-hint-hud" id="mapHint">▶ HAZ CLIC PARA ANALIZAR PUNTO</div>
+        <div class="map-coord-hud" id="mapCoordHud">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE: FORECAST -->
+  <section class="page" id="page-forecast">
+    <div class="forecast-page-layout">
+      <div class="fp-header">
+        <span class="hud-section-label">// PREDICCIÓN EXTENDIDA 48H</span>
+        <span class="fp-coords mono" id="fcCoords">Sin punto seleccionado</span>
+      </div>
+      <div class="fp-no-data" id="fpNoData">
+        <div class="nd-icon">⚡</div>
+        <p>Selecciona un punto en el Mapa para cargar la predicción</p>
+      </div>
+      <div class="fp-content hidden" id="fpContent">
+        <div class="charts-row">
+          <div class="chart-hud">
+            <div class="ch-label">ALTURA DE OLEAJE (m)</div>
+            <canvas id="waveChart" height="130"></canvas>
           </div>
-          <div class="best-hour-card" id="bestHourCard">
-            <div class="best-hour-icon">⏰</div>
+          <div class="chart-hud">
+            <div class="ch-label">VELOCIDAD DE VIENTO (m/s)</div>
+            <canvas id="windChart" height="130"></canvas>
+          </div>
+        </div>
+        <div class="fp-table-wrap">
+          <div class="fp-table-head">
+            <span>HORA</span><span>OLEAJE</span><span>VIENTO</span><span>DIR.</span><span>PRESIÓN</span><span>ESTADO</span>
+          </div>
+          <div id="fpRows"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE: FISHING -->
+  <section class="page" id="page-fishing">
+    <div class="fishing-page-layout">
+
+      <div class="fp2-col">
+        <div class="hud-section-label">// ESPECIES RECOMENDADAS</div>
+        <div class="species-radar-wrap">
+          <canvas id="speciesRadar" width="200" height="200"></canvas>
+        </div>
+        <div class="species-grid" id="speciesGrid">
+          <div class="sp-placeholder">Carga un punto para ver recomendaciones</div>
+        </div>
+      </div>
+
+      <div class="fp2-col">
+        <div class="hud-section-label">// CALENDARIO DE VEDAS · GALICIA</div>
+        <div id="vedasList"></div>
+
+        <div class="hud-section-label" style="margin-top:20px">// MEJOR VENTANA DE PESCA</div>
+        <div class="best-window-card" id="bestWindowCard">
+          <div class="bwc-time" id="bwcTime">—</div>
+          <div class="bwc-detail" id="bwcDetail">Selecciona un punto en el mapa</div>
+          <div class="bwc-bars" id="bwcBars"></div>
+        </div>
+      </div>
+
+      <div class="fp2-col">
+        <div class="hud-section-label">// TALLAS MÍNIMAS LEGALES</div>
+        <input type="text" id="speciesSearch" class="hud-search" placeholder="⌕ Buscar especie…">
+        <div id="speciesTable"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PAGE: LOG -->
+  <section class="page" id="page-log">
+    <div class="log-page-layout">
+
+      <div class="log-form-col">
+        <div class="hud-section-label">// REGISTRAR CAPTURA</div>
+        <div class="log-form-hud">
+          <div class="lfh-row">
+            <label>FECHA</label>
+            <input type="date" id="logDate" class="hud-input">
+          </div>
+          <div class="lfh-row">
+            <label>ESPECIE</label>
+            <input type="text" id="logSpecies" class="hud-input" placeholder="Ej: Lubina">
+          </div>
+          <div class="lfh-row two-col">
             <div>
-              <div class="best-hour-time" id="bestHourTime">Selecciona un punto</div>
-              <div class="best-hour-reason" id="bestHourReason">Calculamos la mejor ventana de pesca</div>
+              <label>PESO (KG)</label>
+              <input type="number" id="logWeight" class="hud-input" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div>
+              <label>LONGITUD (CM)</label>
+              <input type="number" id="logLength" class="hud-input" placeholder="0" min="0">
             </div>
           </div>
-
-          <div class="section-header mt">
-            <span class="section-label">Especies recomendadas ahora</span>
+          <div class="lfh-row">
+            <label>TÉCNICA</label>
+            <select id="logTech" class="hud-input">
+              <option value="">— Seleccionar —</option>
+              <option>Surfcasting</option>
+              <option>Spinning</option>
+              <option>Jigging</option>
+              <option>Mosca</option>
+              <option>Curricán</option>
+              <option>Pesca de fondo</option>
+              <option>Marisqueo</option>
+              <option>Otra</option>
+            </select>
           </div>
-          <div class="species-grid" id="speciesGrid">
-            <div class="species-placeholder">Carga datos para ver recomendaciones</div>
+          <div class="lfh-row">
+            <label>COORDENADAS</label>
+            <input type="text" id="logCoords" class="hud-input mono" placeholder="Automático desde el mapa" readonly>
           </div>
-
-          <div class="section-header mt">
-            <span class="section-label">Calendario de vedas — Galicia</span>
+          <div class="lfh-row">
+            <label>NOTAS</label>
+            <textarea id="logNotes" class="hud-input" rows="3" placeholder="Cebo, condiciones, observaciones…"></textarea>
           </div>
-          <div id="vedasList"></div>
-
-          <div class="section-header mt" style="flex-wrap:wrap;gap:8px;">
-            <span class="section-label">Tallas mínimas legales</span>
-            <input type="text" id="speciesSearch" placeholder="Buscar especie…" class="mini-search">
-          </div>
-          <div id="speciesTable"></div>
-
+          <button class="hud-btn-primary full" id="saveLogBtn">◈ GUARDAR CAPTURA</button>
         </div>
       </div>
 
-      <!-- TAB: LOG -->
-      <div class="tab-content" id="tab-log">
-        <div class="tab-inner">
-
-          <div class="section-header">
-            <span class="section-label">Nueva captura</span>
+      <div class="log-history-col">
+        <div class="log-history-header">
+          <div class="hud-section-label">// HISTORIAL <span id="logCount" class="log-count">0</span></div>
+          <div class="log-actions">
+            <button class="hud-btn-sm" id="exportBtn">↓ CSV</button>
           </div>
-          <div class="log-form">
-            <div class="form-row">
-              <label>Fecha</label>
-              <input type="date" id="logDate" class="form-input">
-            </div>
-            <div class="form-row">
-              <label>Especie</label>
-              <input type="text" id="logSpecies" class="form-input" placeholder="Ej: Lubina">
-            </div>
-            <div class="form-row">
-              <label>Peso (kg)</label>
-              <input type="number" id="logWeight" class="form-input" placeholder="0.00" step="0.01" min="0">
-            </div>
-            <div class="form-row">
-              <label>Coordenadas</label>
-              <input type="text" id="logCoords" class="form-input" placeholder="Clic en mapa para capturar" readonly>
-            </div>
-            <div class="form-row">
-              <label>Notas</label>
-              <textarea id="logNotes" class="form-input" rows="2" placeholder="Cebo, técnica, condiciones…"></textarea>
-            </div>
-            <button class="save-btn" id="saveLogBtn">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Guardar captura
-            </button>
-          </div>
-
-          <div class="section-header mt">
-            <span class="section-label">Historial (<span id="logCount">0</span>)</span>
-            <button class="export-btn" id="exportBtn">Exportar CSV</button>
-          </div>
-          <div id="logEntries"></div>
-
         </div>
+        <div class="log-stats-row" id="logStats"></div>
+        <div id="logEntries"></div>
       </div>
 
-    </aside>
-  </main>
+    </div>
+  </section>
 
-  <div class="toast hidden" id="toast"></div>
+  <!-- MOBILE NAV -->
+  <nav class="mobile-nav" id="mobileNav">
+    <button class="mnav-item active" data-page="radar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/></svg>
+      <span>Radar</span>
+    </button>
+    <button class="mnav-item" data-page="map">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg>
+      <span>Mapa</span>
+    </button>
+    <button class="mnav-item" data-page="forecast">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Pred.</span>
+    </button>
+    <button class="mnav-item" data-page="fishing">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6C20 6 18 8 14 8C10 8 8 5 4 5C4 5 6 8 6 12C6 16 4 18 4 18C8 18 10 15 14 15C18 15 20 17 20 17"/></svg>
+      <span>Pesca</span>
+    </button>
+    <button class="mnav-item" data-page="log">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Diario</span>
+    </button>
+  </nav>
+
+  <!-- TOAST -->
+  <div class="hud-toast hidden" id="toast"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
