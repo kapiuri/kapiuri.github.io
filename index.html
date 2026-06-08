@@ -12,11 +12,10 @@
 </head>
 <body>
 
-  <!-- SCANLINE OVERLAY -->
   <div class="scanline"></div>
   <div class="grid-bg"></div>
 
-  <!-- ============ HEADER ============ -->
+  <!-- HEADER -->
   <header class="hud-header">
     <div class="hud-header-left">
       <div class="hud-logo">
@@ -60,13 +59,10 @@
     </div>
   </header>
 
-  <!-- ============ PAGES ============ -->
-
-  <!-- PAGE: RADAR (home dashboard) -->
+  <!-- PAGE: RADAR -->
   <section class="page active" id="page-radar">
     <div class="radar-layout">
 
-      <!-- Left: Big radar + wave anim -->
       <div class="radar-left">
         <div class="radar-container">
           <canvas id="radarMain" width="320" height="320"></canvas>
@@ -82,7 +78,6 @@
         </div>
       </div>
 
-      <!-- Center: Primary metrics -->
       <div class="radar-center-col">
         <div class="hud-section-label">// CONDICIONES ACTUALES</div>
         <div class="metrics-grid">
@@ -120,13 +115,12 @@
             <div class="mc-label">DIRECCIÓN</div>
             <div class="mc-value" id="mv-dir">—</div>
             <div class="mc-unit">GRADOS</div>
-            <div class="mc-compass" id="compassArrow">
-              <svg viewBox="0 0 40 40" width="32" height="32"><circle cx="20" cy="20" r="18" stroke="var(--g)" stroke-width="1" fill="none" opacity=".3"/><polygon points="20,4 23,20 20,24 17,20" fill="var(--acc)" id="compassPoly"/></svg>
+            <div class="mc-compass" id="compassWrap">
+              <svg viewBox="0 0 40 40" width="32" height="32" id="compassSvg"><circle cx="20" cy="20" r="18" stroke="var(--g)" stroke-width="1" fill="none" opacity=".3"/><polygon points="20,4 23,20 20,24 17,20" fill="var(--acc)" id="compassPoly"/></svg>
             </div>
           </div>
         </div>
 
-        <!-- Score bar -->
         <div class="score-hud" id="scoreHud">
           <div class="score-hud-label">// ÍNDICE DE PESCA</div>
           <div class="score-hud-body">
@@ -138,7 +132,6 @@
           </div>
         </div>
 
-        <!-- Moon + UV + Rain row -->
         <div class="aux-row">
           <div class="aux-card">
             <span class="aux-icon" id="moonEmoji">🌑</span>
@@ -163,7 +156,6 @@
         </div>
       </div>
 
-      <!-- Right: Tides + alerts + coords -->
       <div class="radar-right">
         <div class="hud-section-label">// MAREAS HOY</div>
         <div class="tides-col" id="tidesCol">
@@ -187,6 +179,10 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           COMPARTIR DATOS
         </button>
+        <button class="hud-btn-secondary" id="reloadBtn" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.56"/></svg>
+          RECARGAR DATOS
+        </button>
       </div>
     </div>
   </section>
@@ -202,7 +198,7 @@
           <button class="layer-btn active" data-layer="bathy">BATIMETRÍA</button>
           <button class="layer-btn" data-layer="protected">PROTEGIDAS</button>
           <button class="layer-btn" data-layer="ports">PUERTOS</button>
-          <button class="layer-btn" data-layer="spots">SPOTS</button>
+          <button class="layer-btn active" data-layer="spots">SPOTS</button>
         </div>
         <button class="hud-btn-sm" id="locateBtn">◎ MI POSICIÓN</button>
       </div>
@@ -340,6 +336,7 @@
           <div class="hud-section-label">// HISTORIAL <span id="logCount" class="log-count">0</span></div>
           <div class="log-actions">
             <button class="hud-btn-sm" id="exportBtn">↓ CSV</button>
+            <button class="hud-btn-sm" id="clearLogBtn">✕ LIMPIAR</button>
           </div>
         </div>
         <div class="log-stats-row" id="logStats"></div>
