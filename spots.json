@@ -1,14 +1,27 @@
 [
-  {
-    "name": "Ría de Arousa",
-    "lat": 42.6,
-    "lon": -8.9,
-    "species": ["Lubina", "Dorada", "Sargo"]
-  },
-  {
-    "name": "Costa da Morte",
-    "lat": 43.0,
-    "lon": -9.2,
-    "species": ["Pulpo", "Merluza", "Congrio"]
-  }
+  {"name":"Punta Carreiro","lat":42.418,"lon":-8.774,"species":["Lubina","Sargo","Rodaballo"]},
+  {"name":"Playa de Carnota","lat":42.756,"lon":-9.095,"species":["Lubina","Dorada","Rodaballo"]},
+  {"name":"Ría de Arosa","lat":42.540,"lon":-8.860,"species":["Dorada","Lubina","Merluza"]},
+  {"name":"Punta Moreiras","lat":42.255,"lon":-8.820,"species":["Sargo","Lubina","Besugo"]},
+  {"name":"Cabo Fisterra","lat":42.888,"lon":-9.268,"species":["Merluza","Caballa","Besugo"]},
+  {"name":"Ría de Vigo - Boca Sur","lat":42.145,"lon":-8.870,"species":["Lubina","Rodaballo","Lenguado"]},
+  {"name":"Praia de Louro","lat":42.793,"lon":-9.113,"species":["Lubina","Sargo","Dorada"]},
+  {"name":"Monte Louro","lat":42.797,"lon":-9.099,"species":["Sargo","Lubina","Caballa"]},
+  {"name":"Ría de Corcubión","lat":42.939,"lon":-9.191,"species":["Merluza","Rodaballo","Congrio"]},
+  {"name":"Punta Insua","lat":42.786,"lon":-9.133,"species":["Besugo","Merluza","Congrio"]},
+  {"name":"Cabo Touriñán","lat":43.037,"lon":-9.296,"species":["Merluza","Caballa","Besugo"]},
+  {"name":"Ría de Camariñas","lat":43.123,"lon":-9.180,"species":["Rodaballo","Lubina","Dorada"]},
+  {"name":"Costa da Morte - Muxía","lat":43.102,"lon":-9.222,"species":["Lubina","Sargo","Rodaballo"]},
+  {"name":"Praia de Barizo","lat":43.302,"lon":-8.820,"species":["Lubina","Dorada","Lenguado"]},
+  {"name":"Ría de A Coruña","lat":43.360,"lon":-8.430,"species":["Lubina","Dorada","Sargo"]},
+  {"name":"Cabo Prior","lat":43.569,"lon":-8.322,"species":["Merluza","Besugo","Caballa"]},
+  {"name":"Ría de Ferrol","lat":43.463,"lon":-8.258,"species":["Lubina","Rodaballo","Lenguado"]},
+  {"name":"Cabo Ortegal","lat":43.769,"lon":-7.873,"species":["Merluza","Besugo","Congrio"]},
+  {"name":"Ría de Viveiro","lat":43.658,"lon":-7.590,"species":["Lubina","Dorada","Trucha de Mar"]},
+  {"name":"Ribadeo - Boca Ría","lat":43.548,"lon":-7.047,"species":["Trucha de Mar","Lubina","Rodaballo"]},
+  {"name":"Islas Cíes - Exterior","lat":42.207,"lon":-8.920,"species":["Sargo","Lubina","Besugo"]},
+  {"name":"Praia América","lat":42.109,"lon":-8.826,"species":["Lubina","Dorada","Lenguado"]},
+  {"name":"Esteiro do Miño","lat":41.869,"lon":-8.866,"species":["Lubina","Sargo","Dorada"]},
+  {"name":"Ría de Pontevedra - Canal","lat":42.418,"lon":-8.750,"species":["Merluza","Rodaballo","Lenguado"]},
+  {"name":"Punta Couso","lat":42.551,"lon":-8.934,"species":["Sargo","Lubina","Caballa"]}
 ]
