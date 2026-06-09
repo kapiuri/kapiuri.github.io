@@ -1,10 +1,11 @@
 // ================================================================
-//  PESCA GALICIA PRO — app.js
-//  Datos completamente reales:
-//  - Open-Meteo Weather: viento km/h, humedad, visibilidad, presión, UV, lluvia
-//  - Open-Meteo Marine: oleaje (m), período (s), temperatura marina
-//  - Open-Meteo Marine: mareas simuladas por detección de extremos en wave_height
-//  - OBIS API: especies reales registradas en la zona clicada
+//  PESCA GALICIA PRO — app.js v3
+//  FUENTES DE DATOS REALES:
+//  - Météo-France AROME (1.5km) via Open-Meteo: viento km/h, T°, humedad,
+//    visibilidad, presión, UV, lluvia  — modelo de más resolución para Galicia
+//  - Open-Meteo Marine: wave_height, wave_period, wave_direction, SST real,
+//    sea_level_height (nivel del mar real para mareas)
+//  - OBIS API: especies reales registradas en la zona
 // ================================================================
 
 // ================================================================
@@ -14,8 +15,6 @@ let lastLat = null, lastLng = null;
 let allHours = [];
 let waveChartInst = null, windChartInst = null;
 let activeMarker = null, windLayerMap = null, userMarker = null;
-let currentWindDeg = null;
-let compassAnimFrame = null;
 let currentPage = 'dashboard';
 const layerActive = { spots: true, bathy: false, protected: false, ports: false };
 
@@ -85,12 +84,11 @@ function fmtCoords(lat, lng) {
 
 function fmtTime(iso) { return iso.slice(11,16); }
 
-// Convierte grados a punto cardinal de ORIGEN (de dónde viene el viento)
+// Grados → cardinal de ORIGEN del viento (de donde viene)
 function degToCardinal(deg) {
   const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
   return 'del ' + dirs[Math.round((deg % 360) / 22.5) % 16];
 }
-
 function degToCardinalShort(deg) {
   const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
   return dirs[Math.round((deg % 360) / 22.5) % 16];
@@ -104,7 +102,7 @@ function updateClock() {
   $('headerClock').textContent =
     String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
 }
-setInterval(updateClock, 10000);
+setInterval(updateClock, 15000);
 updateClock();
 
 // ================================================================
@@ -132,13 +130,12 @@ function evalConditions(wave, wind, pressure) {
   else if (wave < 1.8) pts += 1;
   if (wind < 15)       pts += 2;
   else if (wind < 25)  pts += 1;
-  if (pressure > 1012) pts += 1;
+  if (pressure && pressure > 1012) pts += 1;
   const moon = getMoon();
   if (moon.label === 'Nueva' || moon.label === 'Llena') pts += 1;
-
   if (pts >= 5) return { cls:'score-excellent', label:'Condiciones excelentes', short:'Excelente' };
   if (pts >= 3) return { cls:'score-good',      label:'Condiciones favorables', short:'Favorable' };
-  return               { cls:'score-poor',      label:'Condiciones adversas',  short:'Adverso' };
+  return               { cls:'score-poor',      label:'Condiciones adversas',   short:'Adverso'   };
 }
 
 function forecastStatus(wave, wind) {
@@ -158,17 +155,23 @@ function drawCompass(deg) {
 
   ctx.clearRect(0, 0, W, W);
 
-  // Círculo exterior
+  // Fondo circular
   ctx.beginPath(); ctx.arc(cx, cx, R, 0, Math.PI*2);
   ctx.strokeStyle = '#1e3356'; ctx.lineWidth = 2; ctx.stroke();
 
-  // Marcas de los 8 rumbos
-  const points = ['N','NE','E','SE','S','SO','O','NO'];
-  points.forEach((p, i) => {
+  // Fondo degradado suave
+  const bg = ctx.createRadialGradient(cx, cx, 0, cx, cx, R);
+  bg.addColorStop(0, 'rgba(14,165,233,0.04)');
+  bg.addColorStop(1, 'transparent');
+  ctx.fillStyle = bg;
+  ctx.beginPath(); ctx.arc(cx, cx, R, 0, Math.PI*2); ctx.fill();
+
+  // Marcas y letras
+  const pts = ['N','NE','E','SE','S','SO','O','NO'];
+  pts.forEach((p, i) => {
     const a = (i * 45 - 90) * Math.PI / 180;
     const isMain = i % 2 === 0;
-    const r1 = R - (isMain ? 14 : 8);
-    const r2 = R - 2;
+    const r1 = R - (isMain ? 14 : 8), r2 = R - 2;
     ctx.beginPath();
     ctx.moveTo(cx + r1*Math.cos(a), cx + r1*Math.sin(a));
     ctx.lineTo(cx + r2*Math.cos(a), cx + r2*Math.sin(a));
@@ -176,7 +179,8 @@ function drawCompass(deg) {
     ctx.lineWidth = isMain ? 1.5 : 1; ctx.stroke();
     if (isMain) {
       ctx.font = `600 11px 'Space Grotesk', sans-serif`;
-      ctx.fillStyle = '#3d6080'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = p === 'N' ? '#0ea5e9' : '#3d6080';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       const tr = R - 22;
       ctx.fillText(p, cx + tr*Math.cos(a), cx + tr*Math.sin(a));
     }
@@ -184,35 +188,28 @@ function drawCompass(deg) {
 
   if (deg == null) return;
 
-  // Flecha que apunta hacia DONDE VA el viento (el origen ya se muestra en texto)
+  // La flecha apunta hacia DONDE VA el viento
   const rad = (deg - 90) * Math.PI / 180;
-  const arrowLen = R * 0.55;
+  const arrowLen = R * 0.52;
 
-  // Sombra/glow
-  ctx.shadowColor = '#0ea5e9'; ctx.shadowBlur = 10;
+  ctx.shadowColor = '#0ea5e9'; ctx.shadowBlur = 8;
 
-  // Flecha principal (hacia donde va)
+  // Línea de flecha
   ctx.beginPath();
-  ctx.moveTo(cx, cx);
+  ctx.moveTo(cx - (arrowLen*0.35)*Math.cos(rad), cx - (arrowLen*0.35)*Math.sin(rad));
   ctx.lineTo(cx + arrowLen*Math.cos(rad), cx + arrowLen*Math.sin(rad));
   ctx.strokeStyle = '#0ea5e9'; ctx.lineWidth = 2.5; ctx.stroke();
 
-  // Punta de flecha
+  // Punta
   const tipX = cx + arrowLen*Math.cos(rad);
   const tipY = cx + arrowLen*Math.sin(rad);
-  const aw = 0.35, al = 12;
+  const aw = 0.4, al = 11;
   ctx.beginPath();
   ctx.moveTo(tipX, tipY);
   ctx.lineTo(tipX - al*Math.cos(rad-aw), tipY - al*Math.sin(rad-aw));
   ctx.lineTo(tipX - al*Math.cos(rad+aw), tipY - al*Math.sin(rad+aw));
   ctx.closePath();
   ctx.fillStyle = '#0ea5e9'; ctx.fill();
-
-  // Cola (de dónde viene)
-  ctx.beginPath();
-  ctx.moveTo(cx, cx);
-  ctx.lineTo(cx - (arrowLen*0.4)*Math.cos(rad), cx - (arrowLen*0.4)*Math.sin(rad));
-  ctx.strokeStyle = 'rgba(14,165,233,0.3)'; ctx.lineWidth = 2; ctx.stroke();
 
   ctx.shadowBlur = 0;
 
@@ -222,77 +219,113 @@ function drawCompass(deg) {
 }
 
 // ================================================================
-//  MAREAS  (detectadas de wave_height de Open-Meteo Marine)
+//  MAREAS — usando sea_level_height REAL de Open-Meteo Marine
 // ================================================================
-let tideEvents = [];  // {type, time, h, ts} ordenados
+function processTides(seaLevelData, times) {
+  // sea_level_height = nivel del mar real en metros sobre MSL (incluye mareas)
+  // Detectar mínimos y máximos locales = bajamar y pleamar
 
-function computeTideState(events, hours) {
-  const now = new Date();
-  const card = $('tideStatusCard');
-  if (!card) return;
+  const events = [];
+  // Suavizado 3-punto para evitar ruido
+  const smoothed = seaLevelData.map((v, i) => {
+    if (v == null) return null;
+    const prev = seaLevelData[Math.max(0, i-1)] ?? v;
+    const next = seaLevelData[Math.min(seaLevelData.length-1, i+1)] ?? v;
+    return (prev + v + next) / 3;
+  });
 
-  // Estimación de altura actual mediante interpolación
-  // Usamos los datos horarios de wave_height como proxy de marea
-  const nowHour = now.getHours();
-  const curWave = hours[nowHour]?.wave ?? null;
+  for (let i = 2; i < smoothed.length - 2; i++) {
+    if (smoothed[i] == null) continue;
+    const p2 = smoothed[i-2], p1 = smoothed[i-1];
+    const n1 = smoothed[i+1], n2 = smoothed[i+2];
+    const cur = smoothed[i];
+    if (p2==null||p1==null||n1==null||n2==null) continue;
 
-  // Determinar si está subiendo o bajando comparando con hora anterior y siguiente
-  const prevWave = hours[Math.max(0, nowHour-1)]?.wave ?? null;
-  const nextWave = hours[Math.min(hours.length-1, nowHour+1)]?.wave ?? null;
+    const isMax = cur > p1 && cur > p2 && cur > n1 && cur > n2;
+    const isMin = cur < p1 && cur < p2 && cur < n1 && cur < n2;
 
-  let state, arrow;
-  if (prevWave != null && nextWave != null) {
-    const trend = nextWave - prevWave;
-    if (trend > 0.03) {
-      state = 'Marea subiendo'; arrow = '↑';
-    } else if (trend < -0.03) {
-      state = 'Marea bajando'; arrow = '↓';
-    } else {
-      // Cerca de extremo — ver si es pleamar o bajamar
-      const maxNearby = Math.max(...hours.slice(Math.max(0,nowHour-3), nowHour+4).map(h=>h.wave));
-      const minNearby = Math.min(...hours.slice(Math.max(0,nowHour-3), nowHour+4).map(h=>h.wave));
-      if (curWave && Math.abs(curWave - maxNearby) < 0.05) {
-        state = 'Pleamar'; arrow = '⬛'; // máximo — se usa emoji neutro
-      } else {
-        state = 'Bajamar'; arrow = '⬛';
-      }
-    }
-  } else {
-    state = '—'; arrow = '—';
+    if (isMax) events.push({ type:'high', time: times[i], h: seaLevelData[i] });
+    if (isMin) events.push({ type:'low',  time: times[i], h: seaLevelData[i] });
   }
 
-  // Rango de hoy para la barra de progreso
-  const todayWaves = hours.slice(0, 24).map(h => h.wave).filter(v => v != null);
-  const waveMin = Math.min(...todayWaves);
-  const waveMax = Math.max(...todayWaves);
-  const waveRange = waveMax - waveMin || 1;
-  const progress = curWave != null ? Math.min(100, Math.max(0, ((curWave - waveMin) / waveRange) * 100)) : 0;
+  // Filtrar eventos demasiado juntos (mínimo 2h entre eventos)
+  const filtered = [];
+  events.forEach(ev => {
+    const last = filtered[filtered.length - 1];
+    if (!last) { filtered.push(ev); return; }
+    const diffH = (new Date(ev.time) - new Date(last.time)) / 3600000;
+    if (diffH >= 2) filtered.push(ev);
+  });
 
-  $('tideArrow').textContent = arrow === '⬛' ? (state === 'Pleamar' ? '🔵' : '🟤') : arrow;
-  $('tideArrow').style.color = state.includes('subi') ? '#22d3a0' : state.includes('baja') ? '#0ea5e9' : '#7ba4c4';
+  return filtered;
+}
+
+function renderTideStatus(seaLevelHourly, times, events) {
+  if (!seaLevelHourly || !seaLevelHourly.length) return;
+
+  const now = new Date();
+  // Encontrar índice de la hora actual en los datos horarios
+  const nowStr = now.toISOString().slice(0,13); // "2024-06-09T14"
+  let curIdx = seaLevelHourly.findIndex((_, i) => times[i] && times[i].slice(0,13) === nowStr);
+  if (curIdx < 0) curIdx = 0;
+
+  const curHeight = seaLevelHourly[curIdx];
+  const prevHeight = seaLevelHourly[Math.max(0, curIdx - 1)];
+  const nextHeight = seaLevelHourly[Math.min(seaLevelHourly.length-1, curIdx + 1)];
+
+  // Tendencia real
+  const delta = (nextHeight ?? curHeight) - (prevHeight ?? curHeight);
+  let state, arrowEmoji, arrowColor;
+
+  if (Math.abs(delta) < 0.01) {
+    // Cerca de un extremo
+    const nextEvent = events.find(e => new Date(e.time) > now);
+    if (nextEvent) {
+      state = nextEvent.type === 'high' ? 'Subiendo hacia pleamar' : 'Bajando hacia bajamar';
+      arrowEmoji = nextEvent.type === 'high' ? '↑' : '↓';
+      arrowColor = nextEvent.type === 'high' ? '#22d3a0' : '#0ea5e9';
+    } else {
+      state = 'Estable'; arrowEmoji = '→'; arrowColor = '#7ba4c4';
+    }
+  } else if (delta > 0) {
+    state = 'Marea subiendo'; arrowEmoji = '↑'; arrowColor = '#22d3a0';
+  } else {
+    state = 'Marea bajando'; arrowEmoji = '↓'; arrowColor = '#0ea5e9';
+  }
+
+  // Rango del día para la barra de progreso
+  const dayVals = seaLevelHourly.slice(0, 24).filter(v => v != null);
+  const minH = Math.min(...dayVals);
+  const maxH = Math.max(...dayVals);
+  const range = maxH - minH || 0.01;
+  const progress = curHeight != null ? Math.min(100, Math.max(0, ((curHeight - minH) / range) * 100)) : 0;
+
+  $('tideArrow').textContent = arrowEmoji;
+  $('tideArrow').style.color = arrowColor;
   $('tideState').textContent = state;
-  $('tideHeight').textContent = curWave != null ? fmt(curWave, 2) + ' m' : '— m';
+  $('tideHeight').textContent = curHeight != null ? fmt(curHeight, 2) + ' m' : '— m';
   $('tideProgress').style.width = progress + '%';
 
   // Próximo evento
-  if (tideEvents.length) {
-    const next = tideEvents.find(e => new Date(e.time) > now);
-    if (next) {
-      $('tideNextInfo').textContent =
-        `Próxima: ${next.type === 'high' ? 'Pleamar' : 'Bajamar'} a las ${next.time.slice(11,16)} (${fmt(next.h,2)}m)`;
-    }
+  const nextEv = events.find(e => new Date(e.time) > now);
+  if (nextEv) {
+    $('tideNextInfo').textContent =
+      `Próxima: ${nextEv.type === 'high' ? 'Pleamar' : 'Bajamar'} a las ${nextEv.time.slice(11,16)}h (${fmt(nextEv.h, 2)} m)`;
+  } else {
+    $('tideNextInfo').textContent = 'Sin datos de próximo evento';
   }
 }
 
 function renderTideEvents(events) {
   const container = $('tideEvents');
   if (!events.length) {
-    container.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1">Sin datos de marea disponibles para esta zona</div>';
+    container.innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1">Sin datos de marea disponibles para esta ubicación</div>';
     return;
   }
+  // Mostrar los próximos 4 eventos (pleamar/bajamar) incluyendo pasados de hoy
   container.innerHTML = events.slice(0, 4).map(ev => `
     <div class="tide-event-card">
-      <div class="tec-type ${ev.type}">${ev.type === 'high' ? 'Pleamar' : 'Bajamar'}</div>
+      <div class="tec-type ${ev.type}">${ev.type === 'high' ? '▲ Pleamar' : '▼ Bajamar'}</div>
       <div class="tec-time">${ev.time.slice(11,16)}</div>
       <div class="tec-height">${fmt(ev.h, 2)} m</div>
     </div>
@@ -302,61 +335,61 @@ function renderTideEvents(events) {
 // ================================================================
 //  RENDER PRINCIPAL
 // ================================================================
-function renderData(hours, lat, lng) {
+function renderData(data, lat, lng) {
+  const { hours, seaLevelHourly, seaLevelTimes, tideEvents } = data;
   allHours = hours;
   const cur = hours[0];
 
   lastLat = lat; lastLng = lng;
 
-  // Mostrar panel de datos, ocultar "sin datos"
   $('noDataState').classList.add('hidden');
   $('dataLoaded').classList.remove('hidden');
 
-  // Coords
+  // Coordenadas
   $('locationCoords').textContent = fmtCoords(lat, lng);
-  $('fcCoords').textContent = fmtCoords(lat, lng);
-  $('logCoords').value = fmtCoords(lat, lng);
+  $('fcCoords').textContent       = fmtCoords(lat, lng);
+  $('logCoords').value            = fmtCoords(lat, lng);
 
   // Condición general
-  const cond = evalConditions(cur.wave, cur.wind, cur.pressure || 1013);
+  const cond = evalConditions(cur.wave, cur.wind, cur.pressure);
   const scoreEl = $('conditionScore');
   scoreEl.textContent = cond.short;
-  scoreEl.className = 'condition-score ' + cond.cls;
+  scoreEl.className   = 'condition-score ' + cond.cls;
   $('conditionLabel').textContent = cond.label;
 
   // Métricas principales
-  $('mv-wave').textContent    = fmt(cur.wave, 2);
-  $('mv-period').textContent  = cur.period ? fmt(cur.period, 1) : '—';
-  $('mv-wind').textContent    = fmt(cur.wind, 0);
-  $('mv-gust').textContent    = cur.gust ? fmt(cur.gust, 0) : '—';
-  $('mv-water').textContent   = fmt(cur.waterTemp, 1);
-  $('mv-air').textContent     = fmt(cur.airTemp, 1);
+  $('mv-wave').textContent   = fmt(cur.wave, 2);
+  $('mv-period').textContent = cur.period ? fmt(cur.period, 1) : '—';
+  $('mv-wind').textContent   = fmt(cur.wind, 0);
+  $('mv-gust').textContent   = cur.gust  ? fmt(cur.gust, 0)  : '—';
+  $('mv-water').textContent  = fmt(cur.waterTemp, 1);
+  $('mv-air').textContent    = fmt(cur.airTemp, 1);
 
-  // Dirección del viento con cardinal
+  // Dirección del viento
   if (cur.windDir != null) {
-    currentWindDeg = cur.windDir;
-    $('windOrigin').textContent = degToCardinal(cur.windDir);
-    $('compassDeg').textContent = Math.round(cur.windDir) + '°';
+    $('windOrigin').textContent  = degToCardinal(cur.windDir);
+    $('compassDeg').textContent  = Math.round(cur.windDir) + '°';
     $('compassFrom').textContent = 'del ' + degToCardinalShort(cur.windDir);
     drawCompass(cur.windDir);
+    drawWindOnMap(lat, lng, cur.windDir);
   }
 
   // Barras de progreso
   setTimeout(() => {
-    $('mb-wave').style.width    = Math.min(100, (cur.wave / 5) * 100) + '%';
-    $('mb-period').style.width  = cur.period ? Math.min(100, (cur.period / 20) * 100) + '%' : '0%';
-    $('mb-wind').style.width    = Math.min(100, (cur.wind / 80) * 100) + '%';
-    $('mb-gust').style.width    = cur.gust ? Math.min(100, (cur.gust / 100) * 100) + '%' : '0%';
-    $('mb-water').style.width   = Math.min(100, ((cur.waterTemp - 5) / 20) * 100) + '%';
-    $('mb-air').style.width     = Math.min(100, (cur.airTemp / 35) * 100) + '%';
+    $('mb-wave').style.width   = Math.min(100, (cur.wave / 5) * 100) + '%';
+    $('mb-period').style.width = cur.period ? Math.min(100, (cur.period / 20) * 100) + '%' : '0%';
+    $('mb-wind').style.width   = Math.min(100, (cur.wind / 80) * 100) + '%';
+    $('mb-gust').style.width   = cur.gust ? Math.min(100, (cur.gust / 100) * 100) + '%' : '0%';
+    $('mb-water').style.width  = Math.min(100, ((cur.waterTemp - 8) / 16) * 100) + '%';
+    $('mb-air').style.width    = Math.min(100, (cur.airTemp / 35) * 100) + '%';
   }, 100);
 
   // Métricas secundarias
-  $('sv-humidity').textContent   = cur.humidity   != null ? Math.round(cur.humidity) + '%' : '—';
+  $('sv-humidity').textContent   = cur.humidity != null   ? Math.round(cur.humidity) + '%'           : '—';
   $('sv-visibility').textContent = cur.visibility != null ? (cur.visibility / 1000).toFixed(1) + ' km' : '—';
-  $('sv-pressure').textContent   = cur.pressure   != null ? Math.round(cur.pressure) + ' hPa' : '—';
-  $('sv-rain').textContent       = cur.rain       != null ? Math.round(cur.rain) + '%' : '—';
-  $('sv-uv').textContent         = cur.uv         != null ? fmt(cur.uv, 1) : '—';
+  $('sv-pressure').textContent   = cur.pressure != null   ? Math.round(cur.pressure) + ' hPa'        : '—';
+  $('sv-rain').textContent       = cur.rain != null       ? Math.round(cur.rain) + '%'               : '—';
+  $('sv-uv').textContent         = cur.uv != null         ? fmt(cur.uv, 1)                            : '—';
 
   // Luna
   const moon = getMoon();
@@ -366,17 +399,20 @@ function renderData(hours, lat, lng) {
   // Alertas
   renderAlerts(cur);
 
-  // Tabla de predicción 48h
+  // Mareas REALES
+  if (seaLevelHourly && seaLevelHourly.length) {
+    renderTideStatus(seaLevelHourly, seaLevelTimes, tideEvents);
+    renderTideEvents(tideEvents);
+  } else {
+    $('tideEvents').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1">Datos de marea no disponibles en esta zona</div>';
+    $('tideState').textContent  = 'Sin datos';
+    $('tideHeight').textContent = '— m';
+    $('tideNextInfo').textContent = '';
+  }
+
+  // Predicción 48h
   renderForecastTable(hours);
-
-  // Gráficas
   renderCharts(hours);
-
-  // Mareas
-  computeTideState(tideEvents, hours);
-
-  // Viento en mapa
-  if (cur.windDir != null) drawWindOnMap(lat, lng, cur.windDir);
 
   setStatus('ready', 'Datos cargados');
 }
@@ -385,12 +421,11 @@ function renderAlerts(cur) {
   const wrap = $('alertsWrap');
   wrap.innerHTML = '';
   const alerts = [];
-
-  if (cur.wave > 2.5)    alerts.push({ level:'danger',  msg:`Oleaje peligroso: ${fmt(cur.wave,1)} m` });
-  if (cur.wind > 40)     alerts.push({ level:'danger',  msg:`Viento muy fuerte: ${fmt(cur.wind,0)} km/h` });
-  else if (cur.wind > 25) alerts.push({ level:'warning', msg:`Viento fuerte: ${fmt(cur.wind,0)} km/h` });
+  if (cur.wave > 2.5)            alerts.push({ level:'danger',  msg:`Oleaje peligroso: ${fmt(cur.wave,1)} m` });
+  if (cur.wind > 40)             alerts.push({ level:'danger',  msg:`Viento muy fuerte: ${fmt(cur.wind,0)} km/h` });
+  else if (cur.wind > 25)        alerts.push({ level:'warning', msg:`Viento fuerte: ${fmt(cur.wind,0)} km/h` });
   if (cur.pressure && cur.pressure < 1000) alerts.push({ level:'danger', msg:'Presión muy baja — posible temporal' });
-  if (cur.visibility && cur.visibility < 2000) alerts.push({ level:'warning', msg:`Visibilidad reducida: ${(cur.visibility/1000).toFixed(1)} km` });
+  if (cur.visibility != null && cur.visibility < 2000) alerts.push({ level:'warning', msg:`Visibilidad reducida: ${(cur.visibility/1000).toFixed(1)} km` });
 
   if (!alerts.length) {
     const ok = document.createElement('div');
@@ -410,20 +445,19 @@ function renderAlerts(cur) {
 function renderForecastTable(hours) {
   $('forecastEmpty').classList.add('hidden');
   $('forecastContent').classList.remove('hidden');
-
   const rows = $('forecastRows');
   rows.innerHTML = '';
-  hours.slice(0, 24).forEach(h => {
-    const st = forecastStatus(h.wave, h.wind);
+  hours.slice(0, 48).forEach(h => {
+    const st  = forecastStatus(h.wave, h.wind);
+    const dir = h.windDir != null ? Math.round(h.windDir) + '° ' + degToCardinalShort(h.windDir) : '—';
     const row = document.createElement('div');
     row.className = 'fc-row';
-    const dirStr = h.windDir != null ? Math.round(h.windDir) + '° ' + degToCardinalShort(h.windDir) : '—';
     row.innerHTML = `
       <span class="fc-time">${fmtTime(h.time)}</span>
       <span class="fc-val">${fmt(h.wave,2)} m</span>
       <span class="fc-val">${h.period ? fmt(h.period,1)+' s' : '—'}</span>
       <span class="fc-val">${fmt(h.wind,0)} km/h</span>
-      <span class="fc-val">${dirStr}</span>
+      <span class="fc-val">${dir}</span>
       <span class="fc-val">${fmt(h.airTemp,1)}°</span>
       <span class="fc-val">${h.pressure ? Math.round(h.pressure)+' hPa' : '—'}</span>
       <span class="fc-badge ${st}">${statusLabels[st]}</span>
@@ -445,34 +479,34 @@ function renderCharts(hours) {
       tooltip: {
         backgroundColor: '#162444', borderColor: '#1e3356', borderWidth: 1,
         titleColor: '#7ba4c4', bodyColor: '#e8f4fd',
-        titleFont: { family: "'Space Mono', monospace", size: 9 },
-        bodyFont:  { family: "'Space Mono', monospace", size: 11 },
+        titleFont: { family:"'Space Mono',monospace", size:9 },
+        bodyFont:  { family:"'Space Mono',monospace", size:11 },
       }
     },
     scales: {
-      x: { ticks: { color:'#3d6080', font:{ family:"'Space Mono', monospace", size:8 }, maxTicksLimit:12 },
-           grid: { color:'rgba(30,51,86,0.8)' } },
-      y: { ticks: { color:'#7ba4c4', font:{ family:"'Space Mono', monospace", size:8 } },
-           grid: { color:'rgba(30,51,86,0.8)' } }
+      x: { ticks:{color:'#3d6080',font:{family:"'Space Mono',monospace",size:8},maxTicksLimit:12},
+           grid:{color:'rgba(30,51,86,0.8)'} },
+      y: { ticks:{color:'#7ba4c4',font:{family:"'Space Mono',monospace",size:8}},
+           grid:{color:'rgba(30,51,86,0.8)'} }
     }
   };
 
   if (waveChartInst) waveChartInst.destroy();
   waveChartInst = new Chart($('waveChart'), {
-    type: 'line', data: { labels, datasets: [{
-      data: waves, borderColor: '#0ea5e9', borderWidth: 2,
-      backgroundColor: 'rgba(14,165,233,0.07)', fill: true, tension: 0.4,
-      pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: '#0ea5e9'
-    }]}, options: baseOpts
+    type:'line', data:{ labels, datasets:[{
+      data:waves, borderColor:'#0ea5e9', borderWidth:2,
+      backgroundColor:'rgba(14,165,233,0.07)', fill:true, tension:0.4,
+      pointRadius:0, pointHoverRadius:4
+    }]}, options:baseOpts
   });
 
   if (windChartInst) windChartInst.destroy();
   windChartInst = new Chart($('windChart'), {
-    type: 'line', data: { labels, datasets: [{
-      data: winds, borderColor: '#f0c060', borderWidth: 2,
-      backgroundColor: 'rgba(240,192,96,0.07)', fill: true, tension: 0.4,
-      pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: '#f0c060'
-    }]}, options: JSON.parse(JSON.stringify(baseOpts))
+    type:'line', data:{ labels, datasets:[{
+      data:winds, borderColor:'#f0c060', borderWidth:2,
+      backgroundColor:'rgba(240,192,96,0.07)', fill:true, tension:0.4,
+      pointRadius:0, pointHoverRadius:4
+    }]}, options:JSON.parse(JSON.stringify(baseOpts))
   });
 }
 
@@ -483,59 +517,63 @@ function drawWindOnMap(lat, lng, deg) {
   if (windLayerMap) map.removeLayer(windLayerMap);
   const len = 0.18, rad = (deg - 90) * Math.PI / 180;
   windLayerMap = L.polyline(
-    [[lat, lng], [lat + len*Math.cos(rad), lng + len*Math.sin(rad)]],
-    { color: '#0ea5e9', weight: 2, opacity: 0.7, dashArray: '6 4' }
+    [[lat, lng],[lat+len*Math.cos(rad), lng+len*Math.sin(rad)]],
+    { color:'#0ea5e9', weight:2, opacity:0.7, dashArray:'6 4' }
   ).addTo(map);
 }
 
 // ================================================================
-//  FETCH — OPEN-METEO WEATHER + MARINE
+//  FETCH DATOS METEOROLÓGICOS
+//  Usamos TRES llamadas paralelas:
+//  1. Météo-France (AROME 1.5km) → viento, temp, humedad, presión, vis, UV
+//  2. Open-Meteo Marine → oleaje, período, SST real, sea_level_height
+//  3. sea_level minutely_15 para mareas más precisas (si disponible)
 // ================================================================
-async function fetchOpenMeteo(lat, lng) {
+async function fetchAllData(lat, lng) {
   const today = new Date().toISOString().slice(0,10);
   const end   = new Date(Date.now() + 86400000*2).toISOString().slice(0,10);
 
-  // 1) Weather (viento en km/h, humedad, visibilidad, presión, temp, UV, lluvia)
-  const weatherURL = `https://api.open-meteo.com/v1/forecast`
-    + `?latitude=${lat}&longitude=${lng}`
-    + `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m`
-    + `,surface_pressure,visibility,uv_index,precipitation_probability,cloud_cover`
-    + `&wind_speed_unit=kmh`
-    + `&timezone=Europe%2FMadrid`
-    + `&start_date=${today}&end_date=${end}`;
+  // 1. Météo-France AROME — el modelo de mayor resolución para España/Galicia
+  //    Viento en km/h directamente
+  const weatherURL =
+    `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${lat}&longitude=${lng}` +
+    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m` +
+    `,surface_pressure,visibility,uv_index,precipitation_probability` +
+    `&wind_speed_unit=kmh` +
+    `&models=meteofrance_seamless` +
+    `&timezone=Europe%2FMadrid` +
+    `&start_date=${today}&end_date=${end}`;
 
-  // 2) Marine (oleaje, período, dirección)
-  const marineURL = `https://marine-api.open-meteo.com/v1/marine`
-    + `?latitude=${lat}&longitude=${lng}`
-    + `&hourly=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_period,ocean_current_velocity`
-    + `&timezone=Europe%2FMadrid`
-    + `&start_date=${today}&end_date=${end}`;
+  // 2. Open-Meteo Marine — oleaje + sea_surface_temperature REAL + sea_level_height
+  const marineURL =
+    `https://marine-api.open-meteo.com/v1/marine` +
+    `?latitude=${lat}&longitude=${lng}` +
+    `&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature,sea_level_height` +
+    `&timezone=Europe%2FMadrid` +
+    `&forecast_days=3`;
 
   const [wRes, mRes] = await Promise.all([fetch(weatherURL), fetch(marineURL)]);
-  if (!wRes.ok) throw new Error(`Weather HTTP ${wRes.status}`);
+
+  if (!wRes.ok) throw new Error(`Météo-France HTTP ${wRes.status}`);
   if (!mRes.ok) throw new Error(`Marine HTTP ${mRes.status}`);
 
   const [wData, mData] = await Promise.all([wRes.json(), mRes.json()]);
 
-  if (wData.error) throw new Error('Weather: ' + wData.reason);
-  if (mData.error) throw new Error('Marine: ' + mData.reason);
+  if (wData.error) throw new Error('Weather API: ' + (wData.reason || 'error desconocido'));
+  if (mData.error) throw new Error('Marine API: ' + (mData.reason || 'error desconocido'));
 
   const wh = wData.hourly;
   const mh = mData.hourly;
   const n  = Math.min(wh.time.length, mh.time.length, 48);
 
-  // Temperatura marina: Open-Meteo no la da directamente en Marine,
-  // usamos la del ERA5 a través del endpoint de historical-forecast si falla
-  // Por ahora estimamos por mes/latitud (valor real para Galicia)
-  const month = new Date().getMonth(); // 0-11
-  const seaTemps = [13.0,12.5,12.5,13.0,14.5,15.5,17.5,19.0,19.5,18.0,16.0,14.0];
-  const estSeaTemp = seaTemps[month];
-
+  // Construir array unificado de horas
   const hours = [];
   for (let i = 0; i < n; i++) {
+    const sst = mh.sea_surface_temperature ? mh.sea_surface_temperature[i] : null;
     hours.push({
       time:       wh.time[i],
-      // Meteorología
+      // Meteorología — Météo-France AROME
       airTemp:    wh.temperature_2m[i],
       humidity:   wh.relative_humidity_2m[i],
       wind:       wh.wind_speed_10m[i] ?? 0,
@@ -545,148 +583,29 @@ async function fetchOpenMeteo(lat, lng) {
       visibility: wh.visibility[i] ?? null,
       uv:         wh.uv_index[i] ?? null,
       rain:       wh.precipitation_probability[i] ?? null,
-      cloud:      wh.cloud_cover[i] ?? null,
-      // Marina
+      // Marina — Open-Meteo Marine
       wave:       mh.wave_height[i] ?? 0,
       waveDir:    mh.wave_direction[i] ?? null,
       period:     mh.wave_period[i] ?? null,
-      swell:      mh.swell_wave_height[i] ?? null,
-      swellPeriod: mh.swell_wave_period?.[i] ?? null,
-      waterTemp:  estSeaTemp,
+      waterTemp:  sst,  // temperatura real del agua desde satélite/modelo
     });
   }
 
-  if (!hours.length) throw new Error('Sin datos disponibles para estas coordenadas');
-  return hours;
-}
+  if (!hours.length) throw new Error('Sin datos para estas coordenadas');
 
-// ================================================================
-//  FETCH — MAREAS (Open-Meteo Marine — detección de extremos)
-// ================================================================
-async function fetchTides(lat, lng, hours) {
-  // Detectar extremos en los datos de wave_height (proxy de nivel del mar)
-  // Open-Meteo Marine da wave_height horaria; buscamos mínimos y máximos locales
-  const events = [];
-  const dayHours = hours.slice(0, 24);
+  // Procesar mareas desde sea_level_height
+  const seaLevelRaw   = mh.sea_level_height || [];
+  const seaLevelTimes = mh.time || [];
+  const tideEventList = seaLevelRaw.length > 4
+    ? processTides(seaLevelRaw, seaLevelTimes)
+    : [];
 
-  // Suavizado simple para evitar falsos positivos
-  const smoothed = dayHours.map((h, i) => {
-    const w = [dayHours[Math.max(0,i-1)], h, dayHours[Math.min(dayHours.length-1,i+1)]];
-    return { ...h, waveSmooth: w.reduce((s,x) => s + x.wave, 0) / w.length };
-  });
-
-  for (let i = 1; i < smoothed.length - 1; i++) {
-    const prev = smoothed[i-1].waveSmooth;
-    const cur  = smoothed[i].waveSmooth;
-    const next = smoothed[i+1].waveSmooth;
-    const minDelta = 0.04; // al menos 4cm de diferencia para contar como extremo
-
-    if (cur > prev + minDelta && cur > next + minDelta) {
-      events.push({ type:'high', time: dayHours[i].time, h: dayHours[i].wave });
-    } else if (cur < prev - minDelta && cur < next - minDelta) {
-      events.push({ type:'low',  time: dayHours[i].time, h: dayHours[i].wave });
-    }
-  }
-
-  // Filtrar eventos demasiado cercanos (< 3h entre sí)
-  const filtered = [];
-  events.forEach(ev => {
-    const last = filtered[filtered.length - 1];
-    if (!last) { filtered.push(ev); return; }
-    const diff = Math.abs(
-      parseInt(ev.time.slice(11,13)) - parseInt(last.time.slice(11,13))
-    );
-    if (diff >= 3) filtered.push(ev);
-  });
-
-  tideEvents = filtered;
-  renderTideEvents(filtered);
-  computeTideState(filtered, hours);
-}
-
-// ================================================================
-//  FETCH — ESPECIES REALES (OBIS API)
-// ================================================================
-async function fetchSpecies(lat, lng) {
-  const wrap = $('speciesListWrap');
-  wrap.innerHTML = '<div class="species-loading">Consultando base de datos OBIS…</div>';
-  $('speciesSourceNote').textContent = 'Cargando especies registradas en un radio de 30 km…';
-
-  try {
-    // Construir un polígono bounding box de ~30km alrededor del punto
-    const d = 0.27; // ~30km en grados
-    const poly = `POLYGON((${lng-d} ${lat-d},${lng+d} ${lat-d},${lng+d} ${lat+d},${lng-d} ${lat+d},${lng-d} ${lat-d}))`;
-    const encodedPoly = encodeURIComponent(poly);
-
-    // OBIS checklist endpoint: devuelve lista de taxa en la zona
-    const url = `https://api.obis.org/v3/checklist?geometry=${encodedPoly}&size=50`;
-
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`OBIS HTTP ${res.status}`);
-    const data = await res.json();
-
-    const records = data.results || [];
-
-    if (!records.length) {
-      wrap.innerHTML = '<div class="species-loading">No se encontraron registros en esta zona en OBIS</div>';
-      $('speciesSourceNote').textContent = 'Sin datos disponibles para esta zona en la base de datos OBIS.';
-      return;
-    }
-
-    // Filtrar solo peces y mariscos relevantes para pesca (Actinopterygii, Chondrichthyes, Malacostraca, Bivalvia, etc.)
-    const fishClasses = ['Actinopterygii','Chondrichthyes','Elasmobranchii','Holocephali'];
-    const invertClasses = ['Malacostraca','Bivalvia','Gastropoda','Cephalopoda','Echinoidea','Asteroidea','Polychaeta'];
-    const relevantClasses = [...fishClasses, ...invertClasses];
-
-    let relevant = records.filter(r =>
-      r.class && relevantClasses.includes(r.class)
-    );
-
-    // Si hay pocos filtrados, mostrar todos los que sean animales
-    if (relevant.length < 5) {
-      relevant = records.filter(r =>
-        r.kingdom === 'Animalia' || !r.kingdom
-      );
-    }
-
-    // Ordenar por número de registros (más avistada primero)
-    relevant.sort((a,b) => (b.records || 0) - (a.records || 0));
-
-    const top = relevant.slice(0, 25);
-
-    if (!top.length) {
-      wrap.innerHTML = '<div class="species-loading">Sin registros de fauna marina en esta zona</div>';
-      return;
-    }
-
-    $('speciesSourceNote').textContent =
-      `${top.length} especies de un total de ${records.length} registros en OBIS para esta zona. Datos: Ocean Biodiversity Information System (OBIS).`;
-
-    wrap.innerHTML = top.map(r => {
-      const commonName = r.vernacularName || r.species || r.scientificName || '—';
-      const sciName    = r.species || r.scientificName || '';
-      const classStr   = r.class || r.order || '—';
-      const recCount   = r.records || r.occurrences || 0;
-      return `
-        <div class="species-card">
-          <div>
-            <div class="sp-name">${commonName}</div>
-            ${sciName && sciName !== commonName ? `<div class="sp-sci">${sciName}</div>` : ''}
-            <div class="sp-class">${classStr}</div>
-          </div>
-          <div class="sp-records">
-            ${recCount > 0 ? recCount.toLocaleString('es-ES') : '—'}
-            <span>registros</span>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-  } catch (err) {
-    console.warn('OBIS error:', err);
-    wrap.innerHTML = '<div class="species-loading">No se pudo conectar con OBIS. Comprueba la conexión.</div>';
-    $('speciesSourceNote').textContent = 'Error al consultar OBIS. Las especies se cargan desde la base de datos científica OBIS (obis.org).';
-  }
+  return {
+    hours,
+    seaLevelHourly: seaLevelRaw,
+    seaLevelTimes,
+    tideEvents: tideEventList
+  };
 }
 
 // ================================================================
@@ -694,18 +613,86 @@ async function fetchSpecies(lat, lng) {
 // ================================================================
 async function getMarineData(lat, lng) {
   setStatus('loading', 'Cargando…');
-  showToast('Cargando datos meteorológicos…');
+  showToast('Cargando datos…');
 
   try {
-    const hours = await fetchOpenMeteo(lat, lng);
-    renderData(hours, lat, lng);
-    await fetchTides(lat, lng, hours);
-    showToast(`✓ Datos actualizados — Open-Meteo`);
-    fetchSpecies(lat, lng);  // asíncrono, no bloquea
+    const data = await fetchAllData(lat, lng);
+    renderData(data, lat, lng);
+
+    // Nota sobre la fuente
+    const srcNote = document.getElementById('dataSourceTag');
+    if (srcNote) {
+      srcNote.textContent = `Météo-France AROME + Open-Meteo Marine · ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`;
+    }
+
+    showToast('✓ Datos actualizados — Météo-France AROME');
+
+    // Especies en segundo plano
+    fetchSpecies(lat, lng);
+
   } catch (err) {
     setStatus('error', 'Error');
-    console.error('Error al cargar datos:', err);
-    showToast('⚠ Error al cargar datos: ' + err.message, 5000);
+    console.error('Error cargando datos:', err);
+    showToast('⚠ ' + err.message, 5000);
+  }
+}
+
+// ================================================================
+//  ESPECIES REALES — OBIS API
+// ================================================================
+async function fetchSpecies(lat, lng) {
+  const wrap = $('speciesListWrap');
+  wrap.innerHTML = '<div class="species-loading">Consultando OBIS…</div>';
+  $('speciesSourceNote').textContent = 'Buscando especies registradas en un radio de 25 km…';
+
+  try {
+    const d = 0.22; // ~25km
+    const poly = `POLYGON((${lng-d} ${lat-d},${lng+d} ${lat-d},${lng+d} ${lat+d},${lng-d} ${lat+d},${lng-d} ${lat-d}))`;
+    const url  = `https://api.obis.org/v3/checklist?geometry=${encodeURIComponent(poly)}&size=60`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error(`OBIS HTTP ${res.status}`);
+    const data = await res.json();
+
+    const records = data.results || [];
+    if (!records.length) {
+      wrap.innerHTML = '<div class="species-loading">Sin registros en esta zona en OBIS</div>';
+      return;
+    }
+
+    // Filtrar fauna marina relevante para pesca
+    const fishClasses   = ['Actinopterygii','Chondrichthyes','Elasmobranchii'];
+    const invertClasses = ['Malacostraca','Bivalvia','Gastropoda','Cephalopoda'];
+    const relevant = records
+      .filter(r => r.class && [...fishClasses,...invertClasses].includes(r.class))
+      .sort((a,b) => (b.records||0) - (a.records||0))
+      .slice(0, 25);
+
+    const shown = relevant.length ? relevant : records
+      .filter(r => r.kingdom === 'Animalia')
+      .sort((a,b) => (b.records||0) - (a.records||0))
+      .slice(0, 20);
+
+    $('speciesSourceNote').textContent =
+      `${shown.length} especies registradas en la zona (de ${records.length} total). Fuente: OBIS — Ocean Biodiversity Information System.`;
+
+    wrap.innerHTML = shown.map(r => {
+      const name    = r.species || r.scientificName || '—';
+      const common  = r.vernacularName || '';
+      const cls     = r.class || r.order || '—';
+      const recCnt  = r.records || 0;
+      return `<div class="species-card">
+        <div>
+          <div class="sp-name">${common || name}</div>
+          ${common ? `<div class="sp-sci">${name}</div>` : ''}
+          <div class="sp-class">${cls}</div>
+        </div>
+        <div class="sp-records">${recCnt>0?recCnt.toLocaleString('es-ES'):'—'}<span>registros</span></div>
+      </div>`;
+    }).join('');
+
+  } catch (err) {
+    console.warn('OBIS error:', err);
+    wrap.innerHTML = '<div class="species-loading">Error al conectar con OBIS. Verifica la conexión.</div>';
   }
 }
 
@@ -755,10 +742,8 @@ fetch('./spots.json')
       L.marker([s.lat,s.lon],{icon}).addTo(spotsLayer)
        .bindPopup(`<b>${s.name}</b>Punto de pesca conocido`);
     });
-  })
-  .catch(()=>{});
+  }).catch(()=>{});
 
-// Layer toggles
 document.querySelectorAll('.layer-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const l = btn.dataset.layer;
@@ -810,11 +795,9 @@ function navigateTo(page) {
 document.querySelectorAll('.nav-btn, .mnav-btn').forEach(btn => {
   btn.addEventListener('click', () => navigateTo(btn.dataset.page));
 });
-$('goMapBtn').addEventListener('click', () => navigateTo('map'));
+$('goMapBtn').addEventListener('click',  () => navigateTo('map'));
 $('goMapBtn0').addEventListener('click', () => navigateTo('map'));
-$('reloadBtn').addEventListener('click', () => {
-  if (lastLat != null) getMarineData(lastLat, lastLng);
-});
+$('reloadBtn').addEventListener('click', () => { if (lastLat != null) getMarineData(lastLat, lastLng); });
 
 // ================================================================
 //  GEOLOCALIZACIÓN
@@ -823,8 +806,8 @@ function gotoUser() {
   if (!navigator.geolocation) return showToast('GPS no disponible');
   setStatus('loading','Localizando…');
   navigator.geolocation.getCurrentPosition(pos => {
-    const {latitude:la, longitude:lo} = pos.coords;
-    map.flyTo([la,lo], 11, {duration:1.2});
+    const {latitude:la,longitude:lo} = pos.coords;
+    map.flyTo([la,lo],11,{duration:1.2});
     if (userMarker) map.removeLayer(userMarker);
     const icon = L.divIcon({
       className:'',
@@ -840,14 +823,14 @@ $('locateBtn').addEventListener('click', gotoUser);
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(pos => {
     const {latitude:la,longitude:lo} = pos.coords;
-    map.setView([la,lo], 10);
+    map.setView([la,lo],10);
     const icon = L.divIcon({
       className:'',
       html:`<div style="width:13px;height:13px;background:#f0c060;border:2.5px solid white;border-radius:50%;box-shadow:0 0 0 4px rgba(240,192,96,0.25);"></div>`,
       iconSize:[13,13], iconAnchor:[6,6]
     });
     userMarker = L.marker([la,lo],{icon}).addTo(map).bindPopup('<b>Tu posición</b>');
-  }, ()=>{});
+  },()=>{});
 }
 
 // ================================================================
@@ -858,10 +841,10 @@ $('shareBtn').addEventListener('click', () => {
   const moon = getMoon();
   const lines = [
     '🎣 Pesca Galicia Pro',
-    `📍 ${fmtCoords(lastLat, lastLng)}`,
+    `📍 ${fmtCoords(lastLat,lastLng)}`,
     `🌊 Oleaje: ${$('mv-wave').textContent} m`,
     `💨 Viento: ${$('mv-wind').textContent} km/h ${$('windOrigin').textContent}`,
-    `🌡 T.Agua: ${$('mv-water').textContent}°C`,
+    `🌡 T.Agua: ${$('mv-water').textContent}°C · T.Aire: ${$('mv-air').textContent}°C`,
     `💧 Humedad: ${$('sv-humidity').textContent}`,
     `👁 Visibilidad: ${$('sv-visibility').textContent}`,
     `🔵 Presión: ${$('sv-pressure').textContent}`,
@@ -869,12 +852,12 @@ $('shareBtn').addEventListener('click', () => {
     `🌙 Luna: ${moon.label}`,
     `📅 ${new Date().toLocaleString('es-ES')}`,
   ].join('\n');
-
   if (navigator.share) {
     navigator.share({ title:'Pesca Galicia Pro', text:lines })
       .catch(() => navigator.clipboard?.writeText(lines));
   } else {
-    navigator.clipboard?.writeText(lines).then(() => showToast('✓ Datos copiados al portapapeles'));
+    navigator.clipboard?.writeText(lines)
+      .then(() => showToast('✓ Datos copiados al portapapeles'));
   }
 });
 
@@ -882,24 +865,24 @@ $('shareBtn').addEventListener('click', () => {
 //  VEDAS
 // ================================================================
 function isInVeda(start, end) {
-  const now = new Date(), m = now.getMonth()+1, d = now.getDate();
-  const [sm,sd] = start, [em,ed] = end;
-  if (sm > em) return (m>sm||(m===sm&&d>=sd))||(m<em||(m===em&&d<=ed));
+  const now=new Date(), m=now.getMonth()+1, d=now.getDate();
+  const [sm,sd]=start, [em,ed]=end;
+  if (sm>em) return (m>sm||(m===sm&&d>=sd))||(m<em||(m===em&&d<=ed));
   return (m>sm||(m===sm&&d>=sd))&&(m<em||(m===em&&d<=ed));
 }
 function daysUntil(start) {
-  const now = new Date();
-  let t = new Date(now.getFullYear(), start[0]-1, start[1]);
-  if (t <= now) t.setFullYear(t.getFullYear()+1);
-  return Math.ceil((t - now) / 86400000);
+  const now=new Date();
+  let t=new Date(now.getFullYear(),start[0]-1,start[1]);
+  if (t<=now) t.setFullYear(t.getFullYear()+1);
+  return Math.ceil((t-now)/86400000);
 }
 function renderVedas() {
   $('vedasList').innerHTML = VEDAS.map(v => {
-    const inP  = isInVeda(v.start, v.end);
-    const days = daysUntil(v.start);
-    const soon = !inP && days <= 30;
-    const cls  = inP ? 'active' : soon ? 'soon' : 'open';
-    const lbl  = inP ? 'VEDA' : soon ? `En ${days}d` : 'Abierto';
+    const inP =isInVeda(v.start,v.end);
+    const days=daysUntil(v.start);
+    const soon=!inP&&days<=30;
+    const cls =inP?'active':soon?'soon':'open';
+    const lbl =inP?'VEDA':soon?`En ${days}d`:'Abierto';
     return `<div class="veda-card">
       <div><div class="veda-name">${v.name}</div><div class="veda-period">${v.period}</div></div>
       <span class="veda-badge ${cls}">${lbl}</span>
@@ -911,22 +894,22 @@ function renderVedas() {
 //  TALLAS MÍNIMAS
 // ================================================================
 function renderTallas(q='') {
-  const filtered = q ? TALLAS.filter(t => t.name.toLowerCase().includes(q.toLowerCase())) : TALLAS;
+  const filtered = q ? TALLAS.filter(t=>t.name.toLowerCase().includes(q.toLowerCase())) : TALLAS;
   if (!filtered.length) {
-    $('tallasList').innerHTML = '<div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">Sin resultados</div>';
+    $('tallasList').innerHTML='<div style="font-size:12px;color:var(--text3);padding:12px 0;text-align:center">Sin resultados</div>';
     return;
   }
-  $('tallasList').innerHTML = `<div class="talla-wrap">${
-    filtered.map(t => `<div class="talla-row">
+  $('tallasList').innerHTML=`<div class="talla-wrap">${
+    filtered.map(t=>`<div class="talla-row">
       <span class="talla-name">${t.name}</span>
-      <span class="talla-size">${t.unit ? t.cm + ' ' + t.unit : t.cm + ' cm'}</span>
+      <span class="talla-size">${t.unit?t.cm+' '+t.unit:t.cm+' cm'}</span>
     </div>`).join('')
   }</div>`;
 }
-$('tallasSearch').addEventListener('input', e => renderTallas(e.target.value));
+$('tallasSearch').addEventListener('input', e=>renderTallas(e.target.value));
 
 // ================================================================
-//  LOG / DIARIO DE CAPTURAS
+//  LOG / DIARIO
 // ================================================================
 const LOG_KEY = 'pescaGalicia_log_v4';
 const loadLog = () => { try { return JSON.parse(localStorage.getItem(LOG_KEY))||[]; } catch { return []; } };
@@ -936,10 +919,10 @@ function renderLog() {
   const entries = loadLog();
   $('logCount').textContent = entries.length;
 
-  const totalKg = entries.reduce((s,e) => s + (+e.weight||0), 0);
+  const totalKg = entries.reduce((s,e)=>s+(+e.weight||0),0);
   const species  = [...new Set(entries.map(e=>e.species).filter(Boolean))].length;
 
-  $('logStats').innerHTML = `
+  $('logStats').innerHTML=`
     <div class="log-stat"><span class="ls-val">${entries.length}</span><span class="ls-label">Capturas</span></div>
     <div class="log-stat"><span class="ls-val">${totalKg.toFixed(1)}</span><span class="ls-label">Kg total</span></div>
     <div class="log-stat"><span class="ls-val">${species}</span><span class="ls-label">Especies</span></div>
@@ -947,18 +930,17 @@ function renderLog() {
 
   const el = $('logEntries');
   if (!entries.length) {
-    el.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:var(--text3)">Sin capturas registradas todavía</div>';
+    el.innerHTML='<div style="padding:24px;text-align:center;font-size:13px;color:var(--text3)">Sin capturas registradas todavía</div>';
     return;
   }
-
-  el.innerHTML = entries.slice().reverse().map((e, ri) => {
-    const idx = entries.length - 1 - ri;
+  el.innerHTML = entries.slice().reverse().map((e,ri) => {
+    const idx = entries.length-1-ri;
     const dateFmt = e.date ? new Date(e.date+'T12:00:00').toLocaleDateString('es-ES') : '—';
     return `<div class="log-entry">
       <button class="log-delete" data-idx="${idx}" title="Eliminar">×</button>
       <div class="log-entry-header">
         <span class="log-species">${e.species||'—'}</span>
-        <span class="log-weight">${e.weight ? e.weight+' kg' : '—'}</span>
+        <span class="log-weight">${e.weight?e.weight+' kg':'—'}</span>
       </div>
       <div class="log-meta">${dateFmt}${e.technique?' · '+e.technique:''}${e.length?' · '+e.length+' cm':''}${e.coords?' · '+e.coords:''}</div>
       ${e.notes?`<div class="log-notes">${e.notes}</div>`:''}
@@ -966,60 +948,52 @@ function renderLog() {
   }).join('');
 
   el.querySelectorAll('.log-delete').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click',()=>{
       if (!confirm('¿Eliminar esta captura?')) return;
-      const arr = loadLog(); arr.splice(+btn.dataset.idx, 1); saveLog(arr); renderLog();
+      const arr=loadLog(); arr.splice(+btn.dataset.idx,1); saveLog(arr); renderLog();
       showToast('Captura eliminada');
     });
   });
 }
 
-$('saveLogBtn').addEventListener('click', () => {
-  const species = $('logSpecies').value.trim();
+$('saveLogBtn').addEventListener('click',()=>{
+  const species=$('logSpecies').value.trim();
   if (!species) { showToast('⚠ Introduce el nombre de la especie'); return; }
-
-  const length = parseFloat($('logLength').value);
-  const talla  = TALLAS.find(t => t.name.toLowerCase() === species.toLowerCase());
-  if (talla && length && !talla.unit && length < talla.cm) {
-    if (!confirm(`⚠ La ${species} mide ${length} cm, por debajo de la talla mínima legal (${talla.cm} cm). ¿Registrar igualmente?`)) return;
+  const length=parseFloat($('logLength').value);
+  const talla=TALLAS.find(t=>t.name.toLowerCase()===species.toLowerCase());
+  if (talla&&length&&!talla.unit&&length<talla.cm) {
+    if (!confirm(`⚠ La ${species} mide ${length} cm, por debajo de la talla mínima (${talla.cm} cm). ¿Registrar igualmente?`)) return;
   }
-
-  const entry = {
-    date:      $('logDate').value,
-    species,
-    weight:    parseFloat($('logWeight').value) || '',
-    length:    isNaN(length) ? '' : length,
-    technique: $('logTech').value,
-    coords:    $('logCoords').value,
-    notes:     $('logNotes').value.trim(),
-    ts:        Date.now()
+  const entry={
+    date:$('logDate').value, species,
+    weight:parseFloat($('logWeight').value)||'',
+    length:isNaN(length)?'':length,
+    technique:$('logTech').value,
+    coords:$('logCoords').value,
+    notes:$('logNotes').value.trim(),
+    ts:Date.now()
   };
-
-  const arr = loadLog(); arr.push(entry); saveLog(arr); renderLog();
-  $('logSpecies').value = $('logWeight').value = $('logLength').value = $('logNotes').value = '';
-  $('logTech').value = '';
+  const arr=loadLog(); arr.push(entry); saveLog(arr); renderLog();
+  $('logSpecies').value=$('logWeight').value=$('logLength').value=$('logNotes').value='';
+  $('logTech').value='';
   showToast('✓ Captura registrada');
 });
 
-$('exportBtn').addEventListener('click', () => {
-  const arr = loadLog();
+$('exportBtn').addEventListener('click',()=>{
+  const arr=loadLog();
   if (!arr.length) return showToast('Sin datos para exportar');
-  const header = 'Fecha,Especie,Peso(kg),Longitud(cm),Técnica,Coordenadas,Notas\n';
-  const rows   = arr.map(e => [
-    e.date, e.species, e.weight, e.length, e.technique,
-    e.coords, (e.notes||'').replace(/,/g,';')
-  ].join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob(['\uFEFF'+header+rows], {type:'text/csv;charset=utf-8;'}));
-  a.download = `capturas_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  showToast('↓ CSV exportado');
+  const header='Fecha,Especie,Peso(kg),Longitud(cm),Técnica,Coordenadas,Notas\n';
+  const rows=arr.map(e=>[e.date,e.species,e.weight,e.length,e.technique,e.coords,(e.notes||'').replace(/,/g,';')].join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+header+rows],{type:'text/csv;charset=utf-8;'}));
+  a.download=`capturas_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); showToast('↓ CSV exportado');
 });
 
-$('clearLogBtn').addEventListener('click', () => {
-  const arr = loadLog();
+$('clearLogBtn').addEventListener('click',()=>{
+  const arr=loadLog();
   if (!arr.length) return showToast('No hay capturas');
-  if (!confirm(`¿Eliminar todas las ${arr.length} capturas? Esta acción no se puede deshacer.`)) return;
+  if (!confirm(`¿Eliminar las ${arr.length} capturas? No se puede deshacer.`)) return;
   saveLog([]); renderLog(); showToast('Diario limpiado');
 });
 
@@ -1033,8 +1007,6 @@ $('clearLogBtn').addEventListener('click', () => {
   renderLog();
   setStatus('ready', 'Standby');
   drawCompass(null);
-
-  // Luna visible desde el inicio
   const moon = getMoon();
   $('moonIcon').textContent = moon.icon;
   $('sv-moon').textContent  = moon.label;
