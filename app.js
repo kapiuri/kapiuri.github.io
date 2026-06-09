@@ -524,88 +524,106 @@ function drawWindOnMap(lat, lng, deg) {
 
 // ================================================================
 //  FETCH DATOS METEOROLÓGICOS
-//  Usamos TRES llamadas paralelas:
-//  1. Météo-France (AROME 1.5km) → viento, temp, humedad, presión, vis, UV
-//  2. Open-Meteo Marine → oleaje, período, SST real, sea_level_height
-//  3. sea_level minutely_15 para mareas más precisas (si disponible)
+//  1. Météo-France AROME (1.5km) → viento km/h, temp, humedad, presión, vis, UV
+//  2. Open-Meteo Marine (oleaje + SST + mareas reales)
+//     Las mareas usan "sea_level_height_msl" (nombre correcto del parámetro)
+//     SST y mareas se piden por separado para no romper todo si una falla
 // ================================================================
 async function fetchAllData(lat, lng) {
   const today = new Date().toISOString().slice(0,10);
   const end   = new Date(Date.now() + 86400000*2).toISOString().slice(0,10);
 
-  // 1. Météo-France AROME — el modelo de mayor resolución para España/Galicia
-  //    Viento en km/h directamente
+  // 1. Météo-France AROME seamless — mayor resolución para Galicia, viento en km/h
   const weatherURL =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${lat}&longitude=${lng}` +
-    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m` +
-    `,surface_pressure,visibility,uv_index,precipitation_probability` +
+    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
+    `,wind_gusts_10m,surface_pressure,visibility,uv_index,precipitation_probability` +
     `&wind_speed_unit=kmh` +
     `&models=meteofrance_seamless` +
     `&timezone=Europe%2FMadrid` +
     `&start_date=${today}&end_date=${end}`;
 
-  // 2. Open-Meteo Marine — oleaje + sea_surface_temperature REAL + sea_level_height
-  const marineURL =
+  // 2a. Marine — oleaje básico (siempre disponible en mar abierto)
+  const marineWaveURL =
     `https://marine-api.open-meteo.com/v1/marine` +
     `?latitude=${lat}&longitude=${lng}` +
-    `&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature,sea_level_height` +
+    `&hourly=wave_height,wave_direction,wave_period` +
     `&timezone=Europe%2FMadrid` +
     `&forecast_days=3`;
 
-  const [wRes, mRes] = await Promise.all([fetch(weatherURL), fetch(marineURL)]);
+  // 2b. Marine — SST + mareas (pueden no estar disponibles en todas las zonas)
+  //     Nombre CORRECTO del parámetro de nivel del mar: sea_level_height_msl
+  const marineTidesURL =
+    `https://marine-api.open-meteo.com/v1/marine` +
+    `?latitude=${lat}&longitude=${lng}` +
+    `&hourly=sea_surface_temperature,sea_level_height_msl` +
+    `&timezone=Europe%2FMadrid` +
+    `&forecast_days=3`;
 
-  if (!wRes.ok) throw new Error(`Météo-France HTTP ${wRes.status}`);
-  if (!mRes.ok) throw new Error(`Marine HTTP ${mRes.status}`);
+  // Lanzar las tres en paralelo; mareas/SST no bloquean si fallan
+  const [wRes, mWaveRes, mTidesRes] = await Promise.all([
+    fetch(weatherURL),
+    fetch(marineWaveURL),
+    fetch(marineTidesURL).catch(() => null)   // silenciar si no hay cobertura
+  ]);
 
-  const [wData, mData] = await Promise.all([wRes.json(), mRes.json()]);
+  // Weather y oleaje son obligatorios
+  if (!wRes.ok)     throw new Error(`Météo-France HTTP ${wRes.status} — comprueba la conexión`);
+  if (!mWaveRes.ok) throw new Error(`Marine (oleaje) HTTP ${mWaveRes.status} — el punto puede estar en tierra`);
 
-  if (wData.error) throw new Error('Weather API: ' + (wData.reason || 'error desconocido'));
-  if (mData.error) throw new Error('Marine API: ' + (mData.reason || 'error desconocido'));
+  const [wData, mWaveData] = await Promise.all([wRes.json(), mWaveRes.json()]);
 
-  const wh = wData.hourly;
-  const mh = mData.hourly;
-  const n  = Math.min(wh.time.length, mh.time.length, 48);
+  if (wData.error)     throw new Error('Météo-France: ' + (wData.reason     || 'error'));
+  if (mWaveData.error) throw new Error('Marine oleaje: ' + (mWaveData.reason || 'error'));
 
-  // Construir array unificado de horas
+  // SST y mareas: opcionales
+  let mTidesData = null;
+  if (mTidesRes && mTidesRes.ok) {
+    try {
+      const tmp = await mTidesRes.json();
+      if (!tmp.error) mTidesData = tmp;
+    } catch (_) {}
+  }
+
+  const wh     = wData.hourly;
+  const mh     = mWaveData.hourly;
+  const mhT    = mTidesData?.hourly || {};
+  const n      = Math.min(wh.time.length, mh.time.length, 48);
+
   const hours = [];
   for (let i = 0; i < n; i++) {
-    const sst = mh.sea_surface_temperature ? mh.sea_surface_temperature[i] : null;
     hours.push({
       time:       wh.time[i],
-      // Meteorología — Météo-France AROME
-      airTemp:    wh.temperature_2m[i],
-      humidity:   wh.relative_humidity_2m[i],
-      wind:       wh.wind_speed_10m[i] ?? 0,
-      windDir:    wh.wind_direction_10m[i] ?? null,
-      gust:       wh.wind_gusts_10m[i] ?? null,
-      pressure:   wh.surface_pressure[i] ?? null,
-      visibility: wh.visibility[i] ?? null,
-      uv:         wh.uv_index[i] ?? null,
-      rain:       wh.precipitation_probability[i] ?? null,
-      // Marina — Open-Meteo Marine
-      wave:       mh.wave_height[i] ?? 0,
-      waveDir:    mh.wave_direction[i] ?? null,
-      period:     mh.wave_period[i] ?? null,
-      waterTemp:  sst,  // temperatura real del agua desde satélite/modelo
+      // Meteorología Météo-France AROME
+      airTemp:    wh.temperature_2m?.[i]            ?? null,
+      humidity:   wh.relative_humidity_2m?.[i]      ?? null,
+      wind:       wh.wind_speed_10m?.[i]            ?? 0,
+      windDir:    wh.wind_direction_10m?.[i]        ?? null,
+      gust:       wh.wind_gusts_10m?.[i]            ?? null,
+      pressure:   wh.surface_pressure?.[i]          ?? null,
+      visibility: wh.visibility?.[i]               ?? null,
+      uv:         wh.uv_index?.[i]                 ?? null,
+      rain:       wh.precipitation_probability?.[i] ?? null,
+      // Marina
+      wave:       mh.wave_height?.[i]    ?? 0,
+      waveDir:    mh.wave_direction?.[i] ?? null,
+      period:     mh.wave_period?.[i]   ?? null,
+      // SST real (si disponible)
+      waterTemp:  mhT.sea_surface_temperature?.[i]  ?? null,
     });
   }
 
-  if (!hours.length) throw new Error('Sin datos para estas coordenadas');
+  if (!hours.length) throw new Error('Sin datos disponibles para estas coordenadas');
 
-  // Procesar mareas desde sea_level_height
-  const seaLevelRaw   = mh.sea_level_height || [];
-  const seaLevelTimes = mh.time || [];
+  // Mareas desde sea_level_height_msl real
+  const seaLevelRaw   = mhT.sea_level_height_msl || [];
+  const seaLevelTimes = mhT.time || mh.time || [];
   const tideEventList = seaLevelRaw.length > 4
     ? processTides(seaLevelRaw, seaLevelTimes)
     : [];
 
-  return {
-    hours,
-    seaLevelHourly: seaLevelRaw,
-    seaLevelTimes,
-    tideEvents: tideEventList
-  };
+  return { hours, seaLevelHourly: seaLevelRaw, seaLevelTimes, tideEvents: tideEventList };
 }
 
 // ================================================================
@@ -633,7 +651,8 @@ async function getMarineData(lat, lng) {
   } catch (err) {
     setStatus('error', 'Error');
     console.error('Error cargando datos:', err);
-    showToast('⚠ ' + err.message, 5000);
+    const msg = err.message.includes('400') ? '⚠ Punto en tierra o sin cobertura. Selecciona un punto en el mar.' : '⚠ ' + err.message;
+    showToast(msg, 6000);
   }
 }
 
