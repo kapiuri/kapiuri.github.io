@@ -188,13 +188,17 @@ function drawCompass(deg) {
 
   if (deg == null) return;
 
-  // La flecha apunta hacia DONDE VA el viento
+  // wind_direction_10m = dirección de ORIGEN del viento (de dónde viene),
+  // en grados desde el Norte, sentido horario (estándar meteorológico).
+  // En canvas, 0°=Norte=arriba equivale a ángulo -90°, y los grados
+  // aumentan en sentido horario igual que en meteorología:
+  // rad = (deg - 90°). La flecha apunta HACIA EL ORIGEN del viento.
   const rad = (deg - 90) * Math.PI / 180;
   const arrowLen = R * 0.52;
 
   ctx.shadowColor = '#0ea5e9'; ctx.shadowBlur = 8;
 
-  // Línea de flecha
+  // La PUNTA de la flecha señala de dónde viene el viento
   ctx.beginPath();
   ctx.moveTo(cx - (arrowLen*0.35)*Math.cos(rad), cx - (arrowLen*0.35)*Math.sin(rad));
   ctx.lineTo(cx + arrowLen*Math.cos(rad), cx + arrowLen*Math.sin(rad));
@@ -260,13 +264,20 @@ function processTides(seaLevelData, times) {
   return filtered;
 }
 
-function renderTideStatus(seaLevelHourly, times, events) {
+function renderTideStatus(seaLevelHourly, times, events, nowISO) {
   if (!seaLevelHourly || !seaLevelHourly.length) return;
 
   const now = new Date();
-  // Encontrar índice de la hora actual en los datos horarios
-  const nowStr = now.toISOString().slice(0,13); // "2024-06-09T14"
-  let curIdx = seaLevelHourly.findIndex((_, i) => times[i] && times[i].slice(0,13) === nowStr);
+  // Buscar el índice cuya hora coincide con la hora LOCAL actual.
+  // times[] viene con timezone=Europe/Madrid (hora local), así que
+  // comparamos con nowISO (también hora local), NO con toISOString()
+  // que devuelve UTC y desfasaría el índice 1-2 horas.
+  let curIdx = times.findIndex(t => t === nowISO);
+  if (curIdx < 0) {
+    // Fallback: buscar coincidencia solo por "YYYY-MM-DDTHH"
+    const prefix = nowISO.slice(0,13);
+    curIdx = times.findIndex(t => t && t.slice(0,13) === prefix);
+  }
   if (curIdx < 0) curIdx = 0;
 
   const curHeight = seaLevelHourly[curIdx];
@@ -336,7 +347,7 @@ function renderTideEvents(events) {
 //  RENDER PRINCIPAL
 // ================================================================
 function renderData(data, lat, lng) {
-  const { hours, seaLevelHourly, seaLevelTimes, tideEvents } = data;
+  const { hours, seaLevelHourly, seaLevelTimes, tideEvents, nowISO } = data;
   allHours = hours;
   const cur = hours[0];
 
@@ -401,7 +412,7 @@ function renderData(data, lat, lng) {
 
   // Mareas REALES
   if (seaLevelHourly && seaLevelHourly.length) {
-    renderTideStatus(seaLevelHourly, seaLevelTimes, tideEvents);
+    renderTideStatus(seaLevelHourly, seaLevelTimes, tideEvents, nowISO);
     renderTideEvents(tideEvents);
   } else {
     $('tideEvents').innerHTML = '<div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1">Datos de marea no disponibles en esta zona</div>';
@@ -586,15 +597,35 @@ async function fetchAllData(lat, lng) {
     } catch (_) {}
   }
 
-  const wh     = wData.hourly;
-  const mh     = mWaveData.hourly;
-  const mhT    = mTidesData?.hourly || {};
-  const n      = Math.min(wh.time.length, mh.time.length, 48);
+  const wh  = wData.hourly;
+  const mh  = mWaveData.hourly;
+  const mhT = mTidesData?.hourly || {};
+
+  // Los arrays de Weather (Météo-France) y Marine pueden no empezar
+  // exactamente en la misma hora. Construimos un mapa por timestamp ISO
+  // para alinear correctamente cada hora, en vez de asumir mismo índice.
+  const marineByTime = {};
+  (mh.time || []).forEach((t, i) => {
+    marineByTime[t] = {
+      wave:    mh.wave_height?.[i]    ?? 0,
+      waveDir: mh.wave_direction?.[i] ?? null,
+      period:  mh.wave_period?.[i]   ?? null,
+    };
+  });
+  const tidesByTime = {};
+  (mhT.time || []).forEach((t, i) => {
+    tidesByTime[t] = {
+      waterTemp: mhT.sea_surface_temperature?.[i] ?? null,
+    };
+  });
 
   const hours = [];
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < wh.time.length && hours.length < 48; i++) {
+    const t = wh.time[i];
+    const m = marineByTime[t] || { wave:0, waveDir:null, period:null };
+    const s = tidesByTime[t]  || { waterTemp:null };
     hours.push({
-      time:       wh.time[i],
+      time:       t,
       // Meteorología Météo-France AROME
       airTemp:    wh.temperature_2m?.[i]            ?? null,
       humidity:   wh.relative_humidity_2m?.[i]      ?? null,
@@ -605,25 +636,48 @@ async function fetchAllData(lat, lng) {
       visibility: wh.visibility?.[i]               ?? null,
       uv:         wh.uv_index?.[i]                 ?? null,
       rain:       wh.precipitation_probability?.[i] ?? null,
-      // Marina
-      wave:       mh.wave_height?.[i]    ?? 0,
-      waveDir:    mh.wave_direction?.[i] ?? null,
-      period:     mh.wave_period?.[i]   ?? null,
-      // SST real (si disponible)
-      waterTemp:  mhT.sea_surface_temperature?.[i]  ?? null,
+      // Marina (alineada por timestamp)
+      wave:       m.wave,
+      waveDir:    m.waveDir,
+      period:     m.period,
+      // SST real (alineada por timestamp)
+      waterTemp:  s.waterTemp,
     });
   }
 
   if (!hours.length) throw new Error('Sin datos disponibles para estas coordenadas');
 
-  // Mareas desde sea_level_height_msl real
+  // Índice correspondiente a LA HORA ACTUAL (no la primera del array,
+  // que sería las 00:00 del día). Buscamos el timestamp ISO cuya hora
+  // coincide con la hora local actual.
+  const now = new Date();
+  const nowISO = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0') + 'T' +
+    String(now.getHours()).padStart(2,'0') + ':00';
+  let nowIdx = hours.findIndex(h => h.time === nowISO);
+  if (nowIdx < 0) nowIdx = 0; // fallback si no se encuentra
+
+  // Reordenar: empezar el array desde la hora actual para que
+  // hours[0] sea siempre "ahora" y el resto sea la predicción futura
+  const reordered = hours.slice(nowIdx).concat(hours.slice(0, nowIdx));
+
+  // Mareas desde sea_level_height_msl real (en su orden cronológico original,
+  // necesario para detectar correctamente máximos/mínimos consecutivos)
   const seaLevelRaw   = mhT.sea_level_height_msl || [];
   const seaLevelTimes = mhT.time || mh.time || [];
   const tideEventList = seaLevelRaw.length > 4
     ? processTides(seaLevelRaw, seaLevelTimes)
     : [];
 
-  return { hours, seaLevelHourly: seaLevelRaw, seaLevelTimes, tideEvents: tideEventList };
+  return {
+    hours: reordered,        // hours[0] = hora actual real
+    seaLevelHourly: seaLevelRaw,
+    seaLevelTimes,
+    tideEvents: tideEventList,
+    nowISO                    // timestamp de la hora actual, para localizar
+                               // el punto correcto dentro de seaLevelHourly
+  };
 }
 
 // ================================================================
