@@ -351,6 +351,12 @@ function renderData(data, lat, lng) {
   allHours = hours;
   const cur = hours[0];
 
+  // --- DEBUG TEMPORAL ---
+  console.log('[DEBUG] nowISO calculado:', nowISO);
+  console.log('[DEBUG] hours[0] (usado como "actual"):', cur);
+  console.log('[DEBUG] hours[0].time:', cur.time, '| windDir:', cur.windDir, '| wind:', cur.wind);
+  // --- FIN DEBUG ---
+
   lastLat = lat; lastLng = lng;
 
   $('noDataState').classList.add('hidden');
@@ -600,6 +606,14 @@ async function fetchAllData(lat, lng) {
   const wh  = wData.hourly;
   const mh  = mWaveData.hourly;
   const mhT = mTidesData?.hourly || {};
+
+  // --- DEBUG TEMPORAL: ver datos crudos en consola del navegador ---
+  console.log('[DEBUG] Weather timezone:', wData.timezone, wData.timezone_abbreviation, 'utc_offset_seconds:', wData.utc_offset_seconds);
+  console.log('[DEBUG] wh.time[0..5]:', wh.time?.slice(0,6));
+  console.log('[DEBUG] wh.wind_speed_10m[0..5]:', wh.wind_speed_10m?.slice(0,6));
+  console.log('[DEBUG] wh.wind_direction_10m[0..5]:', wh.wind_direction_10m?.slice(0,6));
+  console.log('[DEBUG] hora local navegador:', new Date().toString());
+  // --- FIN DEBUG ---
 
   // Los arrays de Weather (Météo-France) y Marine pueden no empezar
   // exactamente en la misma hora. Construimos un mapa por timestamp ISO
