@@ -345,15 +345,9 @@ function renderTideEvents(events) {
 //  RENDER PRINCIPAL
 // ================================================================
 function renderData(data, lat, lng) {
-  const { hours, seaLevelHourly, seaLevelTimes, tideEvents, nowISO, currentSeaLevel } = data;
+  const { hours, seaLevelHourly, seaLevelTimes, tideEvents, nowISO, currentSeaLevel, modelUsed } = data;
   allHours = hours;
   const cur = hours[0];
-
-  // --- DEBUG TEMPORAL ---
-  console.log('[DEBUG] nowISO calculado:', nowISO);
-  console.log('[DEBUG] hours[0] (usado como "actual"):', cur);
-  console.log('[DEBUG] hours[0].time:', cur.time, '| windDir:', cur.windDir, '| wind:', cur.wind);
-  // --- FIN DEBUG ---
 
   lastLat = lat; lastLng = lng;
 
@@ -548,10 +542,24 @@ async function fetchAllData(lat, lng) {
   const today = new Date().toISOString().slice(0,10);
   const end   = new Date(Date.now() + 86400000*2).toISOString().slice(0,10);
 
-  // 1. Weather — modelo por defecto (best_match), con "current" para el
-  //    valor AHORA MISMO (la API resuelve la hora actual internamente,
-  //    evitando errores de timezone/índice) y "hourly" para la predicción
-  const weatherURL =
+  // 1. Weather — Météo-France AROME (1.5km, mucho mayor resolución que
+  //    el modelo global "best_match"), crucial en rías con orografía
+  //    compleja donde el viento varía mucho en pocos km. "current" da
+  //    el valor de AHORA resuelto por la propia API.
+  const weatherURLPrimary =
+    `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${lat}&longitude=${lng}` +
+    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
+    `,wind_gusts_10m,surface_pressure,visibility,uv_index,precipitation_probability` +
+    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
+    `,wind_gusts_10m,surface_pressure,visibility,uv_index,precipitation_probability` +
+    `&wind_speed_unit=kmh` +
+    `&models=meteofrance_seamless` +
+    `&timezone=Europe%2FMadrid` +
+    `&start_date=${today}&end_date=${end}`;
+
+  // Fallback si meteofrance no tiene cobertura en ese punto
+  const weatherURLFallback =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${lat}&longitude=${lng}` +
     `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
@@ -580,18 +588,33 @@ async function fetchAllData(lat, lng) {
     `&timezone=Europe%2FMadrid` +
     `&forecast_days=3`;
 
-  // Lanzar las tres en paralelo; mareas/SST no bloquean si fallan
-  const [wRes, mWaveRes, mTidesRes] = await Promise.all([
-    fetch(weatherURL),
+  // Lanzar Marine en paralelo; Weather se intenta primero con AROME
+  // (mayor resolución) y si falla se reintenta con el modelo por defecto
+  const [wResTry, mWaveRes, mTidesRes] = await Promise.all([
+    fetch(weatherURLPrimary),
     fetch(marineWaveURL),
     fetch(marineTidesURL).catch(() => null)   // silenciar si no hay cobertura
   ]);
+
+  let wRes = wResTry;
+  let wDataTry = null;
+  if (wRes.ok) {
+    wDataTry = await wRes.json();
+    if (wDataTry.error || !wDataTry.current) {
+      // AROME sin cobertura para este punto → reintentar con modelo por defecto
+      wRes = await fetch(weatherURLFallback);
+      wDataTry = null;
+    }
+  } else {
+    wRes = await fetch(weatherURLFallback);
+  }
 
   // Weather y oleaje son obligatorios
   if (!wRes.ok)     throw new Error(`Weather HTTP ${wRes.status} — comprueba la conexión`);
   if (!mWaveRes.ok) throw new Error(`Marine (oleaje) HTTP ${mWaveRes.status} — el punto puede estar en tierra`);
 
-  const [wData, mWaveData] = await Promise.all([wRes.json(), mWaveRes.json()]);
+  const wData     = wDataTry || await wRes.json();
+  const mWaveData = await mWaveRes.json();
 
   if (wData.error)     throw new Error('Weather: ' + (wData.reason     || 'error'));
   if (mWaveData.error) throw new Error('Marine oleaje: ' + (mWaveData.reason || 'error'));
@@ -612,13 +635,8 @@ async function fetchAllData(lat, lng) {
   const mc  = mWaveData.current || {};
   const mcT = mTidesData?.current || {};
 
-  // --- DEBUG TEMPORAL: ver datos crudos en consola del navegador ---
-  console.log('[DEBUG] Weather timezone:', wData.timezone, 'utc_offset_seconds:', wData.utc_offset_seconds);
-  console.log('[DEBUG] current (Weather):', wc);
-  console.log('[DEBUG] current (Marine wave):', mc);
-  console.log('[DEBUG] current (Marine tides/SST):', mcT);
-  console.log('[DEBUG] hora local navegador:', new Date().toString());
-  // --- FIN DEBUG ---
+  // Modelo meteorológico realmente utilizado (para mostrar al usuario)
+  const modelUsed = (wDataTry && wDataTry.current) ? 'Météo-France AROME (1.5km)' : 'Modelo global (best_match)';
 
   // Alinear hourly de Marine con hourly de Weather por timestamp,
   // para construir la predicción futura (las próximas 48h)
@@ -702,7 +720,8 @@ async function fetchAllData(lat, lng) {
     seaLevelTimes,
     tideEvents: tideEventList,
     nowISO,                   // timestamp "ahora" según la API (hora local)
-    currentSeaLevel: mcT.sea_level_height_msl ?? null
+    currentSeaLevel: mcT.sea_level_height_msl ?? null,
+    modelUsed
   };
 }
 
@@ -717,13 +736,13 @@ async function getMarineData(lat, lng) {
     const data = await fetchAllData(lat, lng);
     renderData(data, lat, lng);
 
-    // Nota sobre la fuente
+    // Nota sobre la fuente real utilizada
     const srcNote = document.getElementById('dataSourceTag');
     if (srcNote) {
-      srcNote.textContent = `Météo-France AROME + Open-Meteo Marine · ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`;
+      srcNote.textContent = `${data.modelUsed} + Marine · ${new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}`;
     }
 
-    showToast('✓ Datos actualizados — Météo-France AROME');
+    showToast(`✓ Datos actualizados — ${data.modelUsed}`);
 
     // Especies en segundo plano
     fetchSpecies(lat, lng);
