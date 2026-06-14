@@ -664,10 +664,13 @@ async function fetchAllData(lat, lng) {
     };
   });
 
-  // HOUR 0 = "AHORA" — usamos los valores "current" de cada API,
-  // que la propia API resuelve internamente sin que tengamos que
-  // calcular índices ni gestionar timezones (evita los bugs anteriores
-  // de desalineamiento horario).
+  // HOUR 0 = "AHORA" — valores "current" para lo que está disponible,
+  // y hourly[nowIdx] para uv_index, precipitation_probability y visibility
+  // que Open-Meteo NO incluye en el endpoint "current".
+  const currentTime = wc.time; // ej "2026-06-13T19:00"
+  const nowIdx = wh.time ? wh.time.findIndex(t => t === currentTime) : -1;
+  const nowI   = nowIdx >= 0 ? nowIdx : 0;
+
   const nowHour = {
     time:       wc.time || new Date().toISOString().slice(0,16),
     airTemp:    wc.temperature_2m            ?? null,
@@ -676,9 +679,11 @@ async function fetchAllData(lat, lng) {
     windDir:    wc.wind_direction_10m        ?? null,
     gust:       wc.wind_gusts_10m            ?? null,
     pressure:   wc.surface_pressure          ?? null,
-    visibility: wc.visibility                ?? null,
-    uv:         wc.uv_index                  ?? null,
-    rain:       wc.precipitation_probability ?? null,
+    // Estos tres solo vienen en hourly, no en current:
+    visibility: wh.visibility?.[nowI]               ?? null,
+    uv:         wh.uv_index?.[nowI]                 ?? null,
+    rain:       wh.precipitation_probability?.[nowI] ?? null,
+    // Marina
     wave:       mc.wave_height               ?? 0,
     waveDir:    mc.wave_direction             ?? null,
     period:     mc.wave_period               ?? null,
@@ -688,7 +693,6 @@ async function fetchAllData(lat, lng) {
   // RESTO DE HORAS (predicción futura) — desde hourly, solo timestamps
   // estrictamente posteriores a la hora "current" para no duplicar/solapar
   const futureHours = [];
-  const currentTime = wc.time; // ej "2026-06-13T19:00"
   for (let i = 0; i < wh.time.length && futureHours.length < 47; i++) {
     const t = wh.time[i];
     if (currentTime && t <= currentTime) continue; // saltar horas pasadas/actual
