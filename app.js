@@ -613,7 +613,7 @@ async function fetchAllData(lat, lng) {
   }
 
   // Weather y oleaje son obligatorios
-  if (!wRes.ok)     throw new Error(`Weather HTTP ${wRes.status} — comprueba la conexión`);
+  if (!wWindRes.ok)  throw new Error(`Weather HTTP ${wWindRes.status} — comprueba la conexión`);
   if (!mWaveRes.ok) throw new Error(`Marine (oleaje) HTTP ${mWaveRes.status} — el punto puede estar en tierra`);
 
   if (!wWindRes.ok) throw new Error(`Weather HTTP ${wWindRes.status} — comprueba la conexión`);
