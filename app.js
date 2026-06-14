@@ -374,10 +374,11 @@ function renderData(data, lat, lng) {
   $('mv-water').textContent  = fmt(cur.waterTemp, 1);
   $('mv-air').textContent    = fmt(cur.airTemp, 1);
 
-  // Dirección del viento
+  // Dirección del viento — cardinal + grados exactos
   if (cur.windDir != null) {
-    $('windOrigin').textContent  = degToCardinal(cur.windDir);
-    $('compassDeg').textContent  = Math.round(cur.windDir) + '°';
+    const deg = Math.round(cur.windDir);
+    $('windOrigin').textContent  = `${degToCardinalShort(cur.windDir)} (${deg}°)`;
+    $('compassDeg').textContent  = deg + '°';
     $('compassFrom').textContent = 'del ' + degToCardinalShort(cur.windDir);
     drawCompass(cur.windDir);
     drawWindOnMap(lat, lng, cur.windDir);
@@ -566,12 +567,14 @@ async function fetchAllData(lat, lng) {
     `&timezone=Europe%2FMadrid` +
     `&start_date=${today}&end_date=${end}`;
 
-  // 1b. Modelo por defecto — UV, visibilidad, probabilidad de precipitación
-  //     (AROME no soporta estos parámetros)
+  // 1b. Modelo por defecto — UV, visibilidad, precipitación Y rachas de viento
+  //     (AROME tiende a sobreestimar rachas en zonas de ría)
   const weatherExtrasURL =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${lat}&longitude=${lng}` +
-    `&hourly=uv_index,visibility,precipitation_probability` +
+    `&current=wind_gusts_10m` +
+    `&hourly=uv_index,visibility,precipitation_probability,wind_gusts_10m` +
+    `&wind_speed_unit=kmh` +
     `&timezone=Europe%2FMadrid` +
     `&start_date=${today}&end_date=${end}`;
 
@@ -686,24 +689,29 @@ async function fetchAllData(lat, lng) {
   const extrasByTime = {};
   extTimes.forEach((t, i) => {
     extrasByTime[t.slice(0,13)] = {
-      uv:   whE.uv_index?.[i]                 ?? null,
-      vis:  whE.visibility?.[i]               ?? null,
-      rain: whE.precipitation_probability?.[i] ?? null,
+      uv:   whE.uv_index?.[i]                  ?? null,
+      vis:  whE.visibility?.[i]                ?? null,
+      rain: whE.precipitation_probability?.[i]  ?? null,
+      gust: whE.wind_gusts_10m?.[i]            ?? null,
     };
   });
 
+  // Racha actual: del current de best_match si disponible, sino de AROME
+  const wcE = wExtrasData?.current || {};
+  const gustNow = wcE.wind_gusts_10m ?? wc.wind_gusts_10m ?? null;
+
   const nowHour = {
     time:       wc.time || new Date().toISOString().slice(0,16),
-    airTemp:    wc.temperature_2m   ?? null,
-    humidity:   wc.relative_humidity_2m ?? null,
-    wind:       wc.wind_speed_10m   ?? 0,
-    windDir:    wc.wind_direction_10m ?? null,
-    gust:       wc.wind_gusts_10m   ?? null,
-    pressure:   wc.surface_pressure ?? null,
+    airTemp:    wc.temperature_2m        ?? null,
+    humidity:   wc.relative_humidity_2m  ?? null,
+    wind:       wc.wind_speed_10m        ?? 0,
+    windDir:    wc.wind_direction_10m    ?? null,
+    gust:       gustNow,                          // best_match, más preciso para rachas
+    pressure:   wc.surface_pressure      ?? null,
     // UV, visibilidad, lluvia — del modelo por defecto (whE)
-    uv:         whE.uv_index?.[nowIE]                 ?? null,
-    visibility: whE.visibility?.[nowIE]               ?? null,
-    rain:       whE.precipitation_probability?.[nowIE] ?? null,
+    uv:         whE.uv_index?.[nowIE]                  ?? null,
+    visibility: whE.visibility?.[nowIE]                ?? null,
+    rain:       whE.precipitation_probability?.[nowIE]  ?? null,
     // Marina
     wave:       mc.wave_height    ?? 0,
     waveDir:    mc.wave_direction  ?? null,
@@ -719,16 +727,16 @@ async function fetchAllData(lat, lng) {
     const t = wh.time[i];
     if (currentTime && t <= currentTime) continue; // saltar horas pasadas/actual
     const m = marineByTime[t] || { wave:0, waveDir:null, period:null };
-    const s = tidesByTime[t]  || { waterTemp:null };
-    const ex = extrasByTime[t.slice(0,13)] || { uv:null, vis:null, rain:null };
+    const s  = tidesByTime[t]  || { waterTemp:null };
+    const ex = extrasByTime[t.slice(0,13)] || { uv:null, vis:null, rain:null, gust:null };
     futureHours.push({
       time:       t,
-      airTemp:    wh.temperature_2m?.[i]     ?? null,
+      airTemp:    wh.temperature_2m?.[i]       ?? null,
       humidity:   wh.relative_humidity_2m?.[i] ?? null,
-      wind:       wh.wind_speed_10m?.[i]     ?? 0,
-      windDir:    wh.wind_direction_10m?.[i] ?? null,
-      gust:       wh.wind_gusts_10m?.[i]     ?? null,
-      pressure:   wh.surface_pressure?.[i]   ?? null,
+      wind:       wh.wind_speed_10m?.[i]       ?? 0,
+      windDir:    wh.wind_direction_10m?.[i]   ?? null,
+      gust:       ex.gust ?? wh.wind_gusts_10m?.[i] ?? null,  // best_match primero
+      pressure:   wh.surface_pressure?.[i]     ?? null,
       uv:         ex.uv,
       visibility: ex.vis,
       rain:       ex.rain,
