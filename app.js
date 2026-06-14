@@ -542,31 +542,34 @@ async function fetchAllData(lat, lng) {
   const today = new Date().toISOString().slice(0,10);
   const end   = new Date(Date.now() + 86400000*2).toISOString().slice(0,10);
 
-  // 1. Weather — Météo-France AROME (1.5km, mucho mayor resolución que
-  //    el modelo global "best_match"), crucial en rías con orografía
-  //    compleja donde el viento varía mucho en pocos km. "current" da
-  //    el valor de AHORA resuelto por la propia API.
-  const weatherURLPrimary =
+  // 1a. Météo-France AROME — viento, temperatura, humedad, presión
+  //     (mayor resolución para Galicia, pero NO soporta uv_index ni precipitation_probability)
+  const weatherWindURL =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${lat}&longitude=${lng}` +
-    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
-    `,wind_gusts_10m,surface_pressure,visibility,uv_index,precipitation_probability` +
-    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
-    `,wind_gusts_10m,surface_pressure,visibility,uv_index,precipitation_probability` +
+    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,surface_pressure` +
+    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,surface_pressure` +
     `&wind_speed_unit=kmh` +
     `&models=meteofrance_seamless` +
     `&timezone=Europe%2FMadrid` +
     `&start_date=${today}&end_date=${end}`;
 
-  // Fallback si meteofrance no tiene cobertura en ese punto
-  const weatherURLFallback =
+  // Fallback si AROME no tiene cobertura
+  const weatherWindFallback =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${lat}&longitude=${lng}` +
-    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
-    `,wind_gusts_10m,surface_pressure,visibility,uv_index,precipitation_probability` +
-    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m` +
-    `,wind_gusts_10m,surface_pressure,visibility,uv_index,precipitation_probability` +
+    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,surface_pressure` +
+    `&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,surface_pressure` +
     `&wind_speed_unit=kmh` +
+    `&timezone=Europe%2FMadrid` +
+    `&start_date=${today}&end_date=${end}`;
+
+  // 1b. Modelo por defecto — UV, visibilidad, probabilidad de precipitación
+  //     (AROME no soporta estos parámetros)
+  const weatherExtrasURL =
+    `https://api.open-meteo.com/v1/forecast` +
+    `?latitude=${lat}&longitude=${lng}` +
+    `&hourly=uv_index,visibility,precipitation_probability` +
     `&timezone=Europe%2FMadrid` +
     `&start_date=${today}&end_date=${end}`;
 
@@ -588,36 +591,48 @@ async function fetchAllData(lat, lng) {
     `&timezone=Europe%2FMadrid` +
     `&forecast_days=3`;
 
-  // Lanzar Marine en paralelo; Weather se intenta primero con AROME
-  // (mayor resolución) y si falla se reintenta con el modelo por defecto
-  const [wResTry, mWaveRes, mTidesRes] = await Promise.all([
-    fetch(weatherURLPrimary),
+  // Lanzar todo en paralelo
+  const [wWindResTry, wExtrasRes, mWaveRes, mTidesRes] = await Promise.all([
+    fetch(weatherWindURL),
+    fetch(weatherExtrasURL).catch(() => null),
     fetch(marineWaveURL),
-    fetch(marineTidesURL).catch(() => null)   // silenciar si no hay cobertura
+    fetch(marineTidesURL).catch(() => null)
   ]);
 
-  let wRes = wResTry;
-  let wDataTry = null;
-  if (wRes.ok) {
-    wDataTry = await wRes.json();
-    if (wDataTry.error || !wDataTry.current) {
-      // AROME sin cobertura para este punto → reintentar con modelo por defecto
-      wRes = await fetch(weatherURLFallback);
-      wDataTry = null;
+  // AROME con fallback
+  let wWindRes = wWindResTry;
+  let wWindDataTry = null;
+  if (wWindRes.ok) {
+    wWindDataTry = await wWindRes.json();
+    if (wWindDataTry.error || !wWindDataTry.current) {
+      wWindRes = await fetch(weatherWindFallback);
+      wWindDataTry = null;
     }
   } else {
-    wRes = await fetch(weatherURLFallback);
+    wWindRes = await fetch(weatherWindFallback);
   }
 
   // Weather y oleaje son obligatorios
   if (!wRes.ok)     throw new Error(`Weather HTTP ${wRes.status} — comprueba la conexión`);
   if (!mWaveRes.ok) throw new Error(`Marine (oleaje) HTTP ${mWaveRes.status} — el punto puede estar en tierra`);
 
-  const wData     = wDataTry || await wRes.json();
+  if (!wWindRes.ok) throw new Error(`Weather HTTP ${wWindRes.status} — comprueba la conexión`);
+  if (!mWaveRes.ok) throw new Error(`Marine (oleaje) HTTP ${mWaveRes.status} — el punto puede estar en tierra`);
+
+  const wWindData = wWindDataTry || await wWindRes.json();
   const mWaveData = await mWaveRes.json();
 
-  if (wData.error)     throw new Error('Weather: ' + (wData.reason     || 'error'));
+  if (wWindData.error) throw new Error('Weather: ' + (wWindData.reason || 'error'));
   if (mWaveData.error) throw new Error('Marine oleaje: ' + (mWaveData.reason || 'error'));
+
+  // Extras (UV, visibilidad, lluvia) — opcionales, modelo por defecto
+  let wExtrasData = null;
+  if (wExtrasRes && wExtrasRes.ok) {
+    try {
+      const tmp = await wExtrasRes.json();
+      if (!tmp.error) wExtrasData = tmp;
+    } catch (_) {}
+  }
 
   // SST y mareas: opcionales
   let mTidesData = null;
@@ -628,24 +643,16 @@ async function fetchAllData(lat, lng) {
     } catch (_) {}
   }
 
-  const wh  = wData.hourly;
+  const wh  = wWindData.hourly;
+  const whE = wExtrasData?.hourly || {};    // UV, visibilidad, lluvia
   const mh  = mWaveData.hourly;
   const mhT = mTidesData?.hourly || {};
-  const wc  = wData.current   || {};
-  const mc  = mWaveData.current || {};
+  const wc  = wWindData.current  || {};
+  const mc  = mWaveData.current  || {};
   const mcT = mTidesData?.current || {};
 
-  // Log para diagnóstico — borrar cuando todo esté correcto
-  console.table({
-    'wind_speed_10m (API)':    wc.wind_speed_10m,
-    'wind_direction_10m (API)': wc.wind_direction_10m,
-    'wind_gusts_10m (API)':    wc.wind_gusts_10m,
-    'wave_height (API)':       mc.wave_height,
-    'time (API current)':      wc.time,
-  });
-
   // Modelo meteorológico realmente utilizado (para mostrar al usuario)
-  const modelUsed = (wDataTry && wDataTry.current) ? 'Météo-France AROME (1.5km)' : 'Modelo global (best_match)';
+  const modelUsed = (wWindDataTry && wWindDataTry.current) ? 'Météo-France AROME (1.5km)' : 'Modelo global';
 
   // Alinear hourly de Marine con hourly de Weather por timestamp,
   // para construir la predicción futura (las próximas 48h)
@@ -664,35 +671,44 @@ async function fetchAllData(lat, lng) {
     };
   });
 
-  // HOUR 0 = "AHORA" — valores "current" para lo que está disponible,
-  // y hourly[nowIdx] para uv_index, precipitation_probability y visibility
-  // que Open-Meteo NO incluye en el endpoint "current".
-  // IMPORTANTE: wc.time puede ser "2026-06-13T19:45" (con minutos exactos)
-  // pero wh.time[] son siempre horas exactas "2026-06-13T19:00".
-  // Comparamos solo los primeros 13 chars (YYYY-MM-DDTHH) para que coincidan.
-  const currentTime  = wc.time || '';
-  const currentHour  = currentTime.slice(0, 13); // "2026-06-13T19"
-  const nowIdx = wh.time ? wh.time.findIndex(t => t.slice(0, 13) === currentHour) : -1;
-  const nowI   = nowIdx >= 0 ? nowIdx : 0;
+  // HORA ACTUAL: buscar índice en wh.time y whE.time (formato "YYYY-MM-DDTHH:00")
+  // wc.time puede ser "2026-06-14T16:30" (con minutos); comparamos solo primeros 13 chars
+  const currentTime = wc.time || '';
+  const currentHour = currentTime.slice(0, 13); // "2026-06-14T16"
+  const nowIdx  = wh.time  ? wh.time.findIndex(t  => t.slice(0,13)  === currentHour) : -1;
+  const nowIdxE = (whE.time || wh.time || []).findIndex(t => t.slice(0,13) === currentHour);
+  const nowI    = nowIdx  >= 0 ? nowIdx  : 0;
+  const nowIE   = nowIdxE >= 0 ? nowIdxE : 0;
+
+  const extTimes = whE.time || wh.time || [];
+  const extrasByTime = {};
+  extTimes.forEach((t, i) => {
+    extrasByTime[t.slice(0,13)] = {
+      uv:   whE.uv_index?.[i]                 ?? null,
+      vis:  whE.visibility?.[i]               ?? null,
+      rain: whE.precipitation_probability?.[i] ?? null,
+    };
+  });
 
   const nowHour = {
     time:       wc.time || new Date().toISOString().slice(0,16),
-    airTemp:    wc.temperature_2m            ?? null,
-    humidity:   wc.relative_humidity_2m      ?? null,
-    wind:       wc.wind_speed_10m            ?? 0,
-    windDir:    wc.wind_direction_10m        ?? null,
-    gust:       wc.wind_gusts_10m            ?? null,
-    pressure:   wc.surface_pressure          ?? null,
-    // Estos tres solo vienen en hourly, no en current:
-    visibility: wh.visibility?.[nowI]               ?? null,
-    uv:         wh.uv_index?.[nowI]                 ?? null,
-    rain:       wh.precipitation_probability?.[nowI] ?? null,
+    airTemp:    wc.temperature_2m   ?? null,
+    humidity:   wc.relative_humidity_2m ?? null,
+    wind:       wc.wind_speed_10m   ?? 0,
+    windDir:    wc.wind_direction_10m ?? null,
+    gust:       wc.wind_gusts_10m   ?? null,
+    pressure:   wc.surface_pressure ?? null,
+    // UV, visibilidad, lluvia — del modelo por defecto (whE)
+    uv:         whE.uv_index?.[nowIE]                 ?? null,
+    visibility: whE.visibility?.[nowIE]               ?? null,
+    rain:       whE.precipitation_probability?.[nowIE] ?? null,
     // Marina
-    wave:       mc.wave_height               ?? 0,
-    waveDir:    mc.wave_direction             ?? null,
-    period:     mc.wave_period               ?? null,
-    waterTemp:  mcT.sea_surface_temperature   ?? null,
+    wave:       mc.wave_height    ?? 0,
+    waveDir:    mc.wave_direction  ?? null,
+    period:     mc.wave_period    ?? null,
+    waterTemp:  mcT.sea_surface_temperature ?? null,
   };
+
 
   // RESTO DE HORAS (predicción futura) — desde hourly, solo timestamps
   // estrictamente posteriores a la hora "current" para no duplicar/solapar
@@ -702,17 +718,18 @@ async function fetchAllData(lat, lng) {
     if (currentTime && t <= currentTime) continue; // saltar horas pasadas/actual
     const m = marineByTime[t] || { wave:0, waveDir:null, period:null };
     const s = tidesByTime[t]  || { waterTemp:null };
+    const ex = extrasByTime[t.slice(0,13)] || { uv:null, vis:null, rain:null };
     futureHours.push({
       time:       t,
-      airTemp:    wh.temperature_2m?.[i]            ?? null,
-      humidity:   wh.relative_humidity_2m?.[i]      ?? null,
-      wind:       wh.wind_speed_10m?.[i]            ?? 0,
-      windDir:    wh.wind_direction_10m?.[i]        ?? null,
-      gust:       wh.wind_gusts_10m?.[i]            ?? null,
-      pressure:   wh.surface_pressure?.[i]          ?? null,
-      visibility: wh.visibility?.[i]               ?? null,
-      uv:         wh.uv_index?.[i]                 ?? null,
-      rain:       wh.precipitation_probability?.[i] ?? null,
+      airTemp:    wh.temperature_2m?.[i]     ?? null,
+      humidity:   wh.relative_humidity_2m?.[i] ?? null,
+      wind:       wh.wind_speed_10m?.[i]     ?? 0,
+      windDir:    wh.wind_direction_10m?.[i] ?? null,
+      gust:       wh.wind_gusts_10m?.[i]     ?? null,
+      pressure:   wh.surface_pressure?.[i]   ?? null,
+      uv:         ex.uv,
+      visibility: ex.vis,
+      rain:       ex.rain,
       wave:       m.wave,
       waveDir:    m.waveDir,
       period:     m.period,
