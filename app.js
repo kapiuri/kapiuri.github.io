@@ -635,6 +635,15 @@ async function fetchAllData(lat, lng) {
   const mc  = mWaveData.current || {};
   const mcT = mTidesData?.current || {};
 
+  // Log para diagnóstico — borrar cuando todo esté correcto
+  console.table({
+    'wind_speed_10m (API)':    wc.wind_speed_10m,
+    'wind_direction_10m (API)': wc.wind_direction_10m,
+    'wind_gusts_10m (API)':    wc.wind_gusts_10m,
+    'wave_height (API)':       mc.wave_height,
+    'time (API current)':      wc.time,
+  });
+
   // Modelo meteorológico realmente utilizado (para mostrar al usuario)
   const modelUsed = (wDataTry && wDataTry.current) ? 'Météo-France AROME (1.5km)' : 'Modelo global (best_match)';
 
