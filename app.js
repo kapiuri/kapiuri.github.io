@@ -395,7 +395,9 @@ function renderData(data, lat, lng) {
 
   // Métricas secundarias
   $('sv-humidity').textContent   = cur.humidity != null   ? Math.round(cur.humidity) + '%'           : '—';
-  $('sv-visibility').textContent = cur.visibility != null ? (cur.visibility / 1000).toFixed(1) + ' km' : '—';
+  $('sv-visibility').textContent = cur.visibility != null
+    ? (Math.min(cur.visibility, 10000) / 1000).toFixed(1) + ' km'
+    : '—';
   $('sv-pressure').textContent   = cur.pressure != null   ? Math.round(cur.pressure) + ' hPa'        : '—';
   $('sv-rain').textContent       = cur.rain != null       ? Math.round(cur.rain) + '%'               : '—';
   $('sv-uv').textContent         = cur.uv != null         ? fmt(cur.uv, 1)                            : '—';
