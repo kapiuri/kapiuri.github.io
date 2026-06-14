@@ -667,8 +667,12 @@ async function fetchAllData(lat, lng) {
   // HOUR 0 = "AHORA" — valores "current" para lo que está disponible,
   // y hourly[nowIdx] para uv_index, precipitation_probability y visibility
   // que Open-Meteo NO incluye en el endpoint "current".
-  const currentTime = wc.time; // ej "2026-06-13T19:00"
-  const nowIdx = wh.time ? wh.time.findIndex(t => t === currentTime) : -1;
+  // IMPORTANTE: wc.time puede ser "2026-06-13T19:45" (con minutos exactos)
+  // pero wh.time[] son siempre horas exactas "2026-06-13T19:00".
+  // Comparamos solo los primeros 13 chars (YYYY-MM-DDTHH) para que coincidan.
+  const currentTime  = wc.time || '';
+  const currentHour  = currentTime.slice(0, 13); // "2026-06-13T19"
+  const nowIdx = wh.time ? wh.time.findIndex(t => t.slice(0, 13) === currentHour) : -1;
   const nowI   = nowIdx >= 0 ? nowIdx : 0;
 
   const nowHour = {
