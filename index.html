@@ -1,1 +1,124 @@
-h
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101318">
+  <meta name="description" content="AutoStudio 3D - Configurador de vehículos en 3D">
+  <title>AutoStudio 3D</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="AutoStudio 3D inicio">
+        <span class="brand-mark">A</span>
+        <span>AUTO<span class="brand-light">STUDIO</span><small>3D CONFIGURATOR</small></span>
+      </a>
+      <div class="topbar-center"><span class="live-dot"></span> GARAGE / CONFIGURADOR</div>
+      <div class="topbar-actions">
+        <button class="btn btn-quiet" id="resetBtn" type="button">Restablecer</button>
+        <button class="btn btn-primary" id="saveBtn" type="button">Guardar proyecto</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <div class="eyebrow">TU GARAJE</div>
+        <h1>Configura tu<br><em>máquina.</em></h1>
+        <p class="intro">Elige un vehículo y empieza a crear una configuración única.</p>
+
+        <label class="field-label" for="vehicleSelect">VEHÍCULO</label>
+        <select id="vehicleSelect" class="control"></select>
+
+        <div class="section-heading"><span>PERSONALIZACIÓN</span><span class="section-number">01 — 03</span></div>
+        <div class="tab-list" role="tablist" aria-label="Categorías de personalización">
+          <button class="tab active" data-tab="paint" role="tab" aria-selected="true">Pintura</button>
+          <button class="tab" data-tab="wheels" role="tab" aria-selected="false">Llantas</button>
+          <button class="tab" data-tab="model" role="tab" aria-selected="false">Modelo 3D</button>
+        </div>
+
+        <section class="tab-panel" id="paintPanel">
+          <div class="panel-title">Color de carrocería <span class="mini-tag">EXTERIOR</span></div>
+          <div class="swatches" id="paintSwatches">
+            <button class="swatch selected" data-color="#d6d9dd" style="--swatch:#d6d9dd" aria-label="Plata"></button>
+            <button class="swatch" data-color="#c51f32" style="--swatch:#c51f32" aria-label="Rojo"></button>
+            <button class="swatch" data-color="#111820" style="--swatch:#111820" aria-label="Negro"></button>
+            <button class="swatch" data-color="#174b79" style="--swatch:#174b79" aria-label="Azul"></button>
+            <button class="swatch" data-color="#e5e0d3" style="--swatch:#e5e0d3" aria-label="Marfil"></button>
+            <button class="swatch" data-color="#526b55" style="--swatch:#526b55" aria-label="Verde"></button>
+          </div>
+          <label class="field-label" for="customColor">COLOR PERSONALIZADO</label>
+          <div class="color-input-wrap"><input id="customColor" type="color" value="#d6d9dd"><span id="colorValue">#D6D9DD</span></div>
+          <label class="field-label" for="finishSelect">ACABADO</label>
+          <select id="finishSelect" class="control">
+            <option value="0.28">Metalizado</option>
+            <option value="0.65">Mate</option>
+            <option value="0.12">Brillante</option>
+          </select>
+        </section>
+
+        <section class="tab-panel hidden" id="wheelsPanel">
+          <div class="panel-title">Diseño de llanta <span class="mini-tag">RUEDAS</span></div>
+          <div class="choice-grid">
+            <button class="choice selected" data-wheel="5"><span class="wheel-icon spokes-5"></span><b>5 radios</b></button>
+            <button class="choice" data-wheel="10"><span class="wheel-icon spokes-10"></span><b>Multirradio</b></button>
+            <button class="choice" data-wheel="mesh"><span class="wheel-icon spokes-mesh"></span><b>Mesh</b></button>
+          </div>
+          <p class="helper">Los diseños son representaciones de demostración. Más adelante añadiremos llantas 3D reales y compatibles por vehículo.</p>
+        </section>
+
+        <section class="tab-panel hidden" id="modelPanel">
+          <div class="panel-title">Tu modelo 3D <span class="mini-tag">GLB / GLTF</span></div>
+          <label class="upload-zone" for="modelFile">
+            <span class="upload-icon">＋</span>
+            <b>Cargar modelo 3D</b>
+            <span>Selecciona un archivo .glb o .gltf desde tu PC</span>
+          </label>
+          <input class="visually-hidden" id="modelFile" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json">
+          <button class="btn btn-outline full" id="demoModelBtn" type="button">Volver al coche de demostración</button>
+          <p class="helper">Los modelos externos deben permitir su descarga y uso. Respeta siempre su licencia. Los archivos locales no se publican en GitHub automáticamente.</p>
+        </section>
+
+        <div class="sidebar-bottom">
+          <div class="status-line"><span class="live-dot"></span><span id="statusText">VISOR 3D LISTO</span></div>
+          <div class="version">AUTOSTUDIO 3D <span>·</span> PREVIEW 0.1</div>
+        </div>
+      </aside>
+
+      <section class="viewer-area">
+        <div class="viewer-toolbar">
+          <div><span class="eyebrow">VISTA EN DIRECTO</span><div class="viewer-title" id="vehicleTitle">Sport Coupé <span>2024</span></div></div>
+          <div class="view-controls">
+            <button class="icon-btn active" id="orbitBtn" title="Vista libre" aria-label="Vista libre">◎</button>
+            <button class="icon-btn" id="frontBtn" title="Vista frontal" aria-label="Vista frontal">F</button>
+            <button class="icon-btn" id="sideBtn" title="Vista lateral" aria-label="Vista lateral">L</button>
+            <button class="icon-btn" id="topBtn" title="Vista superior" aria-label="Vista superior">T</button>
+          </div>
+        </div>
+        <div id="canvasHost" class="canvas-host">
+          <div class="viewer-grid"></div>
+          <div class="canvas-hint"><span class="mouse-symbol">↔</span> ARRASTRA PARA GIRAR <span>·</span> RUEDA PARA ZOOM</div>
+          <div class="model-badge"><span class="live-dot"></span> 3D REALTIME</div>
+          <div id="loadingMessage" class="loading-message">Preparando el garaje 3D…</div>
+        </div>
+        <div class="viewer-footer">
+          <div class="spec"><span>PLATAFORMA</span><b>THREE.JS / WEBGL</b></div>
+          <div class="spec"><span>CONFIGURACIÓN</span><b id="footerColor">PLATA METALIZADO</b></div>
+          <div class="spec"><span>ESTADO</span><b class="ready">● ACTIVO</b></div>
+        </div>
+      </section>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
